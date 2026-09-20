@@ -1,0 +1,2 @@
+I am preparing a short English demo of a fictional meal-photo product. The app can identify foods from a photo, estimate portion sizes, and adapt suggestions to dietary preferences. I need to explain which feature the team will build first and why. I already know the words product, feature, photo, and user, but I am not confident with useful phrases for portion estimation and feature prioritization.
+

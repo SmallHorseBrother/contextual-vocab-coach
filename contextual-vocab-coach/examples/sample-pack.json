@@ -1,0 +1,67 @@
+{
+  "profile": {
+    "goal": {
+      "statement": "Explain a meal-photo product's core features in English",
+      "success_definition": "Give a two-minute product explanation without translating line by line",
+      "focus_modes": ["production", "recognition"],
+      "confirmed": true
+    },
+    "familiar_contexts": [
+      {
+        "label": "product demos",
+        "confidence": "confirmed",
+        "source_ids": ["demo-context"]
+      }
+    ],
+    "preferences": {
+      "daily_minutes": 10,
+      "explanation_language": "zh-CN"
+    },
+    "exclusions": []
+  },
+  "sources": [
+    {
+      "source_id": "demo-context",
+      "label": "Fictional product-pitch example",
+      "kind": "file",
+      "locator": "examples/product-pitch-context.txt",
+      "authorized": true,
+      "retain_raw": false,
+      "summary": "The learner wants to explain meal-photo analysis and feature priorities.",
+      "status": "active"
+    }
+  ],
+  "candidates": [
+    {
+      "term": "estimate portion sizes",
+      "meaning": "估算每份食物的分量",
+      "kind": "phrase",
+      "rationale": "Directly explains a core image-analysis feature",
+      "target_modes": ["production", "recognition"],
+      "source_ids": ["demo-context"],
+      "priority": 5,
+      "anchor": "describing a meal photo during the demo"
+    },
+    {
+      "term": "dietary preferences",
+      "meaning": "饮食偏好",
+      "kind": "collocation",
+      "rationale": "Needed to explain how suggestions adapt to a user",
+      "target_modes": ["production", "recognition"],
+      "source_ids": ["demo-context"],
+      "priority": 4,
+      "anchor": "contrasting two fictional users' meal choices"
+    },
+    {
+      "term": "prioritize",
+      "meaning": "确定优先次序；优先处理",
+      "kind": "word",
+      "rationale": "Helps explain which feature a small team will build first",
+      "target_modes": ["production"],
+      "source_ids": ["demo-context"],
+      "priority": 4,
+      "anchor": "choosing the first feature for a product demo"
+    }
+  ]
+}
+

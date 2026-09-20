@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.contextual-vocab/
+state.json
+*.tmp
+.DS_Store
+
