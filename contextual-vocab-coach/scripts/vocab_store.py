@@ -216,6 +216,8 @@ def validate_pack(pack: dict[str, Any], state: dict[str, Any]) -> None:
             raise StoreError(f"sources[{index}].retain_raw must be true or false")
         if source.get("status", "active") not in VALID_SOURCE_STATUS:
             raise StoreError(f"sources[{index}].status must be active or paused")
+        if "focus_points" in source:
+            string_list(source["focus_points"], f"sources[{index}].focus_points")
         source_ids.add(source_id)
 
     candidates = pack.get("candidates", [])
@@ -264,6 +266,7 @@ def apply_pack(state: dict[str, Any], pack: dict[str, Any], now: str) -> dict[st
             "authorized": True,
             "retain_raw": bool(incoming.get("retain_raw", False)),
             "summary": str(incoming.get("summary", "")).strip(),
+            "focus_points": list(dict.fromkeys(incoming.get("focus_points", []))),
             "status": incoming.get("status", "active"),
             "added_at": now if existing is None else existing["added_at"],
             "updated_at": now,

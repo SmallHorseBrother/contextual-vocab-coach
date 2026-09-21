@@ -24,6 +24,24 @@ python scripts/vocab_store.py source-delete --source-id <id> --mode metadata
 python scripts/vocab_store.py doctor
 ```
 
+## Visual workbench
+
+The bundled build runs with the Python standard library and shares the same store:
+
+```text
+python scripts/workbench_server.py
+```
+
+Then open `http://127.0.0.1:4174/`. The server binds to loopback only. Candidate decisions, review feedback, and source pause/resume actions are written atomically through `vocab_store.py`.
+
+Use an isolated, disposable demo when showing the interface without touching the learner's state:
+
+```text
+python scripts/workbench_server.py --demo
+```
+
+Use `--store <directory-or-json-file>` and `--port <port>` when isolation or a different port is needed. If the workbench build is missing during development, run `npm ci` and `npm run build` from `workbench/`.
+
 ## Operational rules
 
 - Run `status` before starting a session.
@@ -35,6 +53,6 @@ python scripts/vocab_store.py doctor
 - `source-delete --mode metadata` removes the source, its summaries, links, and source-only inferred anchors while preserving accepted learning items and review schedules.
 - `source-delete --mode purge` also removes items supported only by that source and their review events. Treat it as destructive and use only on an explicit request.
 - Run `doctor` after any failed or interrupted state-changing command.
+- Never use `--demo` for a real learning session; it intentionally uses temporary data.
 
 The CLI writes state atomically. It emits JSON unless a command explicitly requests Markdown.
-

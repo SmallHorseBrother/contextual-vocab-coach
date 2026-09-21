@@ -26,7 +26,7 @@
 
 ## 安装
 
-需要 Python 3.10 或更高版本，无第三方 Python 依赖。
+需要 Python 3.10 或更高版本，无第三方 Python 依赖。仓库已包含可直接运行的可视化工作台构建产物；只有修改前端源码时才需要 Node.js。
 
 ```powershell
 git clone https://github.com/SmallHorseBrother/contextual-vocab-coach.git
@@ -45,6 +45,27 @@ $contextual-vocab-coach 根据当前这段项目讨论，帮我找出为了用�
 $contextual-vocab-coach 开始今天到期的复习。
 $contextual-vocab-coach 显示我当前任务的词汇掌握情况。
 $contextual-vocab-coach 暂停使用“产品讨论”这个来源。
+$contextual-vocab-coach 打开我的词汇学习工作台。
+```
+
+## 可视化工作台
+
+Skill 现在同时提供 Codex 对话和本地可视化工作台。Codex 负责理解你授权的上下文、筛选表达与生成个性化练习；工作台适合快速处理候选、开始 10 分钟学习、记录复习反馈、查看掌握地图以及控制来源。
+
+![Contextual Vocab Coach 可视化工作台](design/workbench-preview.png)
+
+直接启动真实本地学习档案：
+
+```powershell
+python .\contextual-vocab-coach\scripts\workbench_server.py
+```
+
+然后在浏览器打开 `http://127.0.0.1:4174/`。服务只监听本机回环地址，所有操作继续写入同一个本地 JSON 学习档案。
+
+如果只是体验界面，可启动不会触碰真实档案的临时演示：
+
+```powershell
+python .\contextual-vocab-coach\scripts\workbench_server.py --demo
 ```
 
 ## 一次完整体验
@@ -92,6 +113,8 @@ contextual-vocab-coach/
 ├── SKILL.md                  # Skill 入口和核心工作流
 ├── agents/openai.yaml        # Codex 展示与调用元数据
 ├── scripts/vocab_store.py    # 本地状态、来源、复习和隐私操作
+├── scripts/workbench_server.py # 本地工作台与 JSON API
+├── workbench/                # React 源码和可直接运行的构建产物
 ├── references/               # 按任务加载的详细规则
 └── examples/                 # 不含真实个人信息的演示材料
 ```
@@ -100,11 +123,11 @@ contextual-vocab-coach/
 
 ## 当前边界
 
-第一版专注于可验证的文字学习闭环，不包含：
+当前版本专注于单人、本地优先、可验证的学习闭环，不包含：
 
 - 静默扫描全部聊天历史或整台电脑
 - 多平台后台同步
-- 完整网页、教师后台或社交系统
+- 教师后台、排行榜或社交系统
 - 自动图片、音频和视频生成
 - “英语大脑”或真实认知结构诊断
 - Token 商城或 API Key 转售
@@ -115,8 +138,12 @@ Codex 当前对话本身就是第一个上下文入口。未来若增加 Hook �
 
 ```powershell
 python -m py_compile .\contextual-vocab-coach\scripts\vocab_store.py
+python -m py_compile .\contextual-vocab-coach\scripts\workbench_server.py
 python -m unittest discover -s tests -v
+Set-Location .\contextual-vocab-coach\workbench
+npm ci
+npm run build
+npm run test:sites
 ```
 
 项目采用 [MIT License](LICENSE)。
-

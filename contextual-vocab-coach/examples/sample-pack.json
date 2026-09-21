@@ -1,8 +1,8 @@
 {
   "profile": {
     "goal": {
-      "statement": "Explain a meal-photo product's core features in English",
-      "success_definition": "Give a two-minute product explanation without translating line by line",
+      "statement": "用英语介绍我的产品",
+      "success_definition": "不逐句翻译，完成一段两分钟的产品介绍",
       "focus_modes": ["production", "recognition"],
       "confirmed": true
     },
@@ -22,12 +22,17 @@
   "sources": [
     {
       "source_id": "demo-context",
-      "label": "Fictional product-pitch example",
-      "kind": "file",
+      "label": "当前项目讨论",
+      "kind": "current_conversation",
       "locator": "examples/product-pitch-context.txt",
       "authorized": true,
       "retain_raw": false,
-      "summary": "The learner wants to explain meal-photo analysis and feature priorities.",
+      "summary": "你正在与团队讨论一款面向全球用户的健康饮食产品，涉及功能设计、目标用户、产品价值和市场策略。我从这段对话中提取了 5 个在你当前目标下最有学习价值的英语表达。",
+      "focus_points": [
+        "介绍产品的核心功能和使用场景",
+        "说明如何根据饮食偏好提供个性化建议",
+        "讨论产品的长期价值和功能优先级"
+      ],
       "status": "active"
     }
   ],
@@ -36,7 +41,7 @@
       "term": "estimate portion sizes",
       "meaning": "估算每份食物的分量",
       "kind": "phrase",
-      "rationale": "Directly explains a core image-analysis feature",
+      "rationale": "你在讨论产品的饮食建议功能时提到这个场景，未来需要向用户解释它如何工作",
       "target_modes": ["production", "recognition"],
       "source_ids": ["demo-context"],
       "priority": 5,
@@ -46,7 +51,7 @@
       "term": "dietary preferences",
       "meaning": "饮食偏好",
       "kind": "collocation",
-      "rationale": "Needed to explain how suggestions adapt to a user",
+      "rationale": "你多次提到根据用户的饮食偏好提供个性化方案，这是产品的核心功能之一",
       "target_modes": ["production", "recognition"],
       "source_ids": ["demo-context"],
       "priority": 4,
@@ -56,12 +61,31 @@
       "term": "prioritize",
       "meaning": "确定优先次序；优先处理",
       "kind": "word",
-      "rationale": "Helps explain which feature a small team will build first",
+      "rationale": "你在讨论产品路线图时提到需要优先考虑高频用户需求，适合用于团队沟通",
       "target_modes": ["production"],
       "source_ids": ["demo-context"],
-      "priority": 4,
+      "priority": 3,
       "anchor": "choosing the first feature for a product demo"
+    },
+    {
+      "term": "seamless experience",
+      "meaning": "无缝的体验；流畅的使用体验",
+      "kind": "collocation",
+      "rationale": "你希望在产品介绍中突出简单、顺畅的使用体验，这个表达很适合当前场景",
+      "target_modes": ["production", "recognition"],
+      "source_ids": ["demo-context"],
+      "priority": 2,
+      "anchor": "describing what happens immediately after a user takes a meal photo"
+    },
+    {
+      "term": "in the long run",
+      "meaning": "从长远来看；长期而言",
+      "kind": "phrase",
+      "rationale": "你在讨论产品价值时提到它能长期帮助用户形成更健康的习惯",
+      "target_modes": ["recognition", "production"],
+      "source_ids": ["demo-context"],
+      "priority": 1,
+      "anchor": "explaining the product's long-term value to users"
     }
   ]
 }
-

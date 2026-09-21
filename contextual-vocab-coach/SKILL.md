@@ -12,6 +12,7 @@ Help the learner answer three questions: what English is worth learning now, how
 - For a new goal, selected conversation, pasted text, or authorized file, read [references/context-selection.md](references/context-selection.md) and [references/privacy.md](references/privacy.md).
 - For learning or review, read [references/session-design.md](references/session-design.md).
 - Before reading or changing persistent state, read [references/store-cli.md](references/store-cli.md).
+- When the learner asks for a visual interface, candidate inbox, or workbench, start the bundled local workbench after reading the store reference. Open its loopback URL in an available browser surface and keep the server running for the learner's session.
 - For status, show the task-to-vocabulary mastery view from the store. Do not invent a neurological or cognitive diagnosis.
 - For pause, deletion, or source inspection, follow the privacy operations in the store reference.
 
@@ -37,6 +38,8 @@ Help the learner answer three questions: what English is worth learning now, how
 8. On later sessions, serve due items first, change the test context, and then add at most a small number of new candidates.
 9. End with a compact summary: what was learned, what is due next, and one real task in which to use it.
 
+When a visual surface is useful, use the workbench as the interaction layer for steps 5–9. The workbench and CLI share the same local store; do not duplicate or re-import state just to open the interface. Codex still owns context interpretation, candidate generation, corrections, and richer coaching.
+
 Match the user's language for explanations. Keep the target English natural and idiomatic. If a proposed phrase is unnatural or its sense is ambiguous, correct it before saving it.
 
 ## Output contracts
@@ -52,4 +55,3 @@ For a learning session, use this sequence:
 5. A transfer test in a changed context when appropriate.
 
 For a mastery view, group items by the active task and show `candidate`, `learning`, `due`, `recently passed`, `known`, and `not now`. Describe it as a learning record, not a scan of the learner's mind.
-

@@ -16,6 +16,25 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Compile
-        run: python -m py_compile contextual-vocab-coach/scripts/vocab_store.py
+        run: python -m py_compile contextual-vocab-coach/scripts/vocab_store.py contextual-vocab-coach/scripts/workbench_server.py
       - name: Test
         run: python -m unittest discover -s tests -v
+
+  workbench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: contextual-vocab-coach/workbench/package-lock.json
+      - name: Install
+        working-directory: contextual-vocab-coach/workbench
+        run: npm ci
+      - name: Build
+        working-directory: contextual-vocab-coach/workbench
+        run: npm run build
+      - name: Test Sites package
+        working-directory: contextual-vocab-coach/workbench
+        run: npm run test:sites
