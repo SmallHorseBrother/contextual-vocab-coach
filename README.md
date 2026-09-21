@@ -2,7 +2,7 @@
 
 > 你忙什么，就优先学什么英语；用你熟悉的事，记住你用得上的表达。
 
-`contextual-vocab-coach` 是一个面向 Codex 的开源英语词汇学习 Skill。它不会先塞给你一本固定词书，而是从你**明确授权的当前目标和上下文**中发现近期值得学的词、短语与搭配，再用熟悉场景帮助理解，通过主动回忆和间隔复习检查是否真正掌握。
+`contextual-vocab-coach` 是一个面向 Codex 的开源英语词汇学习 Skill。它内置 **540 个基础词、短语和生活场景表达**，覆盖 18 类日常场景；同时从你**明确授权的当前目标和上下文**中发现近期最值得学的内容，再用熟悉场景帮助理解，通过主动回忆和间隔复习检查是否真正掌握。
 
 它主要解决三个问题：
 
@@ -13,6 +13,8 @@
 | 什么时候复习？ | 分别记录阅读识别与主动表达，用成熟的调度基线安排复习 |
 
 其中“学什么”和“怎么学”是项目的核心差异；复习调度不是自研算法卖点。
+
+大词库与小批学习是两层：540 项是可搜索的储备池，候选收件箱每次仍只推荐 5–8 项。只有用户明确点击“加入学习”或确认上下文候选后，内容才进入复习队列，避免把几百个词一次性变成压力。词库中的 A1/A2/B1 是便于筛选的实用难度提示，不是官方考试评级。
 
 ## 它和普通 AI 词表有什么不同
 
@@ -50,9 +52,11 @@ $contextual-vocab-coach 打开我的词汇学习工作台。
 
 ## 可视化工作台
 
-Skill 现在同时提供 Codex 对话和本地可视化工作台。Codex 负责理解你授权的上下文、筛选表达与生成个性化练习；工作台适合快速处理候选、开始 10 分钟学习、记录复习反馈、查看掌握地图以及控制来源。
+Skill 现在同时提供 Codex 对话和本地可视化工作台。Codex 负责理解你授权的上下文、筛选表达与生成个性化练习；工作台适合搜索完整词库、按场景和难度筛选、把选中的词加入学习、快速处理上下文候选、开始 10 分钟学习、记录复习反馈、查看掌握地图以及控制来源。
 
 ![Contextual Vocab Coach 可视化工作台](design/workbench-preview.png)
+
+![可搜索和筛选的 540 项生活英语词库](design/implementation-word-library.jpg)
 
 直接启动真实本地学习档案：
 
@@ -79,6 +83,8 @@ python .\contextual-vocab-coach\scripts\workbench_server.py --demo
 7. 结果写入本地学习记录；下次先复习到期项目，再添加少量新内容。
 8. 复习会更换措辞或场景，避免只记住原故事。
 
+如果你暂时没有可导入的上下文，也可以先打开 **Word Library**，从家庭、饮食、购物、交通、旅行、工作、学习、健康、情绪、数码等 18 个场景中搜索基础内容。完整词库不等于自动学习清单；每个词仍由你主动加入。
+
 仓库里的虚构产品示例可以用于验证本地工具：
 
 ```powershell
@@ -86,6 +92,7 @@ $demo = Join-Path $env:TEMP "contextual-vocab-demo"
 python .\contextual-vocab-coach\scripts\vocab_store.py --store $demo init
 python .\contextual-vocab-coach\scripts\vocab_store.py --store $demo apply-pack --input .\contextual-vocab-coach\examples\sample-pack.json --dry-run
 python .\contextual-vocab-coach\scripts\vocab_store.py --store $demo apply-pack --input .\contextual-vocab-coach\examples\sample-pack.json
+python .\contextual-vocab-coach\scripts\vocab_store.py --store $demo lexicon-search --query water
 python .\contextual-vocab-coach\scripts\vocab_store.py --store $demo status --format markdown
 ```
 
@@ -112,6 +119,8 @@ Skill 提供三类来源控制：
 contextual-vocab-coach/
 ├── SKILL.md                  # Skill 入口和核心工作流
 ├── agents/openai.yaml        # Codex 展示与调用元数据
+├── data/starter-lexicon.json # 540 项、18 场景的内置起步词库
+├── scripts/build_starter_lexicon.py # 可复现生成内置词库
 ├── scripts/vocab_store.py    # 本地状态、来源、复习和隐私操作
 ├── scripts/workbench_server.py # 本地工作台与 JSON API
 ├── workbench/                # React 源码和可直接运行的构建产物
@@ -119,7 +128,7 @@ contextual-vocab-coach/
 └── examples/                 # 不含真实个人信息的演示材料
 ```
 
-根目录的 `tests/` 覆盖重复导入、独立掌握轨道、来源删除和历史保留等关键不变量。
+根目录的 `tests/` 覆盖词库规模与筛选、显式加入学习、重复导入、独立掌握轨道、来源删除和历史保留等关键不变量。
 
 ## 当前边界
 
@@ -139,6 +148,7 @@ Codex 当前对话本身就是第一个上下文入口。未来若增加 Hook �
 ```powershell
 python -m py_compile .\contextual-vocab-coach\scripts\vocab_store.py
 python -m py_compile .\contextual-vocab-coach\scripts\workbench_server.py
+python .\contextual-vocab-coach\scripts\build_starter_lexicon.py
 python -m unittest discover -s tests -v
 Set-Location .\contextual-vocab-coach\workbench
 npm ci

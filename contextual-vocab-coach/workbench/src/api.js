@@ -30,3 +30,10 @@ export function recordReview(itemId, mode, feedback) {
 export function setSourceStatus(sourceId, status) {
   return request("/api/source-status", { method: "POST", body: JSON.stringify({ source_id: sourceId, status }) });
 }
+
+export function addLibraryEntry(entryId, decision = "learning") {
+  return request("/api/library-decision", {
+    method: "POST",
+    body: JSON.stringify({ entry_id: entryId, decision }),
+  });
+}

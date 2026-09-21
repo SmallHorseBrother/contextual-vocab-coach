@@ -14,3 +14,4 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Desktop-first, Chinese-first, local-first. Codex supplies authorized context; the workbench owns candidate decisions, learning sessions, review, and source controls.
 - The candidate inbox is the default and highest-fidelity screen. Preserve its warm ivory surface, serif goal title, restrained teal accent, three-column frame, grouped table rows, and right assistant rail.
 - Avoid gamification, brain-scan claims, decorative analytics, card overload, gradients, and invented cloud/account features.
+- Keep a broad starter reservoir (hundreds of basic words and everyday expressions) separate from the small 5–8 item contextual inbox. The library must be searchable and filterable by everyday scenario and approximate level, and any entry can be deliberately added to learning.

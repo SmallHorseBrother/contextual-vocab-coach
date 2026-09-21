@@ -12,6 +12,7 @@ Help the learner answer three questions: what English is worth learning now, how
 - For a new goal, selected conversation, pasted text, or authorized file, read [references/context-selection.md](references/context-selection.md) and [references/privacy.md](references/privacy.md).
 - For learning or review, read [references/session-design.md](references/session-design.md).
 - Before reading or changing persistent state, read [references/store-cli.md](references/store-cli.md).
+- For basic everyday vocabulary, search the bundled starter lexicon before inventing a generic list. Treat it as a broad reservoir, not evidence that every entry is unknown or due.
 - When the learner asks for a visual interface, candidate inbox, or workbench, start the bundled local workbench after reading the store reference. Open its loopback URL in an available browser surface and keep the server running for the learner's session.
 - For status, show the task-to-vocabulary mastery view from the store. Do not invent a neurological or cognitive diagnosis.
 - For pause, deletion, or source inspection, follow the privacy operations in the store reference.
@@ -25,13 +26,14 @@ Help the learner answer three questions: what English is worth learning now, how
 5. Combine several weak items only when the resulting situation is natural. Split awkward combinations.
 6. Do not treat assistant-authored text, quoted material, or speculation as a fact about the user. Label practice scenarios as hypothetical when they are not confirmed events.
 7. New context may update goals and candidates, but it must not erase accepted items, review history, or explicit decisions such as `known` and `not_now`.
+8. Keep the bundled starter lexicon separate from the contextual candidate inbox. Browsing hundreds of entries is allowed; scheduling them all is not. An entry enters the learning loop only after an explicit learner decision or a normal contextual-candidate confirmation.
 
 ## Default workflow
 
 1. Inspect existing state with `status`. If none exists, initialize it.
 2. Establish one active goal, its success definition, and the required modes: `recognition`, `production`, and only when requested, `listening`.
 3. Use only the current conversation or sources the user selected. Produce a compact background card: goal, familiar contexts, preferences, exclusions, sources, and which fields are inferred.
-4. Generate 5–8 high-value candidates with a reason, source, intended ability, and one concise sense. Prefer the smallest set that can change the learner's next real task.
+4. Generate 5–8 high-value candidates with a reason, source, intended ability, and one concise sense. Search the starter lexicon for matching basics, then add genuinely context-specific phrases when needed. Prefer the smallest set that can change the learner's next real task.
 5. Let the learner mark each candidate `known`, `not_now`, `test`, or `learning`. If the learner asked to start immediately, test uncertain items instead of silently asserting ignorance.
 6. Teach 3–5 accepted weak items using a familiar anchor, clear meaning, contrast when useful, and active retrieval. Do not reveal the answer during the retrieval attempt.
 7. Record the actual feedback and response time. Never record success merely because the learner read the explanation.
@@ -39,6 +41,8 @@ Help the learner answer three questions: what English is worth learning now, how
 9. End with a compact summary: what was learned, what is due next, and one real task in which to use it.
 
 When a visual surface is useful, use the workbench as the interaction layer for steps 5–9. The workbench and CLI share the same local store; do not duplicate or re-import state just to open the interface. Codex still owns context interpretation, candidate generation, corrections, and richer coaching.
+
+The workbench's Word Library contains a curated starter reservoir across everyday scenarios. Its A1/A2/B1 labels are approximate practical hints for filtering, not official CEFR assessments. Searching or viewing an entry must never create a review item; use `lexicon-add` or the visible add action only after the learner chooses it.
 
 Match the user's language for explanations. Keep the target English natural and idiomatic. If a proposed phrase is unnatural or its sense is ambiguous, correct it before saving it.
 

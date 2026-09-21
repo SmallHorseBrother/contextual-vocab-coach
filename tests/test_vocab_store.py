@@ -23,6 +23,12 @@ def sample_pack() -> dict:
     )
 
 
+def starter_lexicon() -> dict:
+    return json.loads(
+        (ROOT / "contextual-vocab-coach" / "data" / "starter-lexicon.json").read_text(encoding="utf-8")
+    )
+
+
 class VocabStoreTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tempdir = tempfile.TemporaryDirectory()
@@ -174,6 +180,57 @@ class VocabStoreTests(unittest.TestCase):
         self.assertIn("Task-to-vocabulary mastery", rendered)
         self.assertIn("estimate portion sizes", rendered)
         self.assertNotIn("brain", rendered.casefold())
+
+    def test_bundled_lexicon_has_broad_everyday_coverage(self) -> None:
+        pack = starter_lexicon()
+        store.validate_lexicon_pack(pack)
+
+        self.assertEqual(len(pack["entries"]), 540)
+        self.assertEqual(len(pack["scenarios"]), 18)
+        terms = {entry["term"] for entry in pack["entries"]}
+        self.assertTrue({"hello", "water", "because", "family", "follow up"} <= terms)
+        self.assertEqual({entry["level"] for entry in pack["entries"]}, {"A1", "A2", "B1"})
+
+    def test_lexicon_reimport_preserves_learner_decisions(self) -> None:
+        state = store.load_state(self.path)
+        pack = starter_lexicon()
+        first = store.apply_lexicon_pack(state, pack, "2026-09-21T12:01:00Z")
+        hello = next(entry for entry in pack["entries"] if entry["term"] == "hello")
+        result = store.add_lexicon_entry(state, hello["id"], "learning", "2026-09-21T12:02:00Z")
+
+        second = store.apply_lexicon_pack(state, pack, "2026-09-21T12:03:00Z")
+
+        self.assertEqual(first["entries_added"], 540)
+        self.assertEqual(second["entries_updated"], 540)
+        self.assertEqual(state["candidates"][result["item_id"]]["status"], "learning")
+        self.assertIn(result["item_id"], state["learning_items"])
+
+    def test_lexicon_search_filters_term_scenario_and_level(self) -> None:
+        state = store.load_state(self.path)
+        store.apply_lexicon_pack(state, starter_lexicon(), "2026-09-21T12:01:00Z")
+
+        water = store.lexicon_payload(state, query="water")
+        food_a1 = store.lexicon_payload(state, scenario="food", level="A1")
+
+        self.assertEqual(water["resultCount"], 1)
+        self.assertEqual(water["entries"][0]["meaning"], "水")
+        self.assertGreater(len(food_a1["entries"]), 0)
+        self.assertTrue(all("food" in entry["scenario_ids"] for entry in food_a1["entries"]))
+        self.assertTrue(all(entry["level"] == "A1" for entry in food_a1["entries"]))
+
+    def test_lexicon_entry_enters_learning_only_after_explicit_add(self) -> None:
+        state = store.load_state(self.path)
+        store.apply_lexicon_pack(state, starter_lexicon(), "2026-09-21T12:01:00Z")
+        hello = next(entry for entry in state["lexicon"].values() if entry["term"] == "hello")
+
+        before = store.lexicon_payload(state, query="hello")
+        result = store.add_lexicon_entry(state, hello["id"], "learning", "2026-09-21T12:02:00Z")
+        after = store.lexicon_payload(state, query="hello")
+
+        self.assertEqual(before["entries"][0]["status"], "available")
+        self.assertEqual(after["entries"][0]["status"], "learning")
+        self.assertEqual(after["entries"][0]["candidate_id"], result["item_id"])
+        self.assertIn(result["item_id"], state["learning_items"])
 
 
 if __name__ == "__main__":

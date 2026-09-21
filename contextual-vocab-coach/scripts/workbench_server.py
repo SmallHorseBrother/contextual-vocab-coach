@@ -36,17 +36,22 @@ MAX_BODY_BYTES = 64 * 1024
 def initialize_store(path: Path, *, demo: bool = False) -> None:
     """Create the store when absent and optionally seed the bundled demo."""
     with STATE_LOCK:
+        changed = False
         if path.exists():
             state = store.load_state(path)
         else:
             now = store.iso_now()
             state = store.empty_state(now)
             store.add_event(state, now, "store_initialized")
-            store.save_state(path, state)
+            changed = True
+        now = store.iso_now()
+        if store.ensure_starter_lexicon(state, now) is not None:
+            changed = True
         if demo and not state["candidates"]:
-            now = store.iso_now()
             pack = json.loads(SAMPLE_PACK.read_text(encoding="utf-8"))
             store.apply_pack(state, pack, now)
+            changed = True
+        if changed:
             store.save_state(path, state)
 
 
@@ -82,11 +87,12 @@ def workbench_state(path: Path) -> dict[str, Any]:
             }
         )
 
-    active_source_summaries = [source.get("summary", "") for source in sources if source["status"] == "active"]
+    contextual_sources = [source for source in sources if source.get("kind") != "bundled_lexicon"]
+    active_source_summaries = [source.get("summary", "") for source in contextual_sources if source["status"] == "active"]
     summary = next((value for value in active_source_summaries if value), "尚未导入授权上下文。")
     focus_points = [
         point
-        for source in sources
+        for source in contextual_sources
         if source["status"] == "active"
         for point in source.get("focus_points", [])
     ][:3]
@@ -104,6 +110,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
         "summary": summary,
         "focusPoints": focus_points,
         "dueCount": status["due_count"],
+        "library": store.lexicon_payload(state, limit=1000),
         "candidates": candidate_rows,
         "sources": [
             {
@@ -112,6 +119,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
                 "kind": source["kind"],
                 "status": source["status"],
                 "summary": source.get("summary", ""),
+                "isBundled": source.get("kind") == "bundled_lexicon",
             }
             for source in sources
         ],
@@ -163,6 +171,19 @@ def apply_source_status(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
     return workbench_state(path)
 
 
+def apply_library_decision(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    entry_id = str(payload.get("entry_id", ""))
+    decision = str(payload.get("decision", "learning"))
+    with STATE_LOCK:
+        state = store.load_state(path)
+        store.add_lexicon_entry(state, entry_id, decision, store.iso_now())
+        errors = store.state_errors(state)
+        if errors:
+            raise store.StoreError("Library decision produced an invalid state: " + "; ".join(errors))
+        store.save_state(path, state)
+    return workbench_state(path)
+
+
 def make_handler(
     state_path: Path,
     client_dir: Path = CLIENT_DIR,
@@ -200,6 +221,7 @@ def make_handler(
                 "/api/decision": apply_decision,
                 "/api/review": apply_review,
                 "/api/source-status": apply_source_status,
+                "/api/library-decision": apply_library_decision,
             }
             action = routes.get(urlparse(self.path).path)
             if action is None:

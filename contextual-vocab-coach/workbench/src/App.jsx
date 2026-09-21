@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Archive,
   BookOpenText,
+  Books,
   CaretDown,
   ChatCenteredDots,
   Check,
@@ -10,19 +11,22 @@ import {
   House,
   Lightbulb,
   ListChecks,
+  MagnifyingGlass,
   Pause,
   Play,
+  Plus,
   ShareNetwork,
   SpeakerHigh,
   Sparkle,
   Target,
 } from "@phosphor-icons/react";
 import { MOCK_STATE, STATUS_LABELS } from "./mockData.js";
-import { decideCandidate, fetchWorkbenchState, recordReview, setSourceStatus } from "./api.js";
+import { addLibraryEntry, decideCandidate, fetchWorkbenchState, recordReview, setSourceStatus } from "./api.js";
 
 const NAV_ITEMS = [
   { id: "today", label: "Today", icon: House },
   { id: "inbox", label: "Candidate Inbox", icon: Archive },
+  { id: "library", label: "Word Library", icon: Books },
   { id: "review", label: "Review", icon: ClockCounterClockwise },
   { id: "map", label: "Memory Map", icon: ShareNetwork },
   { id: "sources", label: "Sources", icon: Database },
@@ -160,6 +164,59 @@ function CandidateInbox({ data, pendingId, onDecision, onSpeak }) {
   );
 }
 
+const LIBRARY_STATUS_LABELS = {
+  available: "加入学习",
+  learning: "正在学习",
+  test: "等待短测",
+  known: "已经会了",
+  not_now: "近期不用",
+  proposed: "候选表达",
+};
+
+function LibraryView({ library, pendingId, onAdd, onSpeak }) {
+  const [query, setQuery] = useState("");
+  const [scenario, setScenario] = useState("");
+  const [level, setLevel] = useState("");
+  const entries = library?.entries || [];
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const filtered = entries.filter((entry) => {
+    if (scenario && !entry.scenario_ids.includes(scenario)) return false;
+    if (level && entry.level !== level) return false;
+    if (!normalizedQuery) return true;
+    return [entry.term, entry.meaning, ...(entry.scenario_labels || [])].join(" ").toLocaleLowerCase().includes(normalizedQuery);
+  });
+  const visible = filtered.slice(0, 80);
+
+  return (
+    <section className="library-view" aria-labelledby="library-heading">
+      <div className="library-hero">
+        <div><span className="eyebrow">生活英语储备池</span><h2 id="library-heading">{library?.entryCount || 0} 个基础词与场景表达</h2><p>这里是完整储备库；候选收件箱仍只挑 5–8 个最适合你当前目标的内容。</p></div>
+        <div className="library-stat"><strong>{library?.scenarios?.length || 0}</strong><span>生活场景</span></div>
+      </div>
+      <div className="library-controls">
+        <label className="library-search"><MagnifyingGlass size={19} /><input aria-label="搜索词库" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索英文、中文或场景…" /></label>
+        <select aria-label="按生活场景筛选" value={scenario} onChange={(event) => setScenario(event.target.value)}><option value="">全部场景</option>{(library?.scenarios || []).map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select>
+        <select aria-label="按难度筛选" value={level} onChange={(event) => setLevel(event.target.value)}><option value="">全部难度</option>{(library?.levels || []).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+      </div>
+      <div className="library-result-line"><span>找到 {filtered.length} 项</span><small>当前最多显示 80 项，请用搜索或筛选快速缩小范围。</small></div>
+      <div className="library-grid">
+        {visible.map((entry) => {
+          const available = entry.status === "available";
+          return <article className="library-card" key={entry.id}>
+            <div className="library-copy">
+              <div className="library-term"><strong>{entry.term}</strong><button className="speak-button" onClick={() => onSpeak(entry.term)} type="button" aria-label={`朗读 ${entry.term}`}><SpeakerHigh size={18} /></button></div>
+              <p>{entry.meaning}</p>
+              <div className="library-tags"><span className={`level-tag level-${entry.level.toLowerCase()}`}>{entry.level}</span>{(entry.scenario_labels || []).map((label) => <span key={label}>{label}</span>)}</div>
+            </div>
+            <button className={`library-add ${available ? "" : "is-added"}`} disabled={!available || pendingId === entry.id} onClick={() => onAdd(entry)} type="button">{available ? <Plus size={17} weight="bold" /> : <Check size={17} weight="bold" />}{LIBRARY_STATUS_LABELS[entry.status] || entry.status}</button>
+          </article>;
+        })}
+      </div>
+      {!visible.length ? <div className="library-empty">没有匹配项。换一个中文、英文或生活场景试试。</div> : null}
+    </section>
+  );
+}
+
 function AssistantRail({ data, onStartLearning }) {
   const selectedCount = data.candidates.filter((item) => ["learning", "test"].includes(item.status)).length;
   return (
@@ -246,7 +303,8 @@ export function App() {
   const [activeView, setActiveView] = useState("inbox");
   const [sessionOpen, setSessionOpen] = useState(false);
   const [pendingId, setPendingId] = useState(null);
-  const sourceLabel = data.sources.find((source) => source.status === "active")?.label || data.sources[0]?.label;
+  const [pendingLibraryId, setPendingLibraryId] = useState(null);
+  const sourceLabel = data.sources.find((source) => source.status === "active" && !source.isBundled)?.label || data.sources.find((source) => source.status === "active")?.label || data.sources[0]?.label;
   const dueCount = useMemo(() => data.dueCount ?? data.candidates.filter((item) => item.status === "learning").length, [data]);
 
   const handleDecision = async (itemId, decision) => {
@@ -270,6 +328,16 @@ export function App() {
     if (remote) updateLocal({ ...remote, connected: true });
   };
 
+  const handleLibraryAdd = async (entry) => {
+    setPendingLibraryId(entry.id);
+    const localCandidate = { id: entry.id, term: entry.term, meaning: entry.meaning, rationale: `你从“${entry.scenario_labels.join("、")}”基础词库主动加入`, sourceLabel: "内置生活英语词库", sourceTime: "刚刚", mode: entry.target_modes[0], modeLabel: entry.target_modes[0] === "recognition" ? "理解优先" : "主动表达", status: "learning", anchor: `在“${entry.scenario_labels.join("、")}”场景中自然使用这个表达。` };
+    const optimistic = { ...data, library: { ...data.library, entries: data.library.entries.map((item) => item.id === entry.id ? { ...item, status: "learning" } : item) }, candidates: data.candidates.some((item) => item.term === entry.term && item.meaning === entry.meaning) ? data.candidates : [...data.candidates, localCandidate] };
+    updateLocal(optimistic);
+    const remote = await addLibraryEntry(entry.id);
+    if (remote) updateLocal({ ...remote, connected: true });
+    setPendingLibraryId(null);
+  };
+
   const speak = (term) => {
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
@@ -280,6 +348,7 @@ export function App() {
   let content;
   if (sessionOpen) content = <LearningSession candidates={data.candidates} onBack={() => { setSessionOpen(false); setActiveView("inbox"); }} onReview={handleReview} />;
   else if (activeView === "inbox") content = <CandidateInbox data={data} pendingId={pendingId} onDecision={handleDecision} onSpeak={speak} />;
+  else if (activeView === "library") content = <LibraryView library={data.library} pendingId={pendingLibraryId} onAdd={handleLibraryAdd} onSpeak={speak} />;
   else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body={`围绕“${data.goal?.statement || "当前目标"}”，先完成到期复习，再加入少量新表达。`} actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
   else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body="复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" actionLabel="开始复习" onAction={() => setSessionOpen(true)} />;
   else if (activeView === "map") content = <MasteryView candidates={data.candidates} />;

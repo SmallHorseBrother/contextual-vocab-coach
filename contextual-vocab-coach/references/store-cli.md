@@ -16,6 +16,8 @@ python scripts/vocab_store.py init
 python scripts/vocab_store.py status --format markdown
 python scripts/vocab_store.py apply-pack --input <pack.json> --dry-run
 python scripts/vocab_store.py apply-pack --input <pack.json>
+python scripts/vocab_store.py lexicon-search --query water --scenario food --level A1 --limit 20
+python scripts/vocab_store.py lexicon-add --entry <lexicon-entry-id> --decision learning
 python scripts/vocab_store.py decide --item <id-or-exact-term> --decision learning
 python scripts/vocab_store.py due --limit 5
 python scripts/vocab_store.py review --item <id-or-exact-term> --mode production --feedback good --response-ms 4200 --strategy personal-scene --personalized --transfer-test
@@ -34,6 +36,8 @@ python scripts/workbench_server.py
 
 Then open `http://127.0.0.1:4174/`. The server binds to loopback only. Candidate decisions, review feedback, and source pause/resume actions are written atomically through `vocab_store.py`.
 
+`init` installs the bundled starter lexicon by default. It contains 540 original entries across 18 everyday scenarios. Use `lexicon-search` to browse without changing the learning queue, and `lexicon-add` only after the learner explicitly chooses an entry. The A1/A2/B1 labels are approximate filtering hints rather than an official assessment. For development or custom packs, use `lexicon-import --input <lexicon.json> --dry-run` before importing; `init --no-starter-lexicon` is available for isolated tests.
+
 Use an isolated, disposable demo when showing the interface without touching the learner's state:
 
 ```text
@@ -47,6 +51,7 @@ Use `--store <directory-or-json-file>` and `--port <port>` when isolation or a d
 - Run `status` before starting a session.
 - Validate generated packs with `--dry-run` before applying them.
 - Resolve an item by ID when two senses share the same term.
+- Keep starter-library browsing separate from contextual recommendations and due review. Never bulk-add the library to learning.
 - Use `decide` to preserve `known` and `not_now` decisions across future imports.
 - Run `due` before introducing new items.
 - Call `review` only after the learner attempts retrieval.

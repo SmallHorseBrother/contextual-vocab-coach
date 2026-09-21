@@ -23,8 +23,11 @@ from typing import Any
 
 
 SCHEMA_VERSION = 1
+SKILL_DIR = Path(__file__).resolve().parents[1]
+DEFAULT_STARTER_LEXICON = SKILL_DIR / "data" / "starter-lexicon.json"
 VALID_MODES = {"recognition", "production", "listening"}
 VALID_KINDS = {"word", "phrase", "collocation", "sentence_frame"}
+VALID_LEVELS = {"A1", "A2", "B1"}
 VALID_DECISIONS = {"proposed", "test", "learning", "known", "not_now"}
 VALID_FEEDBACK = {"again", "hard", "good", "easy"}
 VALID_SOURCE_STATUS = {"active", "paused"}
@@ -97,6 +100,8 @@ def empty_state(now: str) -> dict[str, Any]:
         },
         "goals": {},
         "sources": {},
+        "lexicon_meta": {},
+        "lexicon": {},
         "candidates": {},
         "learning_items": {},
         "reviews": [],
@@ -111,6 +116,9 @@ def load_state(path: Path) -> dict[str, Any]:
         state = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise StoreError(f"Cannot read learning store at {path}: {exc}") from exc
+    # Schema v1 stores created before the starter library remain readable.
+    state.setdefault("lexicon_meta", {})
+    state.setdefault("lexicon", {})
     errors = state_errors(state)
     if errors:
         raise StoreError("Invalid learning store: " + "; ".join(errors))
@@ -166,6 +174,225 @@ def read_json_input(value: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise StoreError("Pack must be a JSON object")
     return payload
+
+
+def validate_lexicon_pack(pack: dict[str, Any]) -> None:
+    version = pack.get("version")
+    if not isinstance(version, int) or isinstance(version, bool) or version < 1:
+        raise StoreError("lexicon.version must be a positive integer")
+    require_text(pack.get("title"), "lexicon.title")
+    scenarios = pack.get("scenarios")
+    if not isinstance(scenarios, list) or not scenarios:
+        raise StoreError("lexicon.scenarios must be a non-empty list")
+    scenario_ids: set[str] = set()
+    for index, scenario in enumerate(scenarios):
+        if not isinstance(scenario, dict):
+            raise StoreError(f"lexicon.scenarios[{index}] must be an object")
+        scenario_id = require_text(scenario.get("id"), f"lexicon.scenarios[{index}].id")
+        if not re.fullmatch(r"[a-z][a-z0-9_-]{0,39}", scenario_id):
+            raise StoreError(f"lexicon.scenarios[{index}].id contains unsupported characters")
+        if scenario_id in scenario_ids:
+            raise StoreError(f"duplicate lexicon scenario: {scenario_id}")
+        scenario_ids.add(scenario_id)
+        require_text(scenario.get("label"), f"lexicon.scenarios[{index}].label")
+
+    entries = pack.get("entries")
+    if not isinstance(entries, list) or not entries:
+        raise StoreError("lexicon.entries must be a non-empty list")
+    entry_ids: set[str] = set()
+    senses: set[tuple[str, str]] = set()
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise StoreError(f"lexicon.entries[{index}] must be an object")
+        entry_id = require_text(entry.get("id"), f"lexicon.entries[{index}].id")
+        if entry_id in entry_ids:
+            raise StoreError(f"duplicate lexicon entry id: {entry_id}")
+        entry_ids.add(entry_id)
+        term = require_text(entry.get("term"), f"lexicon.entries[{index}].term")
+        meaning = require_text(entry.get("meaning"), f"lexicon.entries[{index}].meaning")
+        sense = (normalize(term), normalize(meaning))
+        if sense in senses:
+            raise StoreError(f"duplicate lexicon sense: {term} / {meaning}")
+        senses.add(sense)
+        if entry.get("kind") not in VALID_KINDS:
+            raise StoreError(f"lexicon.entries[{index}].kind must be one of {sorted(VALID_KINDS)}")
+        if entry.get("level") not in VALID_LEVELS:
+            raise StoreError(f"lexicon.entries[{index}].level must be one of {sorted(VALID_LEVELS)}")
+        modes = string_list(entry.get("target_modes"), f"lexicon.entries[{index}].target_modes", allowed=VALID_MODES)
+        if not modes:
+            raise StoreError(f"lexicon.entries[{index}].target_modes cannot be empty")
+        references = string_list(entry.get("scenario_ids"), f"lexicon.entries[{index}].scenario_ids")
+        unknown = set(references) - scenario_ids
+        if not references or unknown:
+            raise StoreError(f"lexicon.entries[{index}] references unknown scenarios: {sorted(unknown)}")
+
+
+def apply_lexicon_pack(state: dict[str, Any], pack: dict[str, Any], now: str) -> dict[str, int]:
+    validate_lexicon_pack(pack)
+    scenario_map = {row["id"]: row for row in pack["scenarios"]}
+    result = {"entries_added": 0, "entries_updated": 0}
+    for incoming in pack["entries"]:
+        entry_id = incoming["id"]
+        existed = entry_id in state["lexicon"]
+        state["lexicon"][entry_id] = {
+            "id": entry_id,
+            "term": incoming["term"].strip(),
+            "meaning": incoming["meaning"].strip(),
+            "kind": incoming["kind"],
+            "level": incoming["level"],
+            "scenario_ids": list(dict.fromkeys(incoming["scenario_ids"])),
+            "target_modes": list(dict.fromkeys(incoming["target_modes"])),
+        }
+        result["entries_updated" if existed else "entries_added"] += 1
+
+    state["lexicon_meta"] = {
+        "version": pack["version"],
+        "title": pack["title"].strip(),
+        "description": str(pack.get("description", "")).strip(),
+        "language_pair": str(pack.get("language_pair", "en-zh-CN")).strip(),
+        "scenarios": [
+            {
+                "id": row["id"],
+                "label": row["label"].strip(),
+                "description": str(row.get("description", "")).strip(),
+            }
+            for row in scenario_map.values()
+        ],
+        "updated_at": now,
+    }
+    source_id = "starter-lexicon"
+    existing_source = state["sources"].get(source_id)
+    state["sources"][source_id] = {
+        "id": source_id,
+        "label": "内置生活英语词库",
+        "kind": "bundled_lexicon",
+        "locator": "data/starter-lexicon.json",
+        "fingerprint": f"version:{pack['version']}",
+        "authorized": True,
+        "retain_raw": False,
+        "summary": f"{len(pack['entries'])} 个基础词、短语和生活场景表达。",
+        "focus_points": [],
+        "status": existing_source.get("status", "active") if existing_source else "active",
+        "added_at": existing_source.get("added_at", now) if existing_source else now,
+        "updated_at": now,
+    }
+    state["updated_at"] = now
+    add_event(state, now, "lexicon_imported", version=pack["version"], **result)
+    return result
+
+
+def ensure_starter_lexicon(state: dict[str, Any], now: str) -> dict[str, int] | None:
+    if not DEFAULT_STARTER_LEXICON.is_file():
+        return None
+    pack = json.loads(DEFAULT_STARTER_LEXICON.read_text(encoding="utf-8"))
+    if (
+        state.get("lexicon_meta", {}).get("version") == pack.get("version")
+        and state.get("lexicon")
+        and "starter-lexicon" in state.get("sources", {})
+    ):
+        return None
+    return apply_lexicon_pack(state, pack, now)
+
+
+def lexicon_payload(
+    state: dict[str, Any],
+    *,
+    query: str = "",
+    scenario: str = "",
+    level: str = "",
+    limit: int = 1000,
+) -> dict[str, Any]:
+    query_key = normalize(query)
+    scenario_rows = state.get("lexicon_meta", {}).get("scenarios", [])
+    scenario_labels = {row["id"]: row["label"] for row in scenario_rows}
+    candidate_by_lexicon = {
+        candidate.get("lexicon_entry_id"): candidate
+        for candidate in state["candidates"].values()
+        if candidate.get("lexicon_entry_id")
+    }
+    matched: list[dict[str, Any]] = []
+    for entry in state.get("lexicon", {}).values():
+        if scenario and scenario not in entry["scenario_ids"]:
+            continue
+        if level and level != entry["level"]:
+            continue
+        labels = [scenario_labels.get(item, item) for item in entry["scenario_ids"]]
+        haystack = normalize(" ".join((entry["term"], entry["meaning"], *labels)))
+        if query_key and query_key not in haystack:
+            continue
+        candidate = candidate_by_lexicon.get(entry["id"])
+        matched.append(
+            {
+                **entry,
+                "scenario_labels": labels,
+                "status": candidate["status"] if candidate else "available",
+                "candidate_id": candidate["id"] if candidate else None,
+            }
+        )
+    level_order = {"A1": 0, "A2": 1, "B1": 2}
+    matched.sort(key=lambda row: (level_order.get(row["level"], 9), row["term"].casefold()))
+    return {
+        "title": state.get("lexicon_meta", {}).get("title", "基础词库"),
+        "description": state.get("lexicon_meta", {}).get("description", ""),
+        "entryCount": len(state.get("lexicon", {})),
+        "resultCount": len(matched),
+        "scenarios": scenario_rows,
+        "levels": sorted(VALID_LEVELS, key=lambda value: level_order[value]),
+        "entries": matched[: max(1, min(limit, 2000))],
+    }
+
+
+def add_lexicon_entry(state: dict[str, Any], entry_id: str, decision: str, now: str) -> dict[str, Any]:
+    if "starter-lexicon" not in state["sources"]:
+        ensure_starter_lexicon(state, now)
+    entry = state.get("lexicon", {}).get(entry_id)
+    if entry is None:
+        raise StoreError(f"Unknown lexicon entry: {entry_id}")
+    if decision not in VALID_DECISIONS - {"proposed"}:
+        raise StoreError("decision must be known, not_now, test, or learning")
+    scenario_labels = {
+        row["id"]: row["label"] for row in state.get("lexicon_meta", {}).get("scenarios", [])
+    }
+    labels = [scenario_labels.get(item, item) for item in entry["scenario_ids"]]
+    item_id = stable_id("item", entry["term"], entry["meaning"])
+    goal_id = state["profile"].get("active_goal_id")
+    candidate = state["candidates"].get(item_id)
+    if candidate is None:
+        candidate = {
+            "id": item_id,
+            "term": entry["term"],
+            "meaning": entry["meaning"],
+            "kind": entry["kind"],
+            "rationale": f"来自基础词库；你主动从“{'、'.join(labels)}”场景加入",
+            "target_modes": list(entry["target_modes"]),
+            "source_ids": ["starter-lexicon"],
+            "goal_ids": [goal_id] if goal_id else [],
+            "priority": 2,
+            "evidence_summary": "learner-selected starter lexicon entry",
+            "suggested_anchor": f"在“{'、'.join(labels)}”生活场景中自然使用这个表达",
+            "contrast": "",
+            "status": decision,
+            "lexicon_entry_id": entry_id,
+            "created_at": now,
+            "updated_at": now,
+        }
+        state["candidates"][item_id] = candidate
+    else:
+        candidate["lexicon_entry_id"] = entry_id
+        candidate["source_ids"] = merge_unique(candidate.get("source_ids", []), ["starter-lexicon"])
+        candidate["target_modes"] = merge_unique(candidate.get("target_modes", []), entry["target_modes"])
+        if goal_id:
+            candidate["goal_ids"] = merge_unique(candidate.get("goal_ids", []), [goal_id])
+        candidate["status"] = decision
+        candidate["updated_at"] = now
+    if decision == "learning":
+        ensure_learning_item(state, candidate, now)
+    elif item_id in state["learning_items"]:
+        state["learning_items"][item_id]["status"] = "known" if decision == "known" else "paused"
+        state["learning_items"][item_id]["updated_at"] = now
+    state["updated_at"] = now
+    add_event(state, now, "lexicon_entry_decided", entry_id=entry_id, item_id=item_id, decision=decision)
+    return {"entry_id": entry_id, "item_id": item_id, "decision": decision}
 
 
 def validate_pack(pack: dict[str, Any], state: dict[str, Any]) -> None:
@@ -549,6 +776,7 @@ def status_payload(state: dict[str, Any], now: str) -> dict[str, Any]:
         "updated_at": state["updated_at"],
         "active_goal": state["goals"].get(goal_id) if goal_id else None,
         "candidate_counts": candidate_counts,
+        "lexicon_count": len(state.get("lexicon", {})),
         "learning_item_count": len(state["learning_items"]),
         "review_count": len(state["reviews"]),
         "due_count": len(due_tracks),
@@ -583,6 +811,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
     lines.extend(
         [
             f"Candidates: {counts['proposed']} proposed · {counts['test']} to test · {counts['learning']} learning · {counts['known']} known · {counts['not_now']} not now",
+            "",
+            f"Starter library: {payload.get('lexicon_count', 0)} entries",
             "",
             f"Due now: {payload['due_count']} · Reviews recorded: {payload['review_count']}",
             "",
@@ -625,7 +855,7 @@ def state_errors(state: Any) -> list[str]:
         return ["root is not an object"]
     if state.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"schema_version must be {SCHEMA_VERSION}")
-    for key in ("profile", "goals", "sources", "candidates", "learning_items"):
+    for key in ("profile", "goals", "sources", "lexicon_meta", "lexicon", "candidates", "learning_items"):
         if not isinstance(state.get(key), dict):
             errors.append(f"{key} must be an object")
     for key in ("reviews", "events"):
@@ -641,6 +871,13 @@ def state_errors(state: Any) -> list[str]:
             errors.append(f"source key mismatch: {source_id}")
         if source.get("status") not in VALID_SOURCE_STATUS:
             errors.append(f"source {source_id} has invalid status")
+    for entry_id, entry in state["lexicon"].items():
+        if entry.get("id") != entry_id:
+            errors.append(f"lexicon key mismatch: {entry_id}")
+        if entry.get("level") not in VALID_LEVELS:
+            errors.append(f"lexicon entry {entry_id} has invalid level")
+        if entry.get("kind") not in VALID_KINDS:
+            errors.append(f"lexicon entry {entry_id} has invalid kind")
     for item_id, candidate in state["candidates"].items():
         if candidate.get("id") != item_id:
             errors.append(f"candidate key mismatch: {item_id}")
@@ -668,6 +905,8 @@ def state_errors(state: Any) -> list[str]:
 def command_init(args: argparse.Namespace, path: Path, now: str) -> dict[str, Any]:
     if path.exists():
         state = load_state(path)
+        if not getattr(args, "no_starter_lexicon", False) and ensure_starter_lexicon(state, now) is not None:
+            save_state(path, state)
         return {"created": False, "store": str(path), "status": status_payload(state, now)}
     state = empty_state(now)
     if args.goal:
@@ -685,6 +924,8 @@ def command_init(args: argparse.Namespace, path: Path, now: str) -> dict[str, An
         }
         state["profile"]["active_goal_id"] = goal_id
     add_event(state, now, "store_initialized")
+    if not getattr(args, "no_starter_lexicon", False):
+        ensure_starter_lexicon(state, now)
     save_state(path, state)
     return {"created": True, "store": str(path), "status": status_payload(state, now)}
 
@@ -700,6 +941,45 @@ def command_apply_pack(args: argparse.Namespace, path: Path, now: str) -> dict[s
     if not args.dry_run:
         save_state(path, working)
     return {"dry_run": bool(args.dry_run), "changes": result, "status": status_payload(working, now)}
+
+
+def command_lexicon_import(args: argparse.Namespace, path: Path, now: str) -> dict[str, Any]:
+    state = load_state(path)
+    pack = read_json_input(args.input)
+    working = copy.deepcopy(state)
+    result = apply_lexicon_pack(working, pack, now)
+    errors = state_errors(working)
+    if errors:
+        raise StoreError("Lexicon import produced an invalid state: " + "; ".join(errors))
+    if not args.dry_run:
+        save_state(path, working)
+    return {
+        "dry_run": bool(args.dry_run),
+        "changes": result,
+        "library": lexicon_payload(working, limit=1),
+    }
+
+
+def command_lexicon_search(args: argparse.Namespace, path: Path, now: str) -> dict[str, Any]:
+    del now
+    state = load_state(path)
+    return lexicon_payload(
+        state,
+        query=args.query or "",
+        scenario=args.scenario or "",
+        level=args.level or "",
+        limit=args.limit,
+    )
+
+
+def command_lexicon_add(args: argparse.Namespace, path: Path, now: str) -> dict[str, Any]:
+    state = load_state(path)
+    result = add_lexicon_entry(state, args.entry, args.decision, now)
+    errors = state_errors(state)
+    if errors:
+        raise StoreError("Lexicon decision produced an invalid state: " + "; ".join(errors))
+    save_state(path, state)
+    return result
 
 
 def command_decide(args: argparse.Namespace, path: Path, now: str) -> dict[str, Any]:
@@ -864,10 +1144,25 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--success-definition")
     init.add_argument("--focus-modes", nargs="+", choices=sorted(VALID_MODES))
     init.add_argument("--confirmed", action="store_true")
+    init.add_argument("--no-starter-lexicon", action="store_true")
 
     apply_parser = subparsers.add_parser("apply-pack", help="Validate and merge a context/candidate pack")
     apply_parser.add_argument("--input", required=True, help="JSON path or - for stdin")
     apply_parser.add_argument("--dry-run", action="store_true")
+
+    lexicon_import = subparsers.add_parser("lexicon-import", help="Validate and merge a starter lexicon")
+    lexicon_import.add_argument("--input", default=str(DEFAULT_STARTER_LEXICON))
+    lexicon_import.add_argument("--dry-run", action="store_true")
+
+    lexicon_search = subparsers.add_parser("lexicon-search", help="Search the local starter lexicon")
+    lexicon_search.add_argument("--query")
+    lexicon_search.add_argument("--scenario")
+    lexicon_search.add_argument("--level", choices=sorted(VALID_LEVELS))
+    lexicon_search.add_argument("--limit", type=int, default=30)
+
+    lexicon_add = subparsers.add_parser("lexicon-add", help="Add a starter lexicon entry to the learning loop")
+    lexicon_add.add_argument("--entry", required=True, help="Lexicon entry ID")
+    lexicon_add.add_argument("--decision", choices=sorted(VALID_DECISIONS - {"proposed"}), default="learning")
 
     decide = subparsers.add_parser("decide", help="Record the learner's decision about a candidate")
     decide.add_argument("--item", required=True, help="Item ID or exact term")
@@ -911,6 +1206,12 @@ def main(argv: list[str] | None = None) -> int:
             output: Any = command_init(args, path, now)
         elif args.command == "apply-pack":
             output = command_apply_pack(args, path, now)
+        elif args.command == "lexicon-import":
+            output = command_lexicon_import(args, path, now)
+        elif args.command == "lexicon-search":
+            output = command_lexicon_search(args, path, now)
+        elif args.command == "lexicon-add":
+            output = command_lexicon_add(args, path, now)
         elif args.command == "decide":
             output = command_decide(args, path, now)
         elif args.command == "due":

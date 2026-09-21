@@ -6,6 +6,7 @@ final result: passed
 
 - Source concept: `design/reference-codex-sidecar.png` (1489 × 1060)
 - Browser capture: `design/implementation-codex-sidecar.jpg`
+- Word Library capture: `design/implementation-word-library.jpg`
 - Normalized comparison: `design/qa-side-by-side.png` (source and implementation at 1440 × 1024)
 - Browser under test: Codex in-app browser, local production server at `http://127.0.0.1:4174/`
 
@@ -23,6 +24,9 @@ final result: passed
 
 ## Functional and state review
 
+- Word Library visibly reports 540 entries across 18 scenarios; search for `water` reduced the result set to one exact entry.
+- Combined filters for “餐饮与厨房” and A1 produced 12 matching entries with no unrelated scenario or level shown.
+- Adding `water` changed its visible state to “正在学习,” added two independent due tracks to the Review badge, and preserved the broader 540-entry reservoir.
 - Candidate decision persisted through the local JSON API; adding one two-mode item changed the review badge from 0 to 2.
 - The 10-minute learning CTA opened an active-recall card, accepted an answer, revealed feedback only after submission, and persisted a `good` review; the due badge dropped from 2 to 1 because the second mode remains independently due.
 - Sources could be paused and restored, and the assistant summary reacted to the authorization state.
@@ -35,6 +39,7 @@ final result: passed
 - Semantic buttons, table/row structure, textarea labeling, focus rings, disabled submit state, and speech button labels are present.
 - Icon-only navigation at narrow widths retains explicit accessible names.
 - Desktop was checked at a 1440 × 1024 CSS viewport.
+- The extended Word Library was checked at a 1910 × 1073 viewport; its two-column cards, filters, count, and assistant rail remained readable with no horizontal overflow.
 - Tablet check: 970 px CSS width, no horizontal overflow; navigation and assistant rail become document-flow sections.
 - Mobile check: 597 px CSS width, no horizontal overflow; candidate rows collapse to a two-column layout and actions remain 300 px wide.
 

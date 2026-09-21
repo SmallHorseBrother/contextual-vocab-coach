@@ -1,0 +1,7661 @@
+{
+  "version": 1,
+  "title": "生活英语起步词库",
+  "description": "原创整理的基础词、短语和生活场景表达；难度为实用提示，不是官方考试评级。",
+  "language_pair": "en-zh-CN",
+  "scenarios": [
+    {
+      "id": "social",
+      "label": "社交问候",
+      "description": "见面、寒暄、礼貌表达与澄清"
+    },
+    {
+      "id": "family",
+      "label": "家庭与人际",
+      "description": "家人、朋友、关系与相处"
+    },
+    {
+      "id": "home",
+      "label": "居家日常",
+      "description": "房间、家务和日常起居"
+    },
+    {
+      "id": "food",
+      "label": "餐饮与厨房",
+      "description": "食物、点餐、烹饪和饮食需求"
+    },
+    {
+      "id": "shopping",
+      "label": "购物与支付",
+      "description": "价格、尺码、付款、退换与客服"
+    },
+    {
+      "id": "time",
+      "label": "时间与日程",
+      "description": "日期、频率、约会与截止时间"
+    },
+    {
+      "id": "transport",
+      "label": "交通与问路",
+      "description": "交通工具、方向、换乘和路况"
+    },
+    {
+      "id": "travel",
+      "label": "旅行与住宿",
+      "description": "航班、酒店、行李和观光"
+    },
+    {
+      "id": "work",
+      "label": "工作与办公",
+      "description": "团队、任务、会议和项目推进"
+    },
+    {
+      "id": "study",
+      "label": "学习与课堂",
+      "description": "读写、课堂、作业和学习策略"
+    },
+    {
+      "id": "health",
+      "label": "健康与就医",
+      "description": "身体、症状、看病和恢复"
+    },
+    {
+      "id": "emotion",
+      "label": "情绪与性格",
+      "description": "感受、性格、压力与鼓励"
+    },
+    {
+      "id": "digital",
+      "label": "手机与网络",
+      "description": "设备、账号、文件和联网操作"
+    },
+    {
+      "id": "weather",
+      "label": "天气与自然",
+      "description": "季节、天气变化和户外环境"
+    },
+    {
+      "id": "hobby",
+      "label": "兴趣与运动",
+      "description": "休闲、艺术、运动和周末活动"
+    },
+    {
+      "id": "clothing",
+      "label": "穿衣与洗护",
+      "description": "衣物、穿搭和随身物品"
+    },
+    {
+      "id": "public",
+      "label": "公共服务与安全",
+      "description": "办事、求助、位置和紧急情况"
+    },
+    {
+      "id": "core",
+      "label": "核心动作与连接",
+      "description": "高频动词、逻辑连接和叙述顺序"
+    }
+  ],
+  "entries": [
+    {
+      "id": "lex_c831e4427606",
+      "term": "hello",
+      "meaning": "你好",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4a892f2a3d5a",
+      "term": "hi",
+      "meaning": "嗨；你好",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9266b18194b1",
+      "term": "good morning",
+      "meaning": "早上好",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_32d0ce08837a",
+      "term": "good afternoon",
+      "meaning": "下午好",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f615daf5d18d",
+      "term": "good evening",
+      "meaning": "晚上好",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d3eb4d6f810e",
+      "term": "goodbye",
+      "meaning": "再见",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_52d4c34448ac",
+      "term": "please",
+      "meaning": "请",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_815080da543a",
+      "term": "thank you",
+      "meaning": "谢谢",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_71f69c16c646",
+      "term": "you're welcome",
+      "meaning": "不客气",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_49a3570a4baf",
+      "term": "excuse me",
+      "meaning": "打扰一下；劳驾",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_aae2ba37ecea",
+      "term": "sorry",
+      "meaning": "对不起；抱歉",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a4014eceb288",
+      "term": "yes",
+      "meaning": "是；好的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b1d3ba33a59a",
+      "term": "no",
+      "meaning": "不；不是",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_561a9508257f",
+      "term": "maybe",
+      "meaning": "也许",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ed35723ee7de",
+      "term": "of course",
+      "meaning": "当然",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_63282ac434eb",
+      "term": "nice to meet you",
+      "meaning": "很高兴认识你",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9ed83994a453",
+      "term": "how are you",
+      "meaning": "你好吗",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_09c4b32c1574",
+      "term": "I'm fine",
+      "meaning": "我很好",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3eb1bc3766c6",
+      "term": "see you later",
+      "meaning": "待会儿见；回头见",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e9891bc996fe",
+      "term": "take care",
+      "meaning": "保重；当心",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3f3022a05ce5",
+      "term": "introduce",
+      "meaning": "介绍",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8865dff658b4",
+      "term": "invite",
+      "meaning": "邀请",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_169fee8f3670",
+      "term": "agree",
+      "meaning": "同意",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d3de09635363",
+      "term": "disagree",
+      "meaning": "不同意",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_62faebd689fa",
+      "term": "explain",
+      "meaning": "解释",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ea3875bd4c5b",
+      "term": "repeat",
+      "meaning": "重复",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0224d794f2dc",
+      "term": "speak slowly",
+      "meaning": "说慢一点",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ea7ae0d88501",
+      "term": "I don't understand",
+      "meaning": "我不明白",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f60ea6546f7b",
+      "term": "what do you mean",
+      "meaning": "你是什么意思",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_05c775e81d61",
+      "term": "that makes sense",
+      "meaning": "这说得通",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "social"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4a9f327384fe",
+      "term": "family",
+      "meaning": "家庭；家人",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_462a4c32c360",
+      "term": "parent",
+      "meaning": "父亲或母亲；家长",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0f232cccd755",
+      "term": "mother",
+      "meaning": "母亲",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7edecb6cbb78",
+      "term": "father",
+      "meaning": "父亲",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ecdedff978bd",
+      "term": "child",
+      "meaning": "孩子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_824706b8f408",
+      "term": "son",
+      "meaning": "儿子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_146e092fbf95",
+      "term": "daughter",
+      "meaning": "女儿",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3c569ac93f22",
+      "term": "brother",
+      "meaning": "兄弟",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_668061856375",
+      "term": "sister",
+      "meaning": "姐妹",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d5a4ad76eb43",
+      "term": "husband",
+      "meaning": "丈夫",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_48a53f929c43",
+      "term": "wife",
+      "meaning": "妻子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_99617d032d6e",
+      "term": "friend",
+      "meaning": "朋友",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ef8c5d98bca1",
+      "term": "neighbor",
+      "meaning": "邻居",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9ea70dc90bf6",
+      "term": "relative",
+      "meaning": "亲戚",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dab67a2e1b39",
+      "term": "couple",
+      "meaning": "夫妻；情侣",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_07fefe5c4690",
+      "term": "baby",
+      "meaning": "婴儿",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_589c676cb4e3",
+      "term": "adult",
+      "meaning": "成年人",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ac94ac03a133",
+      "term": "married",
+      "meaning": "已婚的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_fe20ebe05e69",
+      "term": "single",
+      "meaning": "单身的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c33f3e84ceb9",
+      "term": "visit",
+      "meaning": "拜访；看望",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_aa10f8962e12",
+      "term": "grow up",
+      "meaning": "长大",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ff07dcab33f9",
+      "term": "get along",
+      "meaning": "相处融洽",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0da7a3cccf0e",
+      "term": "take care of",
+      "meaning": "照顾",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2fc9169c32f5",
+      "term": "live together",
+      "meaning": "住在一起",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7ba789af4dc6",
+      "term": "keep in touch",
+      "meaning": "保持联系",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_19f9e0ac0dd9",
+      "term": "trust",
+      "meaning": "信任",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e3550558627c",
+      "term": "support",
+      "meaning": "支持",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d56d25e588d0",
+      "term": "argue",
+      "meaning": "争吵；争论",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7dc4a2e92dfd",
+      "term": "apologize",
+      "meaning": "道歉",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_98bb24dbb679",
+      "term": "relationship",
+      "meaning": "关系",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "family"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4822342a8c99",
+      "term": "home",
+      "meaning": "家",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c73de4ebe499",
+      "term": "house",
+      "meaning": "房子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_64a4e7249cad",
+      "term": "room",
+      "meaning": "房间",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_107b1dcbc2f5",
+      "term": "bedroom",
+      "meaning": "卧室",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3f9b52ddd119",
+      "term": "bathroom",
+      "meaning": "浴室；卫生间",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5a8344e85f19",
+      "term": "kitchen",
+      "meaning": "厨房",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8f3c8d3a186d",
+      "term": "door",
+      "meaning": "门",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_843b2ea8abe1",
+      "term": "window",
+      "meaning": "窗户",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_70e5640d1e8e",
+      "term": "table",
+      "meaning": "桌子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8fb3b7baaa96",
+      "term": "chair",
+      "meaning": "椅子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_34bc3d9e02f7",
+      "term": "bed",
+      "meaning": "床",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b5da60d49992",
+      "term": "light",
+      "meaning": "灯；光",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e0fc91407e50",
+      "term": "key",
+      "meaning": "钥匙",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a9128c0a657f",
+      "term": "floor",
+      "meaning": "地板；楼层",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d167b564593e",
+      "term": "clean",
+      "meaning": "打扫；干净的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_00c73e60eb1b",
+      "term": "wash",
+      "meaning": "清洗",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9af9154fd2c4",
+      "term": "dry",
+      "meaning": "使变干；干燥的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_537cfa2b1aab",
+      "term": "open",
+      "meaning": "打开；开着的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_45b73042c34c",
+      "term": "close",
+      "meaning": "关闭；靠近的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bddd26ac4a2f",
+      "term": "turn on",
+      "meaning": "打开电器",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b57e3b0b5a28",
+      "term": "turn off",
+      "meaning": "关闭电器",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_be9951cb0816",
+      "term": "wake up",
+      "meaning": "醒来",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0ac0745fbcec",
+      "term": "get dressed",
+      "meaning": "穿好衣服",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8ff7799867cf",
+      "term": "make the bed",
+      "meaning": "整理床铺",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cc82b2ee4ac7",
+      "term": "take a shower",
+      "meaning": "洗淋浴",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_48fe8503898d",
+      "term": "do the laundry",
+      "meaning": "洗衣服",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4262a376c69f",
+      "term": "take out the trash",
+      "meaning": "倒垃圾",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b6c38518bf4c",
+      "term": "tidy up",
+      "meaning": "整理；收拾",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_494640803d9c",
+      "term": "run out of",
+      "meaning": "用完；耗尽",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2b7d7e13ec43",
+      "term": "feel at home",
+      "meaning": "感觉自在",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "home"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_99efd79aa1f6",
+      "term": "water",
+      "meaning": "水",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_61ba4c1e258d",
+      "term": "coffee",
+      "meaning": "咖啡",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_67333f0abaa2",
+      "term": "tea",
+      "meaning": "茶",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e63256da0520",
+      "term": "milk",
+      "meaning": "牛奶",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1b1d61a7b320",
+      "term": "bread",
+      "meaning": "面包",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_147e4bece32d",
+      "term": "rice",
+      "meaning": "米饭；大米",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d5b8c8c13b95",
+      "term": "fruit",
+      "meaning": "水果",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9aa5983c326c",
+      "term": "vegetable",
+      "meaning": "蔬菜",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cf594a7fee57",
+      "term": "meat",
+      "meaning": "肉",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b90d6952067d",
+      "term": "chicken",
+      "meaning": "鸡肉；鸡",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4bce6e66dbde",
+      "term": "fish",
+      "meaning": "鱼；鱼肉",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c88236dadaa5",
+      "term": "egg",
+      "meaning": "鸡蛋",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_32a53fe24e92",
+      "term": "breakfast",
+      "meaning": "早餐",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cf14e8736393",
+      "term": "lunch",
+      "meaning": "午餐",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a46fd456903f",
+      "term": "dinner",
+      "meaning": "晚餐",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8187e85494e6",
+      "term": "hungry",
+      "meaning": "饿的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_39d514bdc0d2",
+      "term": "thirsty",
+      "meaning": "渴的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4289deec197a",
+      "term": "delicious",
+      "meaning": "美味的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ad29c37e761b",
+      "term": "menu",
+      "meaning": "菜单",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9831a8c2f018",
+      "term": "order",
+      "meaning": "点餐；订单",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_99b7e075bfa1",
+      "term": "cook",
+      "meaning": "烹饪；厨师",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f7aede367987",
+      "term": "cut",
+      "meaning": "切",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1fbacc49031d",
+      "term": "boil",
+      "meaning": "煮沸；水煮",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_933fd2b4558c",
+      "term": "fry",
+      "meaning": "煎；炸",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_22c2d423be57",
+      "term": "bake",
+      "meaning": "烘烤",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3f57d19be41b",
+      "term": "taste",
+      "meaning": "品尝；味道",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_95a48e1fd162",
+      "term": "ingredient",
+      "meaning": "食材；原料",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0c6db484de7c",
+      "term": "portion",
+      "meaning": "一份；分量",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3f30582e48d6",
+      "term": "takeout",
+      "meaning": "外卖",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5c230a3eae08",
+      "term": "dietary preferences",
+      "meaning": "饮食偏好",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "food"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_644e4bccf95d",
+      "term": "shop",
+      "meaning": "商店；购物",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6246f5524ea9",
+      "term": "price",
+      "meaning": "价格",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5963eac7144e",
+      "term": "cash",
+      "meaning": "现金",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_34f01292e1e6",
+      "term": "card",
+      "meaning": "卡；银行卡",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7822d819a192",
+      "term": "bag",
+      "meaning": "袋子；包",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a8f9ce7e2409",
+      "term": "size",
+      "meaning": "尺码；大小",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_afe723476848",
+      "term": "color",
+      "meaning": "颜色",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8d5e21a882eb",
+      "term": "cheap",
+      "meaning": "便宜的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_20eba89cbc53",
+      "term": "expensive",
+      "meaning": "昂贵的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_59634fe05a79",
+      "term": "buy",
+      "meaning": "购买",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_575eec289035",
+      "term": "sell",
+      "meaning": "出售",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b371e821579c",
+      "term": "pay",
+      "meaning": "付款",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4be2ab4422d8",
+      "term": "cost",
+      "meaning": "花费；成本",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8330a98920de",
+      "term": "receipt",
+      "meaning": "收据",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2147fe3463e2",
+      "term": "change",
+      "meaning": "零钱；找零",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3ac1700d3597",
+      "term": "customer",
+      "meaning": "顾客",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bd4ee9e5704f",
+      "term": "discount",
+      "meaning": "折扣",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f7ed453568fc",
+      "term": "sale",
+      "meaning": "促销；出售",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f90a043058ed",
+      "term": "try on",
+      "meaning": "试穿",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_db621c3d6fce",
+      "term": "fit",
+      "meaning": "合身；适合",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2a92f0a243dc",
+      "term": "return",
+      "meaning": "退货；返回",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a2398ceb0628",
+      "term": "exchange",
+      "meaning": "换货；交换",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9728b679d08b",
+      "term": "in stock",
+      "meaning": "有货",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bf39442e1e6f",
+      "term": "out of stock",
+      "meaning": "缺货",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_aecd7d458664",
+      "term": "compare prices",
+      "meaning": "比较价格",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d8815e27a1a6",
+      "term": "pay by card",
+      "meaning": "刷卡支付",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6bdbbede6f35",
+      "term": "keep the receipt",
+      "meaning": "保留收据",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b3aabf706139",
+      "term": "a good deal",
+      "meaning": "很划算的交易",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ce2b8f96e503",
+      "term": "refund",
+      "meaning": "退款",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6117eb233a9b",
+      "term": "checkout",
+      "meaning": "结账处；结账",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "shopping"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8987fd18efe0",
+      "term": "today",
+      "meaning": "今天",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8d2b26d41564",
+      "term": "tomorrow",
+      "meaning": "明天",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_eae6f8782102",
+      "term": "yesterday",
+      "meaning": "昨天",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_96ec52a28336",
+      "term": "morning",
+      "meaning": "早晨",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6a2c796a4de2",
+      "term": "afternoon",
+      "meaning": "下午",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_11c4cba9a5e8",
+      "term": "evening",
+      "meaning": "傍晚；晚上",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7da75e91454e",
+      "term": "night",
+      "meaning": "夜晚",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_63c51fe20e98",
+      "term": "week",
+      "meaning": "周",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_df9baa1d1aee",
+      "term": "month",
+      "meaning": "月",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9d9d0c7ab787",
+      "term": "year",
+      "meaning": "年",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f6f3ccf8bc3e",
+      "term": "hour",
+      "meaning": "小时",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1ab9b0b2fe1d",
+      "term": "minute",
+      "meaning": "分钟",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f12f33952d2a",
+      "term": "early",
+      "meaning": "早的；提前",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_be5f582dbce3",
+      "term": "late",
+      "meaning": "迟的；晚的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a3247ceead1e",
+      "term": "now",
+      "meaning": "现在",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e6a2c8a9f5c0",
+      "term": "soon",
+      "meaning": "很快",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7c5d1455d742",
+      "term": "always",
+      "meaning": "总是",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a93813685b95",
+      "term": "usually",
+      "meaning": "通常",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_322ed09f3411",
+      "term": "sometimes",
+      "meaning": "有时",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f3590d2deb12",
+      "term": "never",
+      "meaning": "从不",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2883c07345f8",
+      "term": "schedule",
+      "meaning": "日程；安排",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f7fe706d5fcb",
+      "term": "appointment",
+      "meaning": "预约；约会",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f519c87ed528",
+      "term": "deadline",
+      "meaning": "截止时间",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e878c86691e6",
+      "term": "on time",
+      "meaning": "准时",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5bd2b71380f0",
+      "term": "be late for",
+      "meaning": "迟到",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cf7b8f977a09",
+      "term": "once a week",
+      "meaning": "每周一次",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c7e8cc0b674f",
+      "term": "in advance",
+      "meaning": "提前",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5e003856a810",
+      "term": "free time",
+      "meaning": "空闲时间",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f9dff407ebef",
+      "term": "make time",
+      "meaning": "腾出时间",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4a7c0e348dc5",
+      "term": "put off",
+      "meaning": "推迟",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "time"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_de95a3e25f27",
+      "term": "car",
+      "meaning": "汽车",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b3e366ba0231",
+      "term": "bus",
+      "meaning": "公共汽车",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_869e972ee684",
+      "term": "train",
+      "meaning": "火车",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0e576e496289",
+      "term": "subway",
+      "meaning": "地铁",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d1645bd23936",
+      "term": "taxi",
+      "meaning": "出租车",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_13d475a8ebe9",
+      "term": "bicycle",
+      "meaning": "自行车",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_272bd9495ec4",
+      "term": "station",
+      "meaning": "车站",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9cc8d5372c08",
+      "term": "stop",
+      "meaning": "站；停止",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5afc3e0afad5",
+      "term": "airport",
+      "meaning": "机场",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_aac468418f36",
+      "term": "ticket",
+      "meaning": "票",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0e79731d8e0a",
+      "term": "road",
+      "meaning": "道路",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0b425b959665",
+      "term": "street",
+      "meaning": "街道",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_42ad215994db",
+      "term": "left",
+      "meaning": "左边；向左",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_07c5f5b742c3",
+      "term": "right",
+      "meaning": "右边；向右",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5f52c7043dcd",
+      "term": "straight",
+      "meaning": "直的；直走",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9021623c3555",
+      "term": "near",
+      "meaning": "近的；在附近",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0cf61aa65537",
+      "term": "far",
+      "meaning": "远的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3545e1ada31c",
+      "term": "drive",
+      "meaning": "驾驶",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c6bbb52e50e7",
+      "term": "ride",
+      "meaning": "骑；乘坐",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e41228d7f8f4",
+      "term": "walk",
+      "meaning": "步行",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b10ad364a09e",
+      "term": "arrive",
+      "meaning": "到达",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_15e957410aee",
+      "term": "leave",
+      "meaning": "离开；出发",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6f96b5a622b1",
+      "term": "traffic",
+      "meaning": "交通",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1b3922feae94",
+      "term": "platform",
+      "meaning": "站台",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1af83cda8e8e",
+      "term": "get on",
+      "meaning": "上车",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d81abf66d86b",
+      "term": "get off",
+      "meaning": "下车",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e1609891edd0",
+      "term": "transfer",
+      "meaning": "换乘；转移",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_423f78cfe42c",
+      "term": "miss the bus",
+      "meaning": "错过公交车",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_38546e74df5d",
+      "term": "traffic jam",
+      "meaning": "交通堵塞",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1d1f30c1153d",
+      "term": "how do I get to",
+      "meaning": "我怎么去……",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "transport"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1b4e0667015a",
+      "term": "trip",
+      "meaning": "旅行",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f889cbf156a2",
+      "term": "travel",
+      "meaning": "旅行；出行",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_deb25dbdb77b",
+      "term": "hotel",
+      "meaning": "酒店",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3f5a4f68d3fe",
+      "term": "guest room",
+      "meaning": "客房",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c1ad9e073a66",
+      "term": "passport",
+      "meaning": "护照",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9b0ed0771c2e",
+      "term": "luggage",
+      "meaning": "行李",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_229beb556297",
+      "term": "map",
+      "meaning": "地图",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0bae0aed477e",
+      "term": "flight",
+      "meaning": "航班",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0069dd430390",
+      "term": "beach",
+      "meaning": "海滩",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8053f317c081",
+      "term": "mountain",
+      "meaning": "山",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6b8074a17403",
+      "term": "museum",
+      "meaning": "博物馆",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d33d1827c4d0",
+      "term": "tourist",
+      "meaning": "游客",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c6219540bc19",
+      "term": "reservation",
+      "meaning": "预订",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4b70283b5622",
+      "term": "check in",
+      "meaning": "办理入住；值机",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_77dc0ab8a3cf",
+      "term": "check out",
+      "meaning": "退房；结账离开",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e56ac436720b",
+      "term": "book a room",
+      "meaning": "预订房间",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c04eac1c8ca0",
+      "term": "pack",
+      "meaning": "打包行李",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9ba5bd1a90bb",
+      "term": "unpack",
+      "meaning": "打开行李",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3508396204b0",
+      "term": "stay",
+      "meaning": "停留；住宿",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8f87dd24e3a9",
+      "term": "landmark",
+      "meaning": "地标",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_398c737ffab3",
+      "term": "sightseeing",
+      "meaning": "观光",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0172421984ce",
+      "term": "local",
+      "meaning": "当地的；本地人",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d5baaaf7d276",
+      "term": "abroad",
+      "meaning": "在国外",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e780e87400c9",
+      "term": "round trip",
+      "meaning": "往返行程",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6342575d84e8",
+      "term": "one-way ticket",
+      "meaning": "单程票",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_fc9b911c2003",
+      "term": "boarding pass",
+      "meaning": "登机牌",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f2f032efba62",
+      "term": "carry-on luggage",
+      "meaning": "随身行李",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_891c48d9509f",
+      "term": "front desk",
+      "meaning": "前台",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ba4b155e5872",
+      "term": "fully booked",
+      "meaning": "预订已满",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4e78a3b02a94",
+      "term": "recommend a place",
+      "meaning": "推荐一个地方",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "travel"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6ed9abc5ecbd",
+      "term": "work",
+      "meaning": "工作",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2845ac9dce3c",
+      "term": "job",
+      "meaning": "工作；职位",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_68620016474c",
+      "term": "office",
+      "meaning": "办公室",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_589eeba95317",
+      "term": "company",
+      "meaning": "公司",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a2905783e7c5",
+      "term": "team",
+      "meaning": "团队",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4dc0cb50c35f",
+      "term": "boss",
+      "meaning": "老板；上司",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4ebc3513accf",
+      "term": "manager",
+      "meaning": "经理",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_36a0d5de5eed",
+      "term": "client",
+      "meaning": "客户",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dac2515f4fe8",
+      "term": "colleague",
+      "meaning": "同事",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4682c8d08665",
+      "term": "meeting",
+      "meaning": "会议",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_656b35595d00",
+      "term": "email",
+      "meaning": "电子邮件",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0aac2c532deb",
+      "term": "task",
+      "meaning": "任务",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_71b57b0dcaad",
+      "term": "project",
+      "meaning": "项目",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a3ec1fac081a",
+      "term": "report",
+      "meaning": "报告",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_56ce62b90314",
+      "term": "plan",
+      "meaning": "计划",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_576bd3776c36",
+      "term": "goal",
+      "meaning": "目标",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_719be7c48dd4",
+      "term": "idea",
+      "meaning": "想法",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_88f7db86e038",
+      "term": "problem",
+      "meaning": "问题",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cd3659e3ad41",
+      "term": "solution",
+      "meaning": "解决方案",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c5a6046fd0a2",
+      "term": "finish",
+      "meaning": "完成",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e1ca0865d8e1",
+      "term": "start",
+      "meaning": "开始",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7e89943af856",
+      "term": "send",
+      "meaning": "发送",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_76c64590f2fd",
+      "term": "receive",
+      "meaning": "收到",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b7c43731c551",
+      "term": "discuss",
+      "meaning": "讨论",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6056960a1b16",
+      "term": "decide",
+      "meaning": "决定",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ce2994e4a493",
+      "term": "prioritize",
+      "meaning": "确定优先顺序",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_93127a5b9ff6",
+      "term": "follow up",
+      "meaning": "跟进",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bb2b3ad78246",
+      "term": "work from home",
+      "meaning": "居家办公",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dd197d14f9b6",
+      "term": "make progress",
+      "meaning": "取得进展",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1ab238185f24",
+      "term": "be responsible for",
+      "meaning": "负责……",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "work"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7a4afaf58a2f",
+      "term": "school",
+      "meaning": "学校",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_25ae8bf1929b",
+      "term": "class",
+      "meaning": "课程；班级",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_92d41334d0ad",
+      "term": "teacher",
+      "meaning": "老师",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e8e45e00e1ec",
+      "term": "student",
+      "meaning": "学生",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_522ed4dcad22",
+      "term": "book",
+      "meaning": "书",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4d2ed48bbde1",
+      "term": "notebook",
+      "meaning": "笔记本",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3be2867247df",
+      "term": "pen",
+      "meaning": "笔",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a9c644e6d8d8",
+      "term": "question",
+      "meaning": "问题",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_66bf8f77e20a",
+      "term": "answer",
+      "meaning": "回答；答案",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2909f4518b42",
+      "term": "homework",
+      "meaning": "家庭作业",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e3a2c73e0aa5",
+      "term": "test",
+      "meaning": "测试；考试",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f6c4e3cea793",
+      "term": "lesson",
+      "meaning": "课；课程内容",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b6019d8a0392",
+      "term": "learn",
+      "meaning": "学习；学会",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ad0693de939e",
+      "term": "study",
+      "meaning": "学习；研究",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c7909dcba5f6",
+      "term": "read",
+      "meaning": "阅读",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9dacd4f390a7",
+      "term": "write",
+      "meaning": "写",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_52c4a28264f2",
+      "term": "listen",
+      "meaning": "听",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b8fc42587f15",
+      "term": "practice",
+      "meaning": "练习",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b3beec6df0f1",
+      "term": "remember",
+      "meaning": "记得",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a72f1a597ab8",
+      "term": "forget",
+      "meaning": "忘记",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_fa1ceb8cc931",
+      "term": "example",
+      "meaning": "例子",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_73f75b0ea02a",
+      "term": "meaning",
+      "meaning": "意思",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a9fc0d8e4c85",
+      "term": "pronounce",
+      "meaning": "发音",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a47a20e909b8",
+      "term": "take notes",
+      "meaning": "记笔记",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_22fa8018b4c4",
+      "term": "look up",
+      "meaning": "查找",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0f96de1fb407",
+      "term": "hand in",
+      "meaning": "提交",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_562191942db4",
+      "term": "figure out",
+      "meaning": "弄明白",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_609c17d74b09",
+      "term": "pay attention",
+      "meaning": "注意",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d67ae1acc10b",
+      "term": "make a mistake",
+      "meaning": "犯错",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_275b92170687",
+      "term": "ask for help",
+      "meaning": "寻求帮助",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "study"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e28dc1d3449b",
+      "term": "body",
+      "meaning": "身体",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_95b81d3990a2",
+      "term": "head",
+      "meaning": "头",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7aaefd8cef17",
+      "term": "face",
+      "meaning": "脸",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_515694420bc4",
+      "term": "eye",
+      "meaning": "眼睛",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_edcabc87643b",
+      "term": "ear",
+      "meaning": "耳朵",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d7e8439b06b1",
+      "term": "nose",
+      "meaning": "鼻子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_366e8e240a2f",
+      "term": "mouth",
+      "meaning": "嘴",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f51d8ce121e5",
+      "term": "hand",
+      "meaning": "手",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_54085d8574f9",
+      "term": "foot",
+      "meaning": "脚",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a3898940ce42",
+      "term": "back",
+      "meaning": "背部",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bfe4ba6643cf",
+      "term": "pain",
+      "meaning": "疼痛",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_69574035f03a",
+      "term": "sick",
+      "meaning": "生病的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_516e5caadced",
+      "term": "healthy",
+      "meaning": "健康的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5d3ee8c839d1",
+      "term": "doctor",
+      "meaning": "医生",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_53022cb2fe00",
+      "term": "nurse",
+      "meaning": "护士",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ce9258102886",
+      "term": "medicine",
+      "meaning": "药",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6c9fc8151b7d",
+      "term": "hospital",
+      "meaning": "医院",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0e70375a06a6",
+      "term": "fever",
+      "meaning": "发烧",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a5f13bc9f88e",
+      "term": "cold",
+      "meaning": "感冒",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b58811d0dd17",
+      "term": "cough",
+      "meaning": "咳嗽",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9463810d6093",
+      "term": "hurt",
+      "meaning": "疼；受伤",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_648fdfbfe47d",
+      "term": "rest",
+      "meaning": "休息",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f2634e9dfa89",
+      "term": "exercise",
+      "meaning": "锻炼",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9ef80831389c",
+      "term": "feel better",
+      "meaning": "感觉好些",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8d9eb8c77dcd",
+      "term": "have a headache",
+      "meaning": "头疼",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_af619ae12729",
+      "term": "take medicine",
+      "meaning": "服药",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_53698e9b6c04",
+      "term": "make an appointment",
+      "meaning": "预约",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c9b4c819d057",
+      "term": "allergy",
+      "meaning": "过敏",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b6aa9dc20be3",
+      "term": "side effect",
+      "meaning": "副作用",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d391250ed67d",
+      "term": "recover",
+      "meaning": "恢复；康复",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "health"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_65cc3cd6665e",
+      "term": "happy",
+      "meaning": "开心的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dcbf3912a42d",
+      "term": "sad",
+      "meaning": "难过的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3c6a9d6dd900",
+      "term": "angry",
+      "meaning": "生气的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9b5c0cd1d8f6",
+      "term": "tired",
+      "meaning": "疲倦的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ba05344b929f",
+      "term": "afraid",
+      "meaning": "害怕的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e916b46aa57d",
+      "term": "worried",
+      "meaning": "担心的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8190fcc07f94",
+      "term": "excited",
+      "meaning": "兴奋的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_923dfe7797d7",
+      "term": "bored",
+      "meaning": "无聊的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ba6735b0efc6",
+      "term": "calm",
+      "meaning": "冷静的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c09465c1994a",
+      "term": "surprised",
+      "meaning": "惊讶的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9a5834a7e51a",
+      "term": "busy",
+      "meaning": "忙的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_823bc6d30adb",
+      "term": "relaxed",
+      "meaning": "放松的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5f35bab1ff95",
+      "term": "kind",
+      "meaning": "友善的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e294e30d9098",
+      "term": "funny",
+      "meaning": "有趣的；好笑的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6f1178c938ac",
+      "term": "quiet",
+      "meaning": "安静的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3bb7df4fc707",
+      "term": "friendly",
+      "meaning": "友好的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_580e6af3cac0",
+      "term": "honest",
+      "meaning": "诚实的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_44e4878c7552",
+      "term": "patient",
+      "meaning": "有耐心的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_57c0a6b4979a",
+      "term": "confident",
+      "meaning": "自信的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b6d39b1d2060",
+      "term": "nervous",
+      "meaning": "紧张的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4cbb9aa4ceba",
+      "term": "proud",
+      "meaning": "自豪的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f27cabe1c2eb",
+      "term": "disappointed",
+      "meaning": "失望的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_de7b92d4b028",
+      "term": "comfortable",
+      "meaning": "舒服的；自在的",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_68652146f0df",
+      "term": "upset",
+      "meaning": "难过的；心烦的",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a1bc2d8163a7",
+      "term": "curious",
+      "meaning": "好奇的",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_484a30e13341",
+      "term": "feel like",
+      "meaning": "想要；感觉像",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f9fff7b986fe",
+      "term": "look forward to",
+      "meaning": "期待",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c727998c7e8a",
+      "term": "be interested in",
+      "meaning": "对……感兴趣",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_799ce3cdf902",
+      "term": "deal with",
+      "meaning": "处理；应对",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_59bba25205d5",
+      "term": "cheer up",
+      "meaning": "振作起来；使高兴",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "emotion"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5e70dad848eb",
+      "term": "phone",
+      "meaning": "手机；电话",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_52fa61ae62d8",
+      "term": "computer",
+      "meaning": "电脑",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8436fd4771d6",
+      "term": "screen",
+      "meaning": "屏幕",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0556f73dc536",
+      "term": "keyboard",
+      "meaning": "键盘",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6df7955c2bc9",
+      "term": "mouse",
+      "meaning": "鼠标",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_626bbb94b2c2",
+      "term": "website",
+      "meaning": "网站",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_26f67e0c035b",
+      "term": "app",
+      "meaning": "应用程序",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8706bf4ea4e1",
+      "term": "password",
+      "meaning": "密码",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ed93400f98a2",
+      "term": "message",
+      "meaning": "消息",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0d67e435723b",
+      "term": "photo",
+      "meaning": "照片",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_516f7651d20c",
+      "term": "video",
+      "meaning": "视频",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ebfc35cf0655",
+      "term": "file",
+      "meaning": "文件",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5d916d7f344c",
+      "term": "download",
+      "meaning": "下载",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bf1523f96e7a",
+      "term": "upload",
+      "meaning": "上传",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5a9af1a32317",
+      "term": "click",
+      "meaning": "点击",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ed8b53f6a4eb",
+      "term": "search",
+      "meaning": "搜索",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c0cc71b52239",
+      "term": "online",
+      "meaning": "在线的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_af555f0048ea",
+      "term": "offline",
+      "meaning": "离线的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ee3acf9abc09",
+      "term": "link",
+      "meaning": "链接",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5aae03e3a7c2",
+      "term": "account",
+      "meaning": "账号",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_01cc21e6cf8d",
+      "term": "log in",
+      "meaning": "登录",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b1ea9760b5f7",
+      "term": "log out",
+      "meaning": "退出登录",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_840714450ee4",
+      "term": "sign up",
+      "meaning": "注册",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7927df5c2573",
+      "term": "turn up the volume",
+      "meaning": "调高音量",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ed33af11d28b",
+      "term": "connect to Wi-Fi",
+      "meaning": "连接无线网络",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_238f04110231",
+      "term": "send a message",
+      "meaning": "发送消息",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_82c08f3826ba",
+      "term": "save a file",
+      "meaning": "保存文件",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4b5603835607",
+      "term": "delete a file",
+      "meaning": "删除文件",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_73d95b579923",
+      "term": "update the app",
+      "meaning": "更新应用",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b8a2b986f5ce",
+      "term": "run out of battery",
+      "meaning": "没电了",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "digital"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c8241b1dc2d0",
+      "term": "sun",
+      "meaning": "太阳",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5d1a6c0373a3",
+      "term": "rain",
+      "meaning": "雨；下雨",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_c0d04c566eaa",
+      "term": "snow",
+      "meaning": "雪；下雪",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_46e1dfd2028f",
+      "term": "wind",
+      "meaning": "风",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9a5f55d9ebca",
+      "term": "cloud",
+      "meaning": "云",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3d3de4a578f2",
+      "term": "sky",
+      "meaning": "天空",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e29ede734ef0",
+      "term": "weather",
+      "meaning": "天气",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5bf2122b6d22",
+      "term": "hot",
+      "meaning": "热的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ce1afcb84765",
+      "term": "cold",
+      "meaning": "冷的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_92299dab22d3",
+      "term": "warm",
+      "meaning": "温暖的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bdc60992d0f8",
+      "term": "cool",
+      "meaning": "凉爽的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_17f0d5ebe894",
+      "term": "wet",
+      "meaning": "湿的",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d5ea11b66310",
+      "term": "dry",
+      "meaning": "干燥的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e6a0896328d7",
+      "term": "season",
+      "meaning": "季节",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0b42c4a7fa7e",
+      "term": "spring",
+      "meaning": "春天",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2362787ca155",
+      "term": "summer",
+      "meaning": "夏天",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5a907d5627e8",
+      "term": "autumn",
+      "meaning": "秋天",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_78898a66344e",
+      "term": "winter",
+      "meaning": "冬天",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1fb1bfbb2162",
+      "term": "temperature",
+      "meaning": "温度",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e26e0ed0b582",
+      "term": "forecast",
+      "meaning": "天气预报；预测",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5c27698c668a",
+      "term": "sunny",
+      "meaning": "晴朗的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a75da47c4707",
+      "term": "rainy",
+      "meaning": "下雨的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f3455b256d75",
+      "term": "windy",
+      "meaning": "有风的",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e3a41f7be70f",
+      "term": "cloudy",
+      "meaning": "多云的",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b7acbc807698",
+      "term": "storm",
+      "meaning": "暴风雨",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ba7c64b6187e",
+      "term": "heavy rain",
+      "meaning": "大雨",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0b504a50ccfc",
+      "term": "clear up",
+      "meaning": "转晴；清理",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e7928a7a834d",
+      "term": "protect the environment",
+      "meaning": "保护环境",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7ed376d6d6c5",
+      "term": "outdoors",
+      "meaning": "在户外",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0e280c225b50",
+      "term": "air quality",
+      "meaning": "空气质量",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "weather"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b7cebafde82b",
+      "term": "music",
+      "meaning": "音乐",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ebe96b6f801a",
+      "term": "movie",
+      "meaning": "电影",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2fa5fb964157",
+      "term": "game",
+      "meaning": "游戏",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3272ed658aeb",
+      "term": "sport",
+      "meaning": "运动",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6f0b9dd720c5",
+      "term": "football",
+      "meaning": "足球",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_051f915fd91d",
+      "term": "basketball",
+      "meaning": "篮球",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7c34ccb5703a",
+      "term": "swimming",
+      "meaning": "游泳",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dafc6adffa9b",
+      "term": "running",
+      "meaning": "跑步",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f1500b15e8ed",
+      "term": "walking",
+      "meaning": "散步；步行",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ca856f0822eb",
+      "term": "dance",
+      "meaning": "跳舞",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cb12be64d3ce",
+      "term": "sing",
+      "meaning": "唱歌",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f3ed01bdbc5b",
+      "term": "draw",
+      "meaning": "画画",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_be2e47916d82",
+      "term": "paint",
+      "meaning": "绘画；涂色",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3ddcdbe403c0",
+      "term": "photography",
+      "meaning": "摄影",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d67c65ded942",
+      "term": "reading",
+      "meaning": "阅读",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d63782198d10",
+      "term": "cooking",
+      "meaning": "烹饪",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9aa311479623",
+      "term": "gardening",
+      "meaning": "园艺",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7449a2a5c620",
+      "term": "weekend",
+      "meaning": "周末",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_98bb25e1646e",
+      "term": "hobby",
+      "meaning": "爱好",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_20fe4bcd68f8",
+      "term": "fun",
+      "meaning": "乐趣；有趣的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b4b49d2e7268",
+      "term": "play",
+      "meaning": "玩；演奏",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e99aeed77b43",
+      "term": "watch",
+      "meaning": "观看",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0be90639f7c1",
+      "term": "listen to",
+      "meaning": "听……",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e0984b8ccbeb",
+      "term": "go for a walk",
+      "meaning": "去散步",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_46cc7522ec7a",
+      "term": "hang out",
+      "meaning": "一起闲逛；聚会",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_64ac81843409",
+      "term": "spend time",
+      "meaning": "花时间",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ebda63044d8e",
+      "term": "join a club",
+      "meaning": "加入社团",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9e5cf230b258",
+      "term": "be good at",
+      "meaning": "擅长",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6288f57d012b",
+      "term": "try something new",
+      "meaning": "尝试新事物",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b73b5ae55af8",
+      "term": "take a break",
+      "meaning": "休息一下",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "hobby"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d4d31a6ff8be",
+      "term": "clothes",
+      "meaning": "衣服",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_22454eccd30e",
+      "term": "shirt",
+      "meaning": "衬衫",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_db703928f54d",
+      "term": "T-shirt",
+      "meaning": "T恤",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d9c9e0b1a593",
+      "term": "pants",
+      "meaning": "裤子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_908dfad500ff",
+      "term": "dress",
+      "meaning": "连衣裙；穿衣",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_63c1013c00cc",
+      "term": "skirt",
+      "meaning": "裙子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3a39e7244303",
+      "term": "shoes",
+      "meaning": "鞋",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7d80f971db0d",
+      "term": "socks",
+      "meaning": "袜子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dd06b0eb023c",
+      "term": "coat",
+      "meaning": "外套",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8fcf18e2e352",
+      "term": "hat",
+      "meaning": "帽子",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_02e6cd18ce4d",
+      "term": "glasses",
+      "meaning": "眼镜",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_7db5800b3cf8",
+      "term": "wristwatch",
+      "meaning": "手表",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_092e550a44ae",
+      "term": "wear",
+      "meaning": "穿；戴",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_35a1ff5993e8",
+      "term": "put on",
+      "meaning": "穿上；戴上",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_85f01b975b8c",
+      "term": "take off",
+      "meaning": "脱下；取下",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9df76226b7fe",
+      "term": "tight",
+      "meaning": "紧的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_0ece6e314f31",
+      "term": "loose",
+      "meaning": "宽松的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e1ef1e92de26",
+      "term": "dirty",
+      "meaning": "脏的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3ea433b091e3",
+      "term": "match",
+      "meaning": "搭配；匹配",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dd1082e0003a",
+      "term": "style",
+      "meaning": "风格",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_da8621bf79bc",
+      "term": "uniform",
+      "meaning": "制服",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3d2b6c480acb",
+      "term": "umbrella",
+      "meaning": "雨伞",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_98770059446d",
+      "term": "wallet",
+      "meaning": "钱包",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cf4a32cff5c6",
+      "term": "backpack",
+      "meaning": "双肩包",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cb4cc6485c15",
+      "term": "button",
+      "meaning": "纽扣；按钮",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_deb7d5f27491",
+      "term": "zipper",
+      "meaning": "拉链",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ecb9ca77c167",
+      "term": "get changed",
+      "meaning": "换衣服",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6fc5304d69a2",
+      "term": "dress up",
+      "meaning": "精心打扮",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_fc59dcae05ed",
+      "term": "casual",
+      "meaning": "休闲的",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_512e49c7b4cc",
+      "term": "personal care",
+      "meaning": "个人护理",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "clothing"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_69f6f1847566",
+      "term": "police",
+      "meaning": "警察",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b2173b68eea4",
+      "term": "firefighter",
+      "meaning": "消防员",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_fea88b95b9ed",
+      "term": "bank",
+      "meaning": "银行",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6e39c9a1920e",
+      "term": "post office",
+      "meaning": "邮局",
+      "kind": "phrase",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_42323911a174",
+      "term": "pharmacy",
+      "meaning": "药店",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6b79f6134d53",
+      "term": "library",
+      "meaning": "图书馆",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ba1f6511b54f",
+      "term": "park",
+      "meaning": "公园",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_46bae0cae26a",
+      "term": "toilet",
+      "meaning": "洗手间",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_52a38baa6f22",
+      "term": "entrance",
+      "meaning": "入口",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_aec4d7ff7ab5",
+      "term": "exit",
+      "meaning": "出口",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_5db0a44567cb",
+      "term": "help",
+      "meaning": "帮助",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_38fd7b7dfbbb",
+      "term": "danger",
+      "meaning": "危险",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_cbfe7bac350c",
+      "term": "safe",
+      "meaning": "安全的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3f14c244e363",
+      "term": "careful",
+      "meaning": "小心的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a1480ba90e05",
+      "term": "lost",
+      "meaning": "迷路的；丢失的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_36c4d61a7bcd",
+      "term": "broken",
+      "meaning": "坏了的",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2494c99525da",
+      "term": "emergency",
+      "meaning": "紧急情况",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d3620adffbae",
+      "term": "call the police",
+      "meaning": "报警",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_91b6b374842e",
+      "term": "call an ambulance",
+      "meaning": "叫救护车",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_bc13db31fb2b",
+      "term": "fire alarm",
+      "meaning": "火警警报",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4b8e4fa737f2",
+      "term": "first aid",
+      "meaning": "急救",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4ec93b084573",
+      "term": "wait in line",
+      "meaning": "排队等候",
+      "kind": "phrase",
+      "level": "A2",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_6063c7d779d6",
+      "term": "fill out a form",
+      "meaning": "填写表格",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_62956c4c6e85",
+      "term": "show your ID",
+      "meaning": "出示证件",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_367a3369abde",
+      "term": "opening hours",
+      "meaning": "营业时间",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ddff77d0a672",
+      "term": "customer service",
+      "meaning": "客户服务",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_48a3e70bf046",
+      "term": "lost and found",
+      "meaning": "失物招领处",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2c4146aedc59",
+      "term": "across from",
+      "meaning": "在……对面",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2b421f49599c",
+      "term": "between",
+      "meaning": "在……之间",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9650918dfbd7",
+      "term": "ask for directions",
+      "meaning": "问路",
+      "kind": "phrase",
+      "level": "B1",
+      "scenario_ids": [
+        "public"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_affce1f36b5c",
+      "term": "do",
+      "meaning": "做",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b05302f894d2",
+      "term": "make",
+      "meaning": "制作；使得",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e0aaacfaaed3",
+      "term": "get",
+      "meaning": "得到；变得",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_8656230968f8",
+      "term": "give",
+      "meaning": "给",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_dac202675bea",
+      "term": "take",
+      "meaning": "拿；带走",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_295b769815a4",
+      "term": "bring",
+      "meaning": "带来",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d4f388c5c162",
+      "term": "keep",
+      "meaning": "保持；保留",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_1cd6063986df",
+      "term": "put",
+      "meaning": "放置",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_fac5bd84d27d",
+      "term": "use",
+      "meaning": "使用",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_3c182f0b0666",
+      "term": "need",
+      "meaning": "需要",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_f60d90293318",
+      "term": "want",
+      "meaning": "想要",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_59e86e6f83e1",
+      "term": "like",
+      "meaning": "喜欢；像",
+      "kind": "word",
+      "level": "A1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_e7acdbc5ecd4",
+      "term": "know",
+      "meaning": "知道；认识",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_512d47055b88",
+      "term": "think",
+      "meaning": "思考；认为",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_492e331881c4",
+      "term": "feel",
+      "meaning": "感觉",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_4b19c45832e6",
+      "term": "find",
+      "meaning": "找到；发现",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2ac0c9cd6434",
+      "term": "tell",
+      "meaning": "告诉",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_b9bc57734c3e",
+      "term": "ask",
+      "meaning": "询问；请求",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ada319cba48e",
+      "term": "try",
+      "meaning": "尝试",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_2f4489d8bb24",
+      "term": "choose",
+      "meaning": "选择",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_50db52916331",
+      "term": "because",
+      "meaning": "因为",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_11c14e661f2c",
+      "term": "but",
+      "meaning": "但是",
+      "kind": "word",
+      "level": "A2",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ac7d379c9965",
+      "term": "so",
+      "meaning": "所以",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_d4ccfd546391",
+      "term": "if",
+      "meaning": "如果",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_71eafde89a6c",
+      "term": "when",
+      "meaning": "当……时；什么时候",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_ed48fdbb4a61",
+      "term": "before",
+      "meaning": "在……之前",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a5816f9cebce",
+      "term": "after",
+      "meaning": "在……之后",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_570fedff4b2e",
+      "term": "first",
+      "meaning": "首先；第一",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_9bb15198aea8",
+      "term": "then",
+      "meaning": "然后",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    },
+    {
+      "id": "lex_a2cd55a451ea",
+      "term": "finally",
+      "meaning": "最后",
+      "kind": "word",
+      "level": "B1",
+      "scenario_ids": [
+        "core"
+      ],
+      "target_modes": [
+        "recognition",
+        "production"
+      ]
+    }
+  ],
+  "entry_count": 540
+}

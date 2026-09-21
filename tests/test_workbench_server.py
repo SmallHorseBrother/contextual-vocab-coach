@@ -59,6 +59,8 @@ class WorkbenchServerTests(unittest.TestCase):
         self.assertEqual(payload["focusPoints"][0], "介绍产品的核心功能和使用场景")
         self.assertNotIn("locator", payload["sources"][0])
         self.assertTrue(payload["connected"])
+        self.assertEqual(payload["library"]["entryCount"], 540)
+        self.assertEqual(len(payload["library"]["scenarios"]), 18)
 
     def test_decision_and_review_share_durable_store(self) -> None:
         _, initial = self.request("/api/state")
@@ -88,13 +90,28 @@ class WorkbenchServerTests(unittest.TestCase):
             "/api/source-status", {"source_id": "demo-context", "status": "paused"}
         )
         self.assertEqual(status, 200)
-        self.assertEqual(payload["sources"][0]["status"], "paused")
+        demo_source = next(source for source in payload["sources"] if source["id"] == "demo-context")
+        self.assertEqual(demo_source["status"], "paused")
 
         status, error = self.request(
             "/api/decision", {"item_id": payload["candidates"][0]["id"], "decision": "delete"}
         )
         self.assertEqual(status, 400)
         self.assertIn("decision", error["error"])
+
+    def test_library_entry_can_be_added_to_learning(self) -> None:
+        _, initial = self.request("/api/state")
+        hello = next(entry for entry in initial["library"]["entries"] if entry["term"] == "hello")
+
+        status, updated = self.request(
+            "/api/library-decision", {"entry_id": hello["id"], "decision": "learning"}
+        )
+
+        self.assertEqual(status, 200)
+        updated_hello = next(entry for entry in updated["library"]["entries"] if entry["id"] == hello["id"])
+        self.assertEqual(updated_hello["status"], "learning")
+        self.assertIn("hello", [candidate["term"] for candidate in updated["candidates"]])
+        self.assertEqual(updated["dueCount"], 2)
 
 
 if __name__ == "__main__":
