@@ -87,6 +87,24 @@ def workbench_state(path: Path) -> dict[str, Any]:
             }
         )
 
+    candidate_by_id = {candidate["id"]: candidate for candidate in candidates}
+    review_queue: list[dict[str, Any]] = []
+    for due in status["due"]:
+        candidate = candidate_by_id.get(due["item_id"], {})
+        review_queue.append(
+            {
+                "id": f"{due['item_id']}:{due['mode']}",
+                "itemId": due["item_id"],
+                "term": due["term"],
+                "meaning": due["meaning"],
+                "mode": due["mode"],
+                "modeLabel": MODE_LABELS.get(due["mode"], due["mode"]),
+                "anchor": candidate.get("suggested_anchor", ""),
+                "dueAt": due["due_at"],
+                "status": "due",
+            }
+        )
+
     contextual_sources = [source for source in sources if source.get("kind") != "bundled_lexicon"]
     active_source_summaries = [source.get("summary", "") for source in contextual_sources if source["status"] == "active"]
     summary = next((value for value in active_source_summaries if value), "尚未导入授权上下文。")
@@ -110,6 +128,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
         "summary": summary,
         "focusPoints": focus_points,
         "dueCount": status["due_count"],
+        "reviewQueue": review_queue,
         "library": store.lexicon_payload(state, limit=1000),
         "candidates": candidate_rows,
         "sources": [
@@ -144,11 +163,15 @@ def apply_review(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         raise store.StoreError(f"unsupported review mode: {mode}")
     if feedback not in store.VALID_FEEDBACK:
         raise store.StoreError(f"unsupported review feedback: {feedback}")
+    response_ms = payload.get("response_ms")
+    if response_ms is not None:
+        if not isinstance(response_ms, int) or isinstance(response_ms, bool) or response_ms < 0:
+            raise store.StoreError("response_ms must be a non-negative integer or null")
     args = argparse.Namespace(
         item=item_id,
         mode=mode,
         feedback=feedback,
-        response_ms=None,
+        response_ms=response_ms,
         strategy=str(payload.get("strategy", "workbench-active-recall")),
         personalized=bool(payload.get("personalized", True)),
         transfer_test=False,

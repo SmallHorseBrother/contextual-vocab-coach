@@ -61,6 +61,7 @@ class WorkbenchServerTests(unittest.TestCase):
         self.assertTrue(payload["connected"])
         self.assertEqual(payload["library"]["entryCount"], 540)
         self.assertEqual(len(payload["library"]["scenarios"]), 18)
+        self.assertEqual(payload["reviewQueue"], [])
 
     def test_decision_and_review_share_durable_store(self) -> None:
         _, initial = self.request("/api/state")
@@ -73,17 +74,22 @@ class WorkbenchServerTests(unittest.TestCase):
             next(candidate for candidate in decided["candidates"] if candidate["id"] == item["id"])["status"],
             "learning",
         )
+        self.assertEqual(len(decided["reviewQueue"]), 2)
+        self.assertEqual({row["mode"] for row in decided["reviewQueue"]}, {"recognition", "production"})
 
         status, reviewed = self.request(
             "/api/review",
-            {"item_id": item["id"], "mode": item["mode"], "feedback": "good"},
+            {"item_id": item["id"], "mode": item["mode"], "feedback": "good", "response_ms": 1250},
         )
         self.assertEqual(status, 200)
         # The sample item has separate production and recognition tracks. The
         # reviewed track is scheduled while the other track remains due.
         self.assertEqual(reviewed["dueCount"], 1)
+        self.assertEqual(len(reviewed["reviewQueue"]), 1)
+        self.assertNotEqual(reviewed["reviewQueue"][0]["mode"], item["mode"])
         state = server_module.store.load_state(self.state_path)
         self.assertEqual(len(state["reviews"]), 1)
+        self.assertEqual(state["reviews"][0]["response_ms"], 1250)
 
     def test_source_can_be_paused_and_invalid_input_is_rejected(self) -> None:
         status, payload = self.request(
@@ -112,6 +118,20 @@ class WorkbenchServerTests(unittest.TestCase):
         self.assertEqual(updated_hello["status"], "learning")
         self.assertIn("hello", [candidate["term"] for candidate in updated["candidates"]])
         self.assertEqual(updated["dueCount"], 2)
+        self.assertEqual({row["mode"] for row in updated["reviewQueue"]}, {"recognition", "production"})
+
+    def test_review_rejects_invalid_response_time(self) -> None:
+        _, initial = self.request("/api/state")
+        item = initial["candidates"][0]
+        self.request("/api/decision", {"item_id": item["id"], "decision": "learning"})
+
+        status, error = self.request(
+            "/api/review",
+            {"item_id": item["id"], "mode": item["mode"], "feedback": "good", "response_ms": -1},
+        )
+
+        self.assertEqual(status, 400)
+        self.assertIn("response_ms", error["error"])
 
 
 if __name__ == "__main__":

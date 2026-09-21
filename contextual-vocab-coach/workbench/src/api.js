@@ -20,10 +20,10 @@ export function decideCandidate(itemId, decision) {
   return request("/api/decision", { method: "POST", body: JSON.stringify({ item_id: itemId, decision }) });
 }
 
-export function recordReview(itemId, mode, feedback) {
+export function recordReview(itemId, mode, feedback, responseMs = null) {
   return request("/api/review", {
     method: "POST",
-    body: JSON.stringify({ item_id: itemId, mode, feedback, strategy: "workbench-active-recall", personalized: true }),
+    body: JSON.stringify({ item_id: itemId, mode, feedback, response_ms: responseMs, strategy: "workbench-active-recall", personalized: true }),
   });
 }
 

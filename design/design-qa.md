@@ -24,6 +24,11 @@ final result: passed
 
 ## Functional and state review
 
+- Review interaction no longer cycles silently: a successful rating advances exactly once, and the final item opens an explicit completion state with the recorded result summary.
+- Recognition and production due tracks render as separate prompts in opposite directions; listening has its own audio-first prompt.
+- `again` visibly clears the answer and retries the same item, while `hard`, `good`, and `easy` advance or finish the session.
+- During a save request all rating buttons are disabled with a visible pending label. A failed save keeps the learner's answer and reference on screen, shows a retryable error, and succeeds in place after connectivity returns.
+- Ending or completing a session returns to the surface where it started instead of always forcing the candidate inbox.
 - Word Library visibly reports 540 entries across 18 scenarios; search for `water` reduced the result set to one exact entry.
 - Combined filters for “餐饮与厨房” and A1 produced 12 matching entries with no unrelated scenario or level shown.
 - Adding `water` changed its visible state to “正在学习,” added two independent due tracks to the Review badge, and preserved the broader 540-entry reservoir.

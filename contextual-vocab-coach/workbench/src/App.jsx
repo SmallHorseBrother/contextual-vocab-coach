@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Archive,
   BookOpenText,
@@ -6,6 +6,7 @@ import {
   CaretDown,
   ChatCenteredDots,
   Check,
+  CheckCircle,
   ClockCounterClockwise,
   Database,
   House,
@@ -19,9 +20,11 @@ import {
   SpeakerHigh,
   Sparkle,
   Target,
+  WarningCircle,
 } from "@phosphor-icons/react";
-import { MOCK_STATE, STATUS_LABELS } from "./mockData.js";
+import { MOCK_STATE } from "./mockData.js";
 import { addLibraryEntry, decideCandidate, fetchWorkbenchState, recordReview, setSourceStatus } from "./api.js";
+import { FEEDBACK_CONFIRMATIONS, FEEDBACK_ORDER, getSessionPrompt, nextSessionStep } from "./sessionFlow.js";
 
 const NAV_ITEMS = [
   { id: "today", label: "Today", icon: House },
@@ -245,31 +248,97 @@ function EmptyPanel({ icon: Icon, title, body, actionLabel, onAction }) {
   );
 }
 
-function LearningSession({ candidates, onBack, onReview }) {
-  const queue = candidates.filter((item) => ["learning", "test"].includes(item.status));
-  const items = queue.length ? queue : candidates.slice(0, 3);
+function LearningSession({ sessionItems, onExit, onReview, onSpeak, returnLabel }) {
+  const [items] = useState(() => sessionItems.map((item) => ({ ...item })));
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
+  const [pendingFeedback, setPendingFeedback] = useState(null);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [results, setResults] = useState([]);
+  const [finished, setFinished] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const sessionRef = useRef(null);
+  const questionStartedAt = useRef(Date.now());
   const current = items[index];
 
-  if (!current) return <EmptyPanel icon={BookOpenText} title="还没有学习内容" body="先从候选收件箱中选择几条值得学的表达。" actionLabel="返回候选收件箱" onAction={onBack} />;
+  useEffect(() => {
+    sessionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [index, finished, retryCount]);
+
+  if (!current) return <EmptyPanel icon={BookOpenText} title="没有等待复习的内容" body="当前没有到期项目。可以回到词库加入内容，或从候选收件箱选择表达。" actionLabel={`返回${returnLabel}`} onAction={onExit} />;
 
   const rate = async (feedback) => {
-    await onReview(current.id, current.mode || "production", feedback);
-    setAnswer(""); setRevealed(false); setIndex((value) => (value + 1) % items.length);
+    if (pendingFeedback) return;
+    setPendingFeedback(feedback);
+    setError("");
+    const responseMs = Math.max(0, Date.now() - questionStartedAt.current);
+    const saved = await onReview(current.itemId || current.id, current.mode || "production", feedback, responseMs);
+    if (!saved) {
+      setError("这次结果没有保存成功。你的答案还在，可以直接重试。");
+      setPendingFeedback(null);
+      return;
+    }
+    const result = { itemId: current.itemId || current.id, mode: current.mode || "production", term: current.term, feedback };
+    setResults((value) => [...value, result]);
+    const step = nextSessionStep(feedback, index, items.length);
+    setPendingFeedback(null);
+    if (step.kind === "complete") {
+      setFinished(true);
+      return;
+    }
+    setAnswer("");
+    setRevealed(false);
+    questionStartedAt.current = Date.now();
+    if (step.kind === "retry") {
+      setNotice(`已记录“${current.term}”：再来一次。答案已收起，请重新回忆。`);
+      setRetryCount((value) => value + 1);
+      return;
+    }
+    setNotice(`已记录“${current.term}”：${FEEDBACK_CONFIRMATIONS[feedback]}。继续下一题。`);
+    setIndex(step.nextIndex);
   };
 
+  if (finished) {
+    const completed = results.filter((result) => result.feedback !== "again");
+    const completedItems = new Set(completed.map((result) => `${result.itemId}:${result.mode}`)).size;
+    return (
+      <section className="session-view session-complete" ref={sessionRef} aria-live="polite">
+        <CheckCircle size={48} weight="duotone" />
+        <span className="eyebrow">本轮完成</span>
+        <h2>这次练习已经记录</h2>
+        <p>完成 {completedItems} 个练习项目，共记录 {results.length} 次真实回忆。复习时间已经更新。</p>
+        <div className="session-result-summary">
+          {FEEDBACK_ORDER.map((feedback) => {
+            const count = results.filter((result) => result.feedback === feedback).length;
+            return count ? <span key={feedback}>{FEEDBACK_CONFIRMATIONS[feedback]} · {count}</span> : null;
+          })}
+        </div>
+        <button className="session-submit" onClick={onExit} type="button">返回{returnLabel}</button>
+      </section>
+    );
+  }
+
+  const prompt = getSessionPrompt(current);
+
   return (
-    <section className="session-view">
-      <button className="back-link" onClick={onBack} type="button">← 返回候选收件箱</button>
+    <section className="session-view" ref={sessionRef}>
+      <button className="back-link" onClick={onExit} type="button">← 结束并返回{returnLabel}</button>
       <div className="session-progress"><span style={{ width: `${((index + 1) / items.length) * 100}%` }} /></div>
-      <span className="eyebrow">主动表达 · {index + 1} / {items.length}</span>
-      <h2>请用英文表达：{current.meaning}</h2>
+      {notice ? <div className="session-notice" role="status"><CheckCircle size={20} weight="fill" />{notice}</div> : null}
+      <span className="eyebrow">{prompt.modeLabel} · {index + 1} / {items.length}</span>
+      <h2>{prompt.title}</h2>
       <p className="session-context">练习场景：{current.anchor || "在你的产品介绍中自然使用这个表达。"}</p>
-      <textarea value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="在这里输入你的英文表达…" rows={6} />
-      {!revealed ? <button className="session-submit" disabled={!answer.trim()} onClick={() => setRevealed(true)} type="button">提交答案</button> : (
-        <div className="session-feedback"><p>参考表达：<strong>{current.term}</strong></p><p>根据刚才的实际回忆情况选择：</p><div>{["again", "hard", "good", "easy"].map((feedback) => <button key={feedback} onClick={() => rate(feedback)} type="button">{STATUS_LABELS[feedback]}</button>)}</div></div>
+      {current.mode === "listening" ? <button className="session-listen" onClick={() => onSpeak(current.term)} type="button"><SpeakerHigh size={20} />播放英文</button> : null}
+      <textarea aria-label="你的回答" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder={prompt.placeholder} rows={6} />
+      {!revealed ? <button className="session-submit" disabled={!answer.trim()} onClick={() => { setNotice(""); setRevealed(true); }} type="button">提交答案</button> : (
+        <div className="session-feedback">
+          <p>{prompt.referenceLabel}：<strong>{prompt.reference}</strong></p>
+          <p>根据刚才的实际回忆情况选择；点击后会立即保存并继续。</p>
+          {error ? <div className="session-error" role="alert"><WarningCircle size={20} weight="fill" />{error}</div> : null}
+          <div className="feedback-actions">{FEEDBACK_ORDER.map((feedback) => <button disabled={Boolean(pendingFeedback)} key={feedback} onClick={() => rate(feedback)} type="button">{pendingFeedback === feedback ? "记录中…" : FEEDBACK_CONFIRMATIONS[feedback]}</button>)}</div>
+        </div>
       )}
     </section>
   );
@@ -316,9 +385,11 @@ export function App() {
     setPendingId(null);
   };
 
-  const handleReview = async (itemId, mode, feedback) => {
-    const remote = await recordReview(itemId, mode, feedback);
-    if (remote) updateLocal({ ...remote, connected: true });
+  const handleReview = async (itemId, mode, feedback, responseMs) => {
+    const remote = await recordReview(itemId, mode, feedback, responseMs);
+    if (!remote) return false;
+    updateLocal({ ...remote, connected: true });
+    return true;
   };
 
   const handleSourceToggle = async (source) => {
@@ -345,12 +416,17 @@ export function App() {
   };
 
   const navigate = (view) => { setSessionOpen(false); setActiveView(view); };
+  const selectedItems = data.candidates.filter((item) => ["learning", "test"].includes(item.status));
+  const sessionItems = activeView === "review"
+    ? (data.reviewQueue || [])
+    : (selectedItems.length ? selectedItems : data.candidates.slice(0, 3));
+  const returnLabel = { today: "今日学习", inbox: "候选收件箱", library: "词库", review: "复习", map: "掌握地图", sources: "来源管理" }[activeView] || "工作台";
   let content;
-  if (sessionOpen) content = <LearningSession candidates={data.candidates} onBack={() => { setSessionOpen(false); setActiveView("inbox"); }} onReview={handleReview} />;
+  if (sessionOpen) content = <LearningSession sessionItems={sessionItems} onExit={() => setSessionOpen(false)} onReview={handleReview} onSpeak={speak} returnLabel={returnLabel} />;
   else if (activeView === "inbox") content = <CandidateInbox data={data} pendingId={pendingId} onDecision={handleDecision} onSpeak={speak} />;
   else if (activeView === "library") content = <LibraryView library={data.library} pendingId={pendingLibraryId} onAdd={handleLibraryAdd} onSpeak={speak} />;
   else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body={`围绕“${data.goal?.statement || "当前目标"}”，先完成到期复习，再加入少量新表达。`} actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
-  else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body="复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" actionLabel="开始复习" onAction={() => setSessionOpen(true)} />;
+  else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body={dueCount ? "复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" : "今天没有到期项目。新内容只会在你明确加入后进入学习计划。"} actionLabel={dueCount ? "开始复习" : null} onAction={() => setSessionOpen(true)} />;
   else if (activeView === "map") content = <MasteryView candidates={data.candidates} />;
   else content = <SourcesView sources={data.sources} onToggle={handleSourceToggle} />;
 

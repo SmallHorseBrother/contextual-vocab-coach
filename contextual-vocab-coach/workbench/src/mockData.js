@@ -18,6 +18,7 @@ export const MOCK_STATE = {
     "讨论产品的长期价值和功能优先级",
   ],
   dueCount: 0,
+  reviewQueue: [],
   library: {
     title: "生活英语起步词库",
     description: "基础词、短语和生活场景表达；每次只从储备池挑少量内容进入学习。",
