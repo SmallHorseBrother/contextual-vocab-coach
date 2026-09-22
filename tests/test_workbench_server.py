@@ -29,8 +29,20 @@ class WorkbenchServerTests(unittest.TestCase):
         self.client_dir = root / "client"
         self.client_dir.mkdir()
         (self.client_dir / "index.html").write_text("<!doctype html><title>Workbench</title>", encoding="utf-8")
+        self.codex_home = root / ".codex"
+        session_dir = self.codex_home / "sessions" / "2026" / "09" / "23"
+        session_dir.mkdir(parents=True)
+        task_id = "55555555-5555-5555-5555-555555555555"
+        (self.codex_home / "session_index.jsonl").write_text(
+            json.dumps({"id": task_id, "thread_name": "具身智能比赛机械臂抓取", "updated_at": "2026-09-23T03:00:00Z"}, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        (session_dir / f"rollout-2026-09-23T03-00-00-{task_id}.jsonl").write_text(
+            json.dumps({"type": "response_item", "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "参加具身智能机器人比赛"}]}}, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
         server_module.initialize_store(self.state_path, demo=True)
-        self.server = server_module.create_server(self.state_path, 0, self.client_dir)
+        self.server = server_module.create_server(self.state_path, 0, self.client_dir, codex_home=self.codex_home, context_depth=5)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.addCleanup(self.server.server_close)
@@ -132,6 +144,18 @@ class WorkbenchServerTests(unittest.TestCase):
 
         self.assertEqual(status, 400)
         self.assertIn("response_ms", error["error"])
+
+    def test_context_scan_and_topic_selection_are_available_from_workbench(self) -> None:
+        status, scanned = self.request("/api/context-scan", {})
+
+        self.assertEqual(status, 200)
+        self.assertEqual(scanned["contextIndex"]["coverage"]["discoveredTaskCount"], 1)
+        self.assertIn("embodied-ai", {topic["id"] for topic in scanned["contextIndex"]["topics"]})
+
+        status, selected = self.request("/api/context-topic", {"topic_id": "embodied-ai"})
+        self.assertEqual(status, 200)
+        self.assertEqual(selected["contextIndex"]["activeTopicId"], "embodied-ai")
+        self.assertIn("具身智能", selected["goal"]["statement"])
 
 
 if __name__ == "__main__":

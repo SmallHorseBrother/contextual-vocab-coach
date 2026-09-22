@@ -7,6 +7,7 @@ export const STATUS_LABELS = {
 
 export const MOCK_STATE = {
   connected: false,
+  runtime: { mode: "demo", contextScanEnabled: false },
   goal: {
     statement: "用英语介绍我的产品",
     successDefinition: "不逐句翻译，完成一段两分钟的产品介绍",
@@ -19,6 +20,27 @@ export const MOCK_STATE = {
   ],
   dueCount: 0,
   reviewQueue: [],
+  contextIndex: {
+    indexedAt: null,
+    activeTopicId: "food-health",
+    coverage: {
+      mode: "demo",
+      discoveredTaskCount: 2,
+      titledTaskCount: 2,
+      deepAnalyzedTaskCount: 0,
+      metadataCoveragePercent: 100,
+      scope: "演示任务，不代表真实 Codex 历史",
+      rawContentStored: false,
+    },
+    topics: [
+      { id: "food-health", label: "FoodLink 与健康饮食产品", goal: "用英语介绍健康饮食产品与核心能力", taskCount: 1, deepAnalyzedCount: 0, candidateCount: 5, recentTitles: ["健康产品演示任务"] },
+      { id: "embodied-ai", label: "具身智能与机器人", goal: "用英语讲清具身智能比赛与机器人方案", taskCount: 1, deepAnalyzedCount: 0, candidateCount: 0, recentTitles: ["具身智能比赛演示任务"] },
+    ],
+    tasks: [
+      { id: "demo-food", title: "健康产品演示任务", topicId: "food-health", topicLabel: "FoodLink 与健康饮食产品", deepAnalyzed: false },
+      { id: "demo-robot", title: "具身智能比赛演示任务", topicId: "embodied-ai", topicLabel: "具身智能与机器人", deepAnalyzed: false },
+    ],
+  },
   library: {
     title: "生活英语起步词库",
     description: "基础词、短语和生活场景表达；每次只从储备池挑少量内容进入学习。",

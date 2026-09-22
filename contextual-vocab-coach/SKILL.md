@@ -1,6 +1,6 @@
 ---
 name: contextual-vocab-coach
-description: Build and run a personal vocabulary-learning loop from the user's current goals and explicitly authorized context. Use when a learner wants to discover useful English words or phrases, turn them into personally meaningful practice, review due items, or inspect and manage their local learning record. Not for exam word-list drilling without a real-world goal.
+description: Build and run a personal vocabulary-learning loop from current goals, local Codex task history, and user-selected sources. Use when a learner wants to discover useful English from real work, map multiple task domains to separate vocabulary sets, practice retrieval, review due items, or inspect context coverage and the local learning record. Not for exam word-list drilling without a real-world goal.
 ---
 
 # Contextual Vocab Coach
@@ -9,7 +9,7 @@ Help the learner answer three questions: what English is worth learning now, how
 
 ## Route the request
 
-- For a new goal, selected conversation, pasted text, or authorized file, read [references/context-selection.md](references/context-selection.md) and [references/privacy.md](references/privacy.md).
+- For a new goal, Codex history scan, selected conversation, pasted text, or authorized file, read [references/context-selection.md](references/context-selection.md) and [references/privacy.md](references/privacy.md).
 - For learning or review, read [references/session-design.md](references/session-design.md).
 - Before reading or changing persistent state, read [references/store-cli.md](references/store-cli.md).
 - For basic everyday vocabulary, search the bundled starter lexicon before inventing a generic list. Treat it as a broad reservoir, not evidence that every entry is unknown or due.
@@ -27,18 +27,21 @@ Help the learner answer three questions: what English is worth learning now, how
 6. Do not treat assistant-authored text, quoted material, or speculation as a fact about the user. Label practice scenarios as hypothetical when they are not confirmed events.
 7. New context may update goals and candidates, but it must not erase accepted items, review history, or explicit decisions such as `known` and `not_now`.
 8. Keep the bundled starter lexicon separate from the contextual candidate inbox. Browsing hundreds of entries is allowed; scheduling them all is not. An entry enters the learning loop only after an explicit learner decision or a normal contextual-candidate confirmation.
+9. Separate task coverage from content understanding. A complete title/metadata index is not a claim that every message was deeply interpreted; always surface both numbers.
+10. Keep different task domains in separate topic workspaces. Switching topics may change the active learning goal and candidate inbox, but must not erase decisions or review history from another topic.
 
 ## Default workflow
 
 1. Inspect existing state with `status`. If none exists, initialize it.
-2. Establish one active goal, its success definition, and the required modes: `recognition`, `production`, and only when requested, `listening`.
-3. Use only the current conversation or sources the user selected. Produce a compact background card: goal, familiar contexts, preferences, exclusions, sources, and which fields are inferred.
-4. Generate 5–8 high-value candidates with a reason, source, intended ability, and one concise sense. Search the starter lexicon for matching basics, then add genuinely context-specific phrases when needed. Prefer the smallest set that can change the learner's next real task.
-5. Let the learner mark each candidate `known`, `not_now`, `test`, or `learning`. If the learner asked to start immediately, test uncertain items instead of silently asserting ignorance.
-6. Teach 3–5 accepted weak items using a familiar anchor, clear meaning, contrast when useful, and active retrieval. Do not reveal the answer during the retrieval attempt.
-7. Record the actual feedback and response time. Never record success merely because the learner read the explanation.
-8. On later sessions, serve due items first, change the test context, and then add at most a small number of new candidates.
-9. End with a compact summary: what was learned, what is due next, and one real task in which to use it.
+2. When running inside Codex Desktop or the local workbench, index the local Codex task history by default unless the learner narrows the scope or pauses scanning. Index all available task titles and timestamps, inspect recent task content with a bounded local-only read, and show both coverage levels.
+3. Cluster recurring tasks into several concrete topic workspaces. Establish one active topic goal at a time, with its success definition and required modes: `recognition`, `production`, and only when requested, `listening`.
+4. Produce a compact background card for the active topic: goal, familiar contexts, preferences, exclusions, source labels, task count, inspection depth, and which fields are inferred.
+5. Generate 5–8 high-value candidates per topic with a reason, source, intended ability, and one concise sense. Search the starter lexicon for matching basics, then add genuinely context-specific phrases when needed. Prefer the smallest set that can change the learner's next real task.
+6. Let the learner mark each candidate `known`, `not_now`, `test`, or `learning`. If the learner asked to start immediately, test uncertain items instead of silently asserting ignorance.
+7. Teach 3–5 accepted weak items using a familiar anchor, clear meaning, contrast when useful, and active retrieval. Do not reveal the answer during the retrieval attempt.
+8. Record the actual feedback and response time. Never record success merely because the learner read the explanation.
+9. On later sessions, serve due items first, change the test context, and then add at most a small number of new candidates.
+10. End with a compact summary: what was learned, what is due next, and one real task in which to use it.
 
 When a visual surface is useful, use the workbench as the interaction layer for steps 5–9. The workbench and CLI share the same local store; do not duplicate or re-import state just to open the interface. Codex still owns context interpretation, candidate generation, corrections, and richer coaching.
 
@@ -48,7 +51,7 @@ Match the user's language for explanations. Keep the target English natural and 
 
 ## Output contracts
 
-For context intake, show the background card and candidate table before or alongside persistence. Every candidate must include `why now`, `source`, and `target mode`.
+For context intake, show the coverage summary, topic map, active background card, and candidate table before or alongside persistence. Every candidate must include `why now`, `source`, `topic`, and `target mode`.
 
 For a learning session, use this sequence:
 

@@ -24,6 +24,8 @@ python scripts/vocab_store.py review --item <id-or-exact-term> --mode production
 python scripts/vocab_store.py source-status --source-id <id> --status paused
 python scripts/vocab_store.py source-delete --source-id <id> --mode metadata
 python scripts/vocab_store.py doctor
+python scripts/codex_context.py scan
+python scripts/codex_context.py select --topic embodied-ai
 ```
 
 ## Visual workbench
@@ -35,6 +37,8 @@ python scripts/workbench_server.py
 ```
 
 Then open `http://127.0.0.1:4174/`. The server binds to loopback only. Candidate decisions, review feedback, and source pause/resume actions are written atomically through `vocab_store.py`.
+
+The normal workbench start also indexes the local Codex task history. It indexes all task titles and timestamps available in the active and archived session registries, then performs bounded head/tail inspection for the most recent 120 tasks. Change the latter with `--context-depth`; disable startup scanning with `--no-context-scan`. The Context Map shows these coverage levels separately.
 
 `init` installs the bundled starter lexicon by default. It contains 540 original entries across 18 everyday scenarios. Use `lexicon-search` to browse without changing the learning queue, and `lexicon-add` only after the learner explicitly chooses an entry. The A1/A2/B1 labels are approximate filtering hints rather than an official assessment. For development or custom packs, use `lexicon-import --input <lexicon.json> --dry-run` before importing; `init --no-starter-lexicon` is available for isolated tests.
 
@@ -59,5 +63,6 @@ Use `--store <directory-or-json-file>` and `--port <port>` when isolation or a d
 - `source-delete --mode purge` also removes items supported only by that source and their review events. Treat it as destructive and use only on an explicit request.
 - Run `doctor` after any failed or interrupted state-changing command.
 - Never use `--demo` for a real learning session; it intentionally uses temporary data.
+- Never describe title/metadata coverage as deep semantic coverage. Report both coverage numbers.
 
 The CLI writes state atomically. It emits JSON unless a command explicitly requests Markdown.

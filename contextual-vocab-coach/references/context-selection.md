@@ -14,7 +14,7 @@ The first two can come from authorized conversations or documents. The third mus
 
 ## Build the background card
 
-Keep one active goal in the first version. Include:
+Keep one active topic goal in the learning surface, while preserving multiple topic workspaces discovered from the learner's tasks. Include:
 
 - Goal stated as a real outcome, such as “explain my product without translating sentence by sentence.”
 - Success definition observable in a new situation.
@@ -23,6 +23,7 @@ Keep one active goal in the first version. Include:
 - Preferences such as time available and explanation language.
 - Exclusions, including topics the learner says are irrelevant or private.
 - Source labels and whether each field is confirmed or inferred.
+- Coverage counts: all discovered tasks, titled tasks, and tasks inspected beyond metadata.
 
 Do not persist an inferred sensitive fact. Present it for confirmation or omit it.
 
@@ -36,7 +37,7 @@ Rank with judgment rather than fake precision. A strong candidate:
 4. Is not already marked known or not now.
 5. Can be explained with a concise, task-relevant sense.
 
-Include verbs, collocations, sentence frames, and connectors when they are more useful than domain nouns. Avoid long pre-generated word books. Default to 5–8 candidates.
+Include verbs, collocations, sentence frames, and connectors when they are more useful than domain nouns. Avoid long pre-generated word books. Default to 5–8 candidates per topic workspace.
 
 Each candidate must carry:
 
@@ -100,4 +101,3 @@ Create a temporary JSON file shaped like this, then validate with `apply-pack --
 ```
 
 The store merges by normalized term and sense. Re-importing context must preserve decisions and review history.
-

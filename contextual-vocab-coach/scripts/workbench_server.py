@@ -19,6 +19,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 import vocab_store as store
+import codex_context
 
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
@@ -66,6 +67,8 @@ def workbench_state(path: Path) -> dict[str, Any]:
     # Python's sort is stable, so equal-priority items keep the order in which
     # the coach proposed them instead of jumping around alphabetically.
     candidates = sorted(state["candidates"].values(), key=lambda item: -item["priority"])
+    context_index = state.get("context_index", {})
+    active_topic_id = context_index.get("activeTopicId")
 
     source_labels = {source["id"]: source["label"] for source in sources}
     candidate_rows: list[dict[str, Any]] = []
@@ -84,6 +87,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
                 "modeLabel": MODE_LABELS.get(primary_mode, primary_mode),
                 "status": candidate["status"],
                 "anchor": candidate.get("suggested_anchor", ""),
+                "topicId": candidate.get("topic_id"),
             }
         )
 
@@ -106,6 +110,10 @@ def workbench_state(path: Path) -> dict[str, Any]:
         )
 
     contextual_sources = [source for source in sources if source.get("kind") != "bundled_lexicon"]
+    active_topic = next(
+        (topic for topic in context_index.get("topics", []) if topic.get("id") == active_topic_id),
+        None,
+    )
     active_source_summaries = [source.get("summary", "") for source in contextual_sources if source["status"] == "active"]
     summary = next((value for value in active_source_summaries if value), "尚未导入授权上下文。")
     focus_points = [
@@ -118,6 +126,9 @@ def workbench_state(path: Path) -> dict[str, Any]:
         focus_points = [candidate["rationale"] for candidate in candidates[:3]]
     if not focus_points:
         focus_points = ["先在 Codex 中确认学习目标并导入一份授权上下文"]
+    if active_topic:
+        summary = active_topic.get("summary", summary)
+        focus_points = active_topic.get("recentTitles", focus_points)[:3]
 
     return {
         "connected": True,
@@ -127,6 +138,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
         },
         "summary": summary,
         "focusPoints": focus_points,
+        "contextIndex": context_index,
         "dueCount": status["due_count"],
         "reviewQueue": review_queue,
         "library": store.lexicon_payload(state, limit=1000),
@@ -139,6 +151,8 @@ def workbench_state(path: Path) -> dict[str, Any]:
                 "status": source["status"],
                 "summary": source.get("summary", ""),
                 "isBundled": source.get("kind") == "bundled_lexicon",
+                "topicId": source.get("topic_id"),
+                "taskCount": source.get("task_count"),
             }
             for source in sources
         ],
@@ -207,10 +221,20 @@ def apply_library_decision(path: Path, payload: dict[str, Any]) -> dict[str, Any
     return workbench_state(path)
 
 
+def apply_context_topic(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    topic_id = str(payload.get("topic_id", ""))
+    with STATE_LOCK:
+        codex_context.select_topic(path, topic_id)
+    return workbench_state(path)
+
+
 def make_handler(
     state_path: Path,
     client_dir: Path = CLIENT_DIR,
     qa_output: Path | None = None,
+    codex_home: Path | None = None,
+    context_depth: int = 120,
+    demo_mode: bool = False,
 ) -> type[SimpleHTTPRequestHandler]:
     class WorkbenchHandler(SimpleHTTPRequestHandler):
         server_version = "ContextualVocabWorkbench/1.0"
@@ -227,7 +251,7 @@ def make_handler(
         def do_GET(self) -> None:  # noqa: N802
             path = urlparse(self.path).path
             if path == "/api/state":
-                self._send_json(workbench_state(state_path))
+                self._send_json(self._decorate(workbench_state(state_path)))
                 return
             if path.startswith("/api/"):
                 self._send_json({"error": "not found"}, HTTPStatus.NOT_FOUND)
@@ -245,14 +269,31 @@ def make_handler(
                 "/api/review": apply_review,
                 "/api/source-status": apply_source_status,
                 "/api/library-decision": apply_library_decision,
+                "/api/context-topic": apply_context_topic,
             }
-            action = routes.get(urlparse(self.path).path)
+            request_path = urlparse(self.path).path
+            if request_path == "/api/context-scan":
+                try:
+                    self._read_json()
+                    if demo_mode:
+                        raise store.StoreError("演示模式不会读取真实 Codex 历史；请启动真实工作台后扫描。")
+                    with STATE_LOCK:
+                        codex_context.scan_into_store(
+                            state_path,
+                            codex_home=codex_home,
+                            deep_limit=context_depth,
+                        )
+                    self._send_json(self._decorate(workbench_state(state_path)))
+                except (OSError, store.StoreError, ValueError, json.JSONDecodeError) as exc:
+                    self._send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+                return
+            action = routes.get(request_path)
             if action is None:
                 self._send_json({"error": "not found"}, HTTPStatus.NOT_FOUND)
                 return
             try:
                 payload = self._read_json()
-                self._send_json(action(state_path, payload))
+                self._send_json(self._decorate(action(state_path, payload)))
             except (store.StoreError, ValueError, json.JSONDecodeError) as exc:
                 self._send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
 
@@ -298,6 +339,15 @@ def make_handler(
             self.end_headers()
             self.wfile.write(body)
 
+        def _decorate(self, payload: dict[str, Any]) -> dict[str, Any]:
+            return {
+                **payload,
+                "runtime": {
+                    "mode": "demo" if demo_mode else "live",
+                    "contextScanEnabled": not demo_mode,
+                },
+            }
+
         def log_message(self, format: str, *args: Any) -> None:
             print(f"[workbench] {self.address_string()} {format % args}")
 
@@ -309,12 +359,25 @@ def create_server(
     port: int,
     client_dir: Path = CLIENT_DIR,
     qa_output: Path | None = None,
+    codex_home: Path | None = None,
+    context_depth: int = 120,
+    demo_mode: bool = False,
 ) -> ThreadingHTTPServer:
     if not (client_dir / "index.html").is_file():
         raise store.StoreError(
             f"Workbench build not found at {client_dir}. Run `npm ci && npm run build` in workbench/."
         )
-    return ThreadingHTTPServer(("127.0.0.1", port), make_handler(state_path, client_dir, qa_output))
+    return ThreadingHTTPServer(
+        ("127.0.0.1", port),
+        make_handler(
+            state_path,
+            client_dir,
+            qa_output,
+            codex_home=codex_home,
+            context_depth=context_depth,
+            demo_mode=demo_mode,
+        ),
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -322,6 +385,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--store", help="State file or directory (defaults to the normal local store)")
     parser.add_argument("--port", type=int, default=4174, help="Loopback port (default: 4174)")
     parser.add_argument("--demo", action="store_true", help="Use bundled sample content without touching the normal store")
+    parser.add_argument("--no-context-scan", action="store_true", help="Skip the automatic local Codex history scan")
+    parser.add_argument("--codex-home", type=Path, help="Codex data directory (defaults to CODEX_HOME or ~/.codex)")
+    parser.add_argument("--context-depth", type=int, default=120, help="Recent tasks to inspect beyond title metadata")
     parser.add_argument("--qa-output", type=Path, help=argparse.SUPPRESS)
     return parser
 
@@ -336,7 +402,26 @@ def main(argv: list[str] | None = None) -> int:
         else:
             state_path = store.resolve_store_path(args.store)
         initialize_store(state_path, demo=args.demo)
-        server = create_server(state_path, args.port, qa_output=args.qa_output)
+        if not args.demo and not args.no_context_scan:
+            context_index = codex_context.scan_into_store(
+                state_path,
+                codex_home=args.codex_home,
+                deep_limit=max(0, args.context_depth),
+            )
+            coverage = context_index["coverage"]
+            print(
+                "Codex context: "
+                f"{coverage['discoveredTaskCount']} tasks indexed, "
+                f"{coverage['deepAnalyzedTaskCount']} recently inspected"
+            )
+        server = create_server(
+            state_path,
+            args.port,
+            qa_output=args.qa_output,
+            codex_home=args.codex_home,
+            context_depth=max(0, args.context_depth),
+            demo_mode=args.demo,
+        )
         print(f"Contextual Vocab Coach workbench: http://127.0.0.1:{args.port}/")
         print(f"Learning store: {state_path}")
         server.serve_forever()

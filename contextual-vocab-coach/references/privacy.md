@@ -4,9 +4,11 @@ Read this reference before using a conversation, transcript, file, folder, or ot
 
 ## Default boundary
 
-Use only material the learner explicitly selected or the current conversation when the request clearly scopes it in. Do not discover and scan unrelated chat histories, home folders, cloud drives, or messaging databases.
+When the learner opens the native local workbench or asks for Codex-wide context, treat the local Codex task history as the default source scope. Index task titles and timestamps across active and archived tasks, and use bounded local reads for recent task content. Show exactly how many tasks were discovered, titled, and more deeply inspected.
 
-Store a minimal source label and summary rather than raw content. Set `retain_raw` to false unless the learner explicitly asks to retain the original. A local script can still send data away if another command calls a cloud model; disclose that before such a call.
+Do not expand this default to unrelated home folders, cloud drives, browsers, or messaging databases. When the learner explicitly narrows the task scope, honor that narrower boundary.
+
+Store a minimal task identifier, title, topic assignment, source label, and summary rather than raw content. Set `retain_raw` to false unless the learner explicitly asks to retain the original. The bundled scanner is deterministic and local-only; if another command would send conversation text to a remote model, disclose that separately before the call.
 
 ## Source truth
 
@@ -24,9 +26,9 @@ Only a user-confirmed statement is a durable personal fact. Do not turn a one-of
 The learner must be able to:
 
 - Inspect source labels and summaries.
+- Inspect context coverage, topic assignments, and whether a task received metadata-only or deeper analysis.
 - Pause a source so it stops contributing new candidates.
 - Delete source metadata while keeping explicitly accepted learning records.
 - Purge source-derived candidates, accepted items, and their review events.
 
 Use `source-status`, `source-delete --mode metadata`, or `source-delete --mode purge` as described in the CLI reference. Explain the consequence before a purge.
-

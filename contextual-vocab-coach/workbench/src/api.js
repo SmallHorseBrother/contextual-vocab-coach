@@ -37,3 +37,14 @@ export function addLibraryEntry(entryId, decision = "learning") {
     body: JSON.stringify({ entry_id: entryId, decision }),
   });
 }
+
+export function scanCodexContext() {
+  return request("/api/context-scan", { method: "POST", body: "{}" });
+}
+
+export function selectContextTopic(topicId) {
+  return request("/api/context-topic", {
+    method: "POST",
+    body: JSON.stringify({ topic_id: topicId }),
+  });
+}

@@ -23,7 +23,7 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react";
 import { MOCK_STATE } from "./mockData.js";
-import { addLibraryEntry, decideCandidate, fetchWorkbenchState, recordReview, setSourceStatus } from "./api.js";
+import { addLibraryEntry, decideCandidate, fetchWorkbenchState, recordReview, scanCodexContext, selectContextTopic, setSourceStatus } from "./api.js";
 import { FEEDBACK_CONFIRMATIONS, FEEDBACK_ORDER, getSessionPrompt, nextSessionStep } from "./sessionFlow.js";
 
 const NAV_ITEMS = [
@@ -32,6 +32,7 @@ const NAV_ITEMS = [
   { id: "library", label: "Word Library", icon: Books },
   { id: "review", label: "Review", icon: ClockCounterClockwise },
   { id: "map", label: "Memory Map", icon: ShareNetwork },
+  { id: "context", label: "Context Map", icon: MagnifyingGlass },
   { id: "sources", label: "Sources", icon: Database },
 ];
 
@@ -104,7 +105,7 @@ function GoalHeader({ goal, sourceLabel }) {
           <CaretDown size={24} weight="bold" />
         </button>
         <p>来自：{sourceLabel || "尚未选择来源"}</p>
-        {menuOpen ? <div className="goal-menu"><strong>{goal?.statement || "尚未设置学习目标"}</strong><span>{goal?.successDefinition || "请先在 Codex 中确认一个真实任务。"}</span><small>如需更换目标，请在 Codex 对话中告诉我。</small></div> : null}
+        {menuOpen ? <div className="goal-menu"><strong>{goal?.statement || "尚未设置学习目标"}</strong><span>{goal?.successDefinition || "请先在 Codex 中确认一个真实任务。"}</span><small>可在 Context Map 中切换任务主题。</small></div> : null}
       </div>
       <div className="goal-promise">
         <Sparkle size={22} weight="duotone" />
@@ -224,7 +225,7 @@ function AssistantRail({ data, onStartLearning }) {
   const selectedCount = data.candidates.filter((item) => ["learning", "test"].includes(item.status)).length;
   return (
     <aside className="assistant-rail">
-      <header><h2>Codex 助手</h2><p>基于你授权的对话内容</p></header>
+      <header><h2>Codex 助手</h2><p>基于本机 Codex 任务索引</p></header>
       <section className="assistant-summary">
         <div className="assistant-section-title"><ChatCenteredDots size={23} weight="duotone" /><strong>本次提取的对话摘要</strong></div>
         <p>{data.summary}</p>
@@ -367,13 +368,91 @@ function SourcesView({ sources, onToggle }) {
   );
 }
 
+function formatScanTime(value) {
+  if (!value) return "尚未扫描";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(date);
+}
+
+function ContextView({ contextIndex, pending, error, onScan, onSelectTopic, scanEnabled }) {
+  const coverage = contextIndex?.coverage || {};
+  const topics = contextIndex?.topics || [];
+  const tasks = contextIndex?.tasks || [];
+  const activeTopicId = contextIndex?.activeTopicId;
+  const [taskFilter, setTaskFilter] = useState("all");
+  const visibleTasks = tasks.filter((task) => taskFilter === "all" || task.topicId === taskFilter).slice(0, 80);
+
+  return (
+    <section className="context-view" aria-labelledby="context-heading">
+      <div className="context-hero">
+        <div>
+          <span className="eyebrow">本机 Codex 上下文索引</span>
+          <h2 id="context-heading">不只看当前对话，看见你的完整任务版图</h2>
+          <p>任务标题与时间做全量索引；最近任务做有限深读。原始对话不写入词汇库，覆盖情况在这里透明展示。</p>
+        </div>
+        <button className="context-scan-button" disabled={pending || !scanEnabled} onClick={onScan} type="button">
+          <ClockCounterClockwise size={20} weight="bold" />
+          {pending ? "正在扫描…" : scanEnabled ? "重新扫描 Codex" : "演示模式不可扫描"}
+        </button>
+      </div>
+      {error ? <div className="context-error" role="alert"><WarningCircle size={20} weight="fill" />{error}</div> : null}
+      <div className="coverage-strip">
+        <div><strong>{coverage.discoveredTaskCount || 0}</strong><span>发现的唯一任务</span></div>
+        <div><strong>{coverage.titledTaskCount || 0}</strong><span>已建立标题索引</span></div>
+        <div><strong>{coverage.deepAnalyzedTaskCount || 0}</strong><span>最近任务有限深读</span></div>
+        <div><strong>{topics.length}</strong><span>识别出的主题簇</span></div>
+      </div>
+      <div className="coverage-note">
+        <CheckCircle size={19} weight="duotone" />
+        <span>{coverage.scope || "等待首次扫描"} · 元数据覆盖 {coverage.metadataCoveragePercent || 0}% · 原文持久化：{coverage.rawContentStored ? "是" : "否"} · 更新于 {formatScanTime(contextIndex?.indexedAt)}</span>
+      </div>
+      <div className="context-section-heading">
+        <div><h3>主题工作区</h3><p>选择一个主题，候选词汇和学习目标会立即切换；不同领域不会混成一张词表。</p></div>
+      </div>
+      <div className="topic-grid">
+        {topics.map((topic) => (
+          <button className={`topic-card ${topic.id === activeTopicId ? "is-active" : ""}`} key={topic.id} onClick={() => onSelectTopic(topic.id)} type="button">
+            <span className="topic-card-top"><strong>{topic.label}</strong><b>{topic.taskCount} 个任务</b></span>
+            <p>{topic.goal}</p>
+            <span className="topic-meta">深读 {topic.deepAnalyzedCount} · 候选 {topic.candidateCount} · 最近 {formatScanTime(topic.lastActiveAt)}</span>
+            <span className="topic-examples">{(topic.recentTitles || []).slice(0, 3).join(" · ")}</span>
+          </button>
+        ))}
+      </div>
+      <div className="context-section-heading task-heading">
+        <div><h3>扫描到的任务</h3><p>显示最近 80 项；可按主题核对哪些任务被归到哪里。</p></div>
+        <select aria-label="按主题筛选任务" value={taskFilter} onChange={(event) => setTaskFilter(event.target.value)}>
+          <option value="all">全部主题</option>
+          {topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.label}</option>)}
+        </select>
+      </div>
+      <div className="task-index-table" role="table" aria-label="Codex 任务索引">
+        {visibleTasks.map((task) => (
+          <div className="task-index-row" key={task.id} role="row">
+            <span className={`deep-dot ${task.deepAnalyzed ? "is-deep" : ""}`} title={task.deepAnalyzed ? "已有限深读" : "仅元数据"} />
+            <strong>{task.title}</strong>
+            <span>{task.topicLabel}</span>
+            <small>{formatScanTime(task.updatedAt)}</small>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function App() {
   const { data, updateLocal, loading } = useWorkbenchState();
   const [activeView, setActiveView] = useState("inbox");
   const [sessionOpen, setSessionOpen] = useState(false);
   const [pendingId, setPendingId] = useState(null);
   const [pendingLibraryId, setPendingLibraryId] = useState(null);
-  const sourceLabel = data.sources.find((source) => source.status === "active" && !source.isBundled)?.label || data.sources.find((source) => source.status === "active")?.label || data.sources[0]?.label;
+  const [contextPending, setContextPending] = useState(false);
+  const [contextError, setContextError] = useState("");
+  const activeTopicId = data.contextIndex?.activeTopicId;
+  const activeTopic = data.contextIndex?.topics?.find((topic) => topic.id === activeTopicId);
+  const scopedCandidates = data.candidates.filter((candidate) => !activeTopicId || !candidate.topicId || candidate.topicId === activeTopicId);
+  const sourceLabel = data.sources.find((source) => source.status === "active" && source.topicId === activeTopicId)?.label || data.sources.find((source) => source.status === "active" && !source.isBundled)?.label || data.sources.find((source) => source.status === "active")?.label || data.sources[0]?.label;
   const dueCount = useMemo(() => data.dueCount ?? data.candidates.filter((item) => item.status === "learning").length, [data]);
 
   const handleDecision = async (itemId, decision) => {
@@ -409,6 +488,27 @@ export function App() {
     setPendingLibraryId(null);
   };
 
+  const handleContextScan = async () => {
+    setContextPending(true);
+    setContextError("");
+    const remote = await scanCodexContext();
+    if (remote) updateLocal({ ...remote, connected: true });
+    else setContextError("扫描没有完成。请确认当前运行的是真实工作台，并稍后重试。");
+    setContextPending(false);
+  };
+
+  const handleTopicSelect = async (topicId) => {
+    setContextError("");
+    const optimistic = { ...data, contextIndex: { ...data.contextIndex, activeTopicId: topicId } };
+    updateLocal(optimistic);
+    const remote = await selectContextTopic(topicId);
+    if (remote) updateLocal({ ...remote, connected: true });
+    else {
+      updateLocal(data);
+      setContextError("主题切换没有保存成功，请重试。");
+    }
+  };
+
   const speak = (term) => {
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
@@ -416,25 +516,30 @@ export function App() {
   };
 
   const navigate = (view) => { setSessionOpen(false); setActiveView(view); };
-  const selectedItems = data.candidates.filter((item) => ["learning", "test"].includes(item.status));
+  const selectedItems = scopedCandidates.filter((item) => ["learning", "test"].includes(item.status));
   const sessionItems = activeView === "review"
     ? (data.reviewQueue || [])
-    : (selectedItems.length ? selectedItems : data.candidates.slice(0, 3));
-  const returnLabel = { today: "今日学习", inbox: "候选收件箱", library: "词库", review: "复习", map: "掌握地图", sources: "来源管理" }[activeView] || "工作台";
+    : (selectedItems.length ? selectedItems : scopedCandidates.slice(0, 3));
+  const returnLabel = { today: "今日学习", inbox: "候选收件箱", library: "词库", review: "复习", map: "掌握地图", context: "上下文地图", sources: "来源管理" }[activeView] || "工作台";
+  const scopedData = { ...data, candidates: scopedCandidates };
   let content;
   if (sessionOpen) content = <LearningSession sessionItems={sessionItems} onExit={() => setSessionOpen(false)} onReview={handleReview} onSpeak={speak} returnLabel={returnLabel} />;
-  else if (activeView === "inbox") content = <CandidateInbox data={data} pendingId={pendingId} onDecision={handleDecision} onSpeak={speak} />;
+  else if (activeView === "inbox") content = <CandidateInbox data={scopedData} pendingId={pendingId} onDecision={handleDecision} onSpeak={speak} />;
   else if (activeView === "library") content = <LibraryView library={data.library} pendingId={pendingLibraryId} onAdd={handleLibraryAdd} onSpeak={speak} />;
   else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body={`围绕“${data.goal?.statement || "当前目标"}”，先完成到期复习，再加入少量新表达。`} actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
   else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body={dueCount ? "复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" : "今天没有到期项目。新内容只会在你明确加入后进入学习计划。"} actionLabel={dueCount ? "开始复习" : null} onAction={() => setSessionOpen(true)} />;
   else if (activeView === "map") content = <MasteryView candidates={data.candidates} />;
+  else if (activeView === "context") content = <ContextView contextIndex={data.contextIndex} pending={contextPending} error={contextError} onScan={handleContextScan} onSelectTopic={handleTopicSelect} scanEnabled={data.runtime?.contextScanEnabled !== false} />;
   else content = <SourcesView sources={data.sources} onToggle={handleSourceToggle} />;
 
   return (
     <div className={`workbench-shell ${loading ? "is-loading" : ""}`}>
       <NavRail activeView={activeView} onNavigate={navigate} dueCount={dueCount} />
-      <main className="workspace-main"><GoalHeader goal={data.goal} sourceLabel={sourceLabel} /><div className="workspace-content">{content}</div></main>
-      <AssistantRail data={data} onStartLearning={() => setSessionOpen(true)} />
+      <main className="workspace-main">
+        {data.runtime?.mode === "demo" || !data.connected ? <div className="demo-banner"><WarningCircle size={18} weight="fill" />当前显示演示数据，不代表已扫描你的 Codex 历史。</div> : null}
+        <GoalHeader goal={data.goal} sourceLabel={sourceLabel} /><div className="workspace-content">{content}</div>
+      </main>
+      <AssistantRail data={{ ...scopedData, summary: activeTopic?.summary || data.summary, focusPoints: activeTopic?.recentTitles?.slice(0, 3) || data.focusPoints }} onStartLearning={() => setSessionOpen(true)} />
     </div>
   );
 }
