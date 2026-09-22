@@ -2,10 +2,11 @@
 """Build a transparent, local-only context index from Codex task history.
 
 The scanner intentionally separates complete task-metadata coverage from bounded
-message inspection.  It indexes every task title available in
+message inspection. It indexes every task title available in
 ``session_index.jsonl`` and every rollout identifier found on disk, then reads a
-small head/tail window from the most recent rollouts.  Raw conversation text is
-never written to the vocabulary store.
+small head/tail window from every rollout on the initial scan. Later scans reuse
+unchanged derived results. Raw conversation text is never written to the
+vocabulary store.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ import vocab_store as store
 
 
 ROLLOUT_ID = re.compile(r"([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})", re.IGNORECASE)
-SEGMENT_BYTES = 384 * 1024
+SEGMENT_BYTES = 64 * 1024
 
 LEARNING_DIRECTION = "把我日常正在做的事，用英语表达出来"
 LEARNING_SUCCESS = "遇到熟悉的工作和生活场景时，能直接调用合适的英文表达，而不是逐句翻译"
@@ -174,6 +175,33 @@ TOPICS: tuple[dict[str, Any], ...] = (
 TOPIC_BY_ID = {topic["id"]: topic for topic in TOPICS}
 
 
+def _starter_lexicon_entries() -> list[dict[str, Any]]:
+    try:
+        payload = json.loads(store.DEFAULT_STARTER_LEXICON.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [row for row in payload.get("entries", []) if isinstance(row, dict)]
+
+
+STARTER_LEXICON_ENTRIES = _starter_lexicon_entries()
+ENGLISH_LEXICON_TERMS = {
+    store.normalize(str(row.get("term", ""))): str(row.get("id", ""))
+    for row in STARTER_LEXICON_ENTRIES
+    if str(row.get("term", "")).strip()
+}
+MAX_LEXICON_WORDS = max((len(term.split()) for term in ENGLISH_LEXICON_TERMS), default=1)
+CHINESE_LEXICON_SIGNALS: dict[str, set[str]] = {}
+for _entry in STARTER_LEXICON_ENTRIES:
+    _entry_id = str(_entry.get("id", ""))
+    for _fragment in re.split(r"[；;，,、/（）()…]+", str(_entry.get("meaning", ""))):
+        _signal = _fragment.strip()
+        if len(_signal) >= 2 and re.search(r"[\u3400-\u9fff]", _signal):
+            CHINESE_LEXICON_SIGNALS.setdefault(_signal, set()).add(_entry_id)
+CHINESE_SIGNAL_PATTERN = re.compile(
+    "|".join(re.escape(value) for value in sorted(CHINESE_LEXICON_SIGNALS, key=len, reverse=True))
+) if CHINESE_LEXICON_SIGNALS else None
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -279,6 +307,21 @@ def read_recent_user_text(path: Path) -> tuple[str, int]:
     return "\n".join(texts), message_count
 
 
+def match_starter_lexicon(text: str) -> list[str]:
+    """Return starter entries explicitly observed in a task excerpt."""
+    matched: set[str] = set()
+    words = re.findall(r"[a-z]+(?:'[a-z]+)?", text.casefold())
+    for index in range(len(words)):
+        for size in range(1, min(MAX_LEXICON_WORDS, len(words) - index) + 1):
+            entry_id = ENGLISH_LEXICON_TERMS.get(" ".join(words[index:index + size]))
+            if entry_id:
+                matched.add(entry_id)
+    if CHINESE_SIGNAL_PATTERN is not None:
+        for found in CHINESE_SIGNAL_PATTERN.finditer(text):
+            matched.update(CHINESE_LEXICON_SIGNALS.get(found.group(0), ()))
+    return sorted(matched)
+
+
 def classify(text: str, *, title: str = "") -> tuple[str, int]:
     haystack = text.casefold()
     title_text = title.casefold()
@@ -299,42 +342,95 @@ def _sort_key(record: dict[str, Any]) -> tuple[str, str]:
     return (record.get("updatedAt", ""), record.get("id", ""))
 
 
-def build_context_index(codex_home: Path, *, deep_limit: int = 120) -> dict[str, Any]:
+def build_context_index(
+    codex_home: Path,
+    *,
+    deep_limit: int = -1,
+    previous_index: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     indexed = read_session_index(codex_home)
     rollouts = discover_rollouts(codex_home)
+    previous_tasks = {
+        row.get("id"): row
+        for row in (previous_index or {}).get("tasks", [])
+        if isinstance(row, dict) and row.get("id")
+    }
     all_ids = set(indexed) | set(rollouts)
     records: list[dict[str, Any]] = []
     for task_id in all_ids:
         base = indexed.get(task_id, {"id": task_id, "title": "未命名历史任务", "updatedAt": ""})
+        rollout = rollouts.get(task_id)
+        rollout_fingerprint = ""
+        if rollout is not None:
+            stat = rollout.stat()
+            rollout_fingerprint = f"{stat.st_size}:{stat.st_mtime_ns}"
         records.append({
             **base,
             "hasRollout": task_id in rollouts,
+            "rolloutFingerprint": rollout_fingerprint,
             "deepAnalyzed": False,
             "messageCount": None,
+            "lexiconEntryIds": [],
             "topicId": "general",
             "topicLabel": TOPIC_BY_ID["general"]["label"],
             "score": 0,
         })
     records.sort(key=_sort_key, reverse=True)
 
-    deep_ids = {
-        record["id"]
-        for record in [row for row in records if row["hasRollout"]][: max(0, deep_limit)]
-    }
+    rollout_records = [row for row in records if row["hasRollout"]]
+    target_records = rollout_records if deep_limit < 0 else rollout_records[: max(0, deep_limit)]
+    deep_ids = {record["id"] for record in target_records}
     read_failures = 0
+    changed_tasks = 0
+    reused_tasks = 0
     for record in records:
         content = ""
         if record["id"] in deep_ids:
+            previous = previous_tasks.get(record["id"], {})
+            if (
+                previous.get("rolloutFingerprint") == record["rolloutFingerprint"]
+                and previous.get("deepAnalyzed") is True
+            ):
+                record["deepAnalyzed"] = True
+                record["messageCount"] = previous.get("messageCount")
+                record["lexiconEntryIds"] = list(previous.get("lexiconEntryIds", []))
+                record["topicId"] = previous.get("topicId", "general")
+                record["topicLabel"] = TOPIC_BY_ID.get(record["topicId"], TOPIC_BY_ID["general"])["label"]
+                record["score"] = previous.get("score", 0)
+                reused_tasks += 1
+                continue
             try:
                 content, message_count = read_recent_user_text(rollouts[record["id"]])
                 record["deepAnalyzed"] = True
                 record["messageCount"] = message_count
+                changed_tasks += 1
             except OSError:
                 read_failures += 1
+        combined = f"{record['title']}\n{content}"
         topic_id, score = classify(content, title=record["title"])
         record["topicId"] = topic_id
         record["topicLabel"] = TOPIC_BY_ID[topic_id]["label"]
         record["score"] = score
+        record["lexiconEntryIds"] = match_starter_lexicon(combined)
+
+    lexicon_matches: dict[str, dict[str, Any]] = {}
+    topic_lexicon_ids: dict[str, set[str]] = {topic["id"]: set() for topic in TOPICS}
+    for record in records:
+        for entry_id in record["lexiconEntryIds"]:
+            topic_lexicon_ids[record["topicId"]].add(entry_id)
+            match = lexicon_matches.setdefault(entry_id, {
+                "entryId": entry_id,
+                "taskCount": 0,
+                "topicIds": set(),
+                "lastSeenAt": "",
+                "recentTitles": [],
+            })
+            match["taskCount"] += 1
+            match["topicIds"].add(record["topicId"])
+            if record["updatedAt"] >= match["lastSeenAt"]:
+                match["lastSeenAt"] = record["updatedAt"]
+            if len(match["recentTitles"]) < 3 and record["title"] not in match["recentTitles"]:
+                match["recentTitles"].append(record["title"])
 
     topic_rows: list[dict[str, Any]] = []
     for topic in TOPICS:
@@ -352,12 +448,13 @@ def build_context_index(codex_home: Path, *, deep_limit: int = 120) -> dict[str,
             "lastActiveAt": matches[0]["updatedAt"],
             "recentTitles": [row["title"] for row in matches[:5]],
             "candidateCount": len(topic["vocabulary"]),
+            "wordCount": len(topic["vocabulary"]) + len(topic_lexicon_ids[topic["id"]]),
         })
     topic_rows.sort(key=lambda row: (row["lastActiveAt"], row["taskCount"]), reverse=True)
     active_topic = next((topic["id"] for topic in topic_rows if topic["id"] != "general"), topic_rows[0]["id"] if topic_rows else None)
     timestamps = [record["updatedAt"] for record in records if record["updatedAt"]]
     return {
-        "version": 1,
+        "version": 2,
         "indexedAt": utc_now(),
         "activeTopicId": active_topic,
         "coverage": {
@@ -366,16 +463,23 @@ def build_context_index(codex_home: Path, *, deep_limit: int = 120) -> dict[str,
             "titledTaskCount": len(indexed),
             "rolloutTaskCount": len(rollouts),
             "deepAnalyzedTaskCount": sum(1 for record in records if record["deepAnalyzed"]),
+            "newOrChangedTaskCount": changed_tasks,
+            "reusedContentTaskCount": reused_tasks,
             "messageCount": sum(record["messageCount"] or 0 for record in records),
+            "matchedLexiconCount": len(lexicon_matches),
             "metadataCoveragePercent": round((len(indexed) / len(all_ids) * 100), 1) if all_ids else 0,
             "readFailures": read_failures,
             "earliestTaskAt": min(timestamps) if timestamps else "",
             "latestTaskAt": max(timestamps) if timestamps else "",
-            "scope": "本机 Codex 活跃与已归档任务；全量任务元数据 + 最近任务有限深读",
+            "scope": "本机 Codex 活跃与已归档任务；全量任务元数据 + 每个任务首尾内容扫描；更新时复用未变化结果",
             "rawContentStored": False,
         },
         "topics": topic_rows,
         "tasks": records,
+        "lexiconMatches": [
+            {**row, "topicIds": sorted(row["topicIds"])}
+            for row in sorted(lexicon_matches.values(), key=lambda item: (-item["taskCount"], item["entryId"]))
+        ],
     }
 
 
@@ -470,7 +574,7 @@ def apply_context_index(state: dict[str, Any], context_index: dict[str, Any], no
     )
 
 
-def scan_into_store(state_path: Path, *, codex_home: Path | None = None, deep_limit: int = 120) -> dict[str, Any]:
+def scan_into_store(state_path: Path, *, codex_home: Path | None = None, deep_limit: int = -1) -> dict[str, Any]:
     root = (codex_home or default_codex_home()).expanduser().resolve()
     if not state_path.exists():
         state = store.empty_state(utc_now())
@@ -478,7 +582,11 @@ def scan_into_store(state_path: Path, *, codex_home: Path | None = None, deep_li
     else:
         state = store.load_state(state_path)
     now = store.iso_now()
-    context_index = build_context_index(root, deep_limit=deep_limit)
+    context_index = build_context_index(
+        root,
+        deep_limit=deep_limit,
+        previous_index=state.get("context_index"),
+    )
     apply_context_index(state, context_index, now)
     errors = store.state_errors(state)
     if errors:
@@ -505,7 +613,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--store", help="Vocabulary store path")
     parser.add_argument("--codex-home", help="Codex data directory")
-    parser.add_argument("--deep-limit", type=int, default=120, help="Recent tasks to inspect with bounded head/tail reads")
+    parser.add_argument("--deep-limit", type=int, default=-1, help="Tasks to inspect with bounded head/tail reads; -1 scans all")
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("scan", help="Scan local Codex history and update the vocabulary store")
     select = subparsers.add_parser("select", help="Select an indexed topic as the active learning context")
@@ -521,7 +629,7 @@ def main(argv: Iterable[str] | None = None) -> int:
             result = scan_into_store(
                 state_path,
                 codex_home=Path(args.codex_home) if args.codex_home else None,
-                deep_limit=max(0, args.deep_limit),
+                deep_limit=args.deep_limit,
             )
             print(json.dumps(result, ensure_ascii=False, indent=2))
         else:

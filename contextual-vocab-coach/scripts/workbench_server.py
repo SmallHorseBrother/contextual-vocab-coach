@@ -34,6 +34,108 @@ STATE_LOCK = threading.RLock()
 MAX_BODY_BYTES = 64 * 1024
 
 
+def personal_vocabulary_payload(
+    state: dict[str, Any],
+    context_index: dict[str, Any],
+    library: dict[str, Any],
+) -> dict[str, Any]:
+    """Merge the broad starter reservoir and scanned contextual expressions."""
+    topic_labels = {row["id"]: row["label"] for row in context_index.get("topics", [])}
+    matches = {row["entryId"]: row for row in context_index.get("lexiconMatches", [])}
+    source_labels = {row["id"]: row["label"] for row in state["sources"].values()}
+    entries: dict[tuple[str, str], dict[str, Any]] = {}
+
+    for row in library.get("entries", []):
+        match = matches.get(row["id"], {})
+        context_ids = list(match.get("topicIds", []))
+        key = (store.normalize(row["term"]), store.normalize(row["meaning"]))
+        entries[key] = {
+            "id": row["id"],
+            "lexiconEntryId": row["id"],
+            "candidateId": row.get("candidate_id"),
+            "term": row["term"],
+            "meaning": row["meaning"],
+            "kind": row["kind"],
+            "level": row["level"],
+            "scenarioIds": list(row.get("scenario_ids", [])),
+            "scenarioLabels": list(row.get("scenario_labels", [])),
+            "contextIds": context_ids,
+            "contextLabels": [topic_labels[item] for item in context_ids if item in topic_labels],
+            "taskCount": int(match.get("taskCount", 0)),
+            "recentTitles": list(match.get("recentTitles", [])),
+            "lastSeenAt": match.get("lastSeenAt", ""),
+            "sourceType": "observed" if match else "foundation",
+            "sourceLabel": "Codex 历史中出现" if match else "基础生活英语",
+            "rationale": (
+                f"在 {match.get('taskCount', 0)} 个 Codex 任务中出现"
+                if match else "基础工作与生活表达，已纳入个人词表"
+            ),
+            "status": row["status"],
+            "targetModes": list(row.get("target_modes", [])),
+        }
+
+    for candidate in state["candidates"].values():
+        source_ids = candidate.get("source_ids", [])
+        context_ids = list(dict.fromkeys(
+            [candidate.get("topic_id")] if candidate.get("topic_id") else []
+        ))
+        key = (store.normalize(candidate["term"]), store.normalize(candidate["meaning"]))
+        existing = entries.get(key)
+        contextual = {
+            "id": candidate["id"],
+            "lexiconEntryId": candidate.get("lexicon_entry_id"),
+            "candidateId": candidate["id"],
+            "term": candidate["term"],
+            "meaning": candidate["meaning"],
+            "kind": candidate["kind"],
+            "level": existing.get("level", "") if existing else "",
+            "scenarioIds": existing.get("scenarioIds", []) if existing else [],
+            "scenarioLabels": existing.get("scenarioLabels", []) if existing else [],
+            "contextIds": list(dict.fromkeys([*(existing.get("contextIds", []) if existing else []), *context_ids])),
+            "taskCount": existing.get("taskCount", 0) if existing else 0,
+            "recentTitles": existing.get("recentTitles", []) if existing else [],
+            "lastSeenAt": existing.get("lastSeenAt", "") if existing else "",
+            "sourceType": "contextual",
+            "sourceLabel": source_labels.get(source_ids[0], "Codex 历史") if source_ids else "Codex 历史",
+            "rationale": candidate["rationale"],
+            "status": candidate["status"],
+            "targetModes": list(candidate.get("target_modes", [])),
+        }
+        contextual["contextLabels"] = [
+            topic_labels[item] for item in contextual["contextIds"] if item in topic_labels
+        ]
+        entries[key] = contextual
+
+    status_order = {"learning": 0, "test": 1, "proposed": 2, "available": 3, "known": 4, "not_now": 5}
+    source_order = {"contextual": 0, "observed": 1, "foundation": 2}
+    rows = sorted(
+        entries.values(),
+        key=lambda row: (
+            status_order.get(row["status"], 9),
+            source_order.get(row["sourceType"], 9),
+            -row["taskCount"],
+            row["term"].casefold(),
+        ),
+    )
+    return {
+        "title": "我的英语词表",
+        "description": "首次扫描形成静态快照；更新时优先处理最新任务并扩充词表。",
+        "entryCount": len(rows),
+        "uniqueTermCount": len({store.normalize(row["term"]) for row in rows}),
+        "contextualCount": sum(1 for row in rows if row["sourceType"] == "contextual"),
+        "observedCount": sum(1 for row in rows if row["sourceType"] == "observed"),
+        "foundationCount": sum(1 for row in rows if row["sourceType"] == "foundation"),
+        "contexts": [
+            {"id": row["id"], "label": row["label"], "wordCount": row.get("wordCount", row.get("candidateCount", 0))}
+            for row in context_index.get("topics", [])
+        ],
+        "levels": library.get("levels", []),
+        "entries": rows,
+        "updatedAt": context_index.get("indexedAt"),
+        "coverage": context_index.get("coverage", {}),
+    }
+
+
 def initialize_store(path: Path, *, demo: bool = False) -> None:
     """Create the store when absent and optionally seed the bundled demo."""
     with STATE_LOCK:
@@ -130,6 +232,9 @@ def workbench_state(path: Path) -> dict[str, Any]:
         summary = active_topic.get("summary", summary)
         focus_points = active_topic.get("recentTitles", focus_points)[:3]
 
+    library = store.lexicon_payload(state, limit=2000)
+    personal_vocabulary = personal_vocabulary_payload(state, context_index, library)
+
     return {
         "connected": True,
         "goal": {
@@ -141,7 +246,8 @@ def workbench_state(path: Path) -> dict[str, Any]:
         "contextIndex": context_index,
         "dueCount": status["due_count"],
         "reviewQueue": review_queue,
-        "library": store.lexicon_payload(state, limit=1000),
+        "library": library,
+        "personalVocabulary": personal_vocabulary,
         "candidates": candidate_rows,
         "sources": [
             {
@@ -233,7 +339,7 @@ def make_handler(
     client_dir: Path = CLIENT_DIR,
     qa_output: Path | None = None,
     codex_home: Path | None = None,
-    context_depth: int = 120,
+    context_depth: int = -1,
     demo_mode: bool = False,
 ) -> type[SimpleHTTPRequestHandler]:
     class WorkbenchHandler(SimpleHTTPRequestHandler):
@@ -360,7 +466,7 @@ def create_server(
     client_dir: Path = CLIENT_DIR,
     qa_output: Path | None = None,
     codex_home: Path | None = None,
-    context_depth: int = 120,
+    context_depth: int = -1,
     demo_mode: bool = False,
 ) -> ThreadingHTTPServer:
     if not (client_dir / "index.html").is_file():
@@ -387,7 +493,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--demo", action="store_true", help="Use bundled sample content without touching the normal store")
     parser.add_argument("--no-context-scan", action="store_true", help="Skip the automatic local Codex history scan")
     parser.add_argument("--codex-home", type=Path, help="Codex data directory (defaults to CODEX_HOME or ~/.codex)")
-    parser.add_argument("--context-depth", type=int, default=120, help="Recent tasks to inspect beyond title metadata")
+    parser.add_argument("--context-depth", type=int, default=-1, help="Tasks to inspect beyond title metadata; -1 scans all")
     parser.add_argument("--qa-output", type=Path, help=argparse.SUPPRESS)
     return parser
 
@@ -406,7 +512,7 @@ def main(argv: list[str] | None = None) -> int:
             context_index = codex_context.scan_into_store(
                 state_path,
                 codex_home=args.codex_home,
-                deep_limit=max(0, args.context_depth),
+                deep_limit=args.context_depth,
             )
             coverage = context_index["coverage"]
             print(
@@ -419,7 +525,7 @@ def main(argv: list[str] | None = None) -> int:
             args.port,
             qa_output=args.qa_output,
             codex_home=args.codex_home,
-            context_depth=max(0, args.context_depth),
+            context_depth=args.context_depth,
             demo_mode=args.demo,
         )
         print(f"Contextual Vocab Coach workbench: http://127.0.0.1:{args.port}/")

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Archive,
   BookOpenText,
   Books,
   CaretDown,
@@ -23,24 +22,15 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react";
 import { MOCK_STATE } from "./mockData.js";
-import { addLibraryEntry, decideCandidate, fetchWorkbenchState, recordReview, scanCodexContext, selectContextTopic, setSourceStatus } from "./api.js";
+import { addLibraryEntry, decideCandidate, fetchWorkbenchState, recordReview, scanCodexContext, setSourceStatus } from "./api.js";
 import { FEEDBACK_CONFIRMATIONS, FEEDBACK_ORDER, getSessionPrompt, nextSessionStep } from "./sessionFlow.js";
 
 const NAV_ITEMS = [
-  { id: "today", label: "Today", icon: House },
-  { id: "inbox", label: "Candidate Inbox", icon: Archive },
-  { id: "library", label: "Word Library", icon: Books },
-  { id: "review", label: "Review", icon: ClockCounterClockwise },
-  { id: "map", label: "Memory Map", icon: ShareNetwork },
-  { id: "context", label: "Context Map", icon: MagnifyingGlass },
-  { id: "sources", label: "Sources", icon: Database },
-];
-
-const DECISIONS = [
-  { id: "known", label: "已会" },
-  { id: "not_now", label: "暂不学" },
-  { id: "test", label: "先测试" },
-  { id: "learning", label: "加入学习" },
+  { id: "today", label: "今日学习", icon: House },
+  { id: "vocabulary", label: "我的词表", icon: Books },
+  { id: "review", label: "复习", icon: ClockCounterClockwise },
+  { id: "map", label: "学习记录", icon: ShareNetwork },
+  { id: "sources", label: "来源与扫描", icon: Database },
 ];
 
 function useWorkbenchState() {
@@ -94,7 +84,7 @@ function NavRail({ activeView, onNavigate, dueCount }) {
   );
 }
 
-function GoalHeader({ goal, contextLabel }) {
+function GoalHeader({ goal, subtitle }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="goal-header">
@@ -104,8 +94,8 @@ function GoalHeader({ goal, contextLabel }) {
           {goal?.statement || "把我日常正在做的事，用英语表达出来"}
           <CaretDown size={24} weight="bold" />
         </button>
-        <p>当前上下文：{contextLabel || "日常工作与生活"}</p>
-        {menuOpen ? <div className="goal-menu"><strong>{goal?.statement || "把我日常正在做的事，用英语表达出来"}</strong><span>{goal?.successDefinition || "遇到熟悉场景时，能直接调用合适的英文表达。"}</span><small>Context Map 只切换本轮内容，不会改写这个方向。</small></div> : null}
+        <p>{subtitle || "系统会自动从你的真实任务中整理词表"}</p>
+        {menuOpen ? <div className="goal-menu"><strong>{goal?.statement || "把我日常正在做的事，用英语表达出来"}</strong><span>{goal?.successDefinition || "遇到熟悉场景时，能直接调用合适的英文表达。"}</span><small>上下文默认隐藏，只用于推荐、分类和来源追溯。</small></div> : null}
       </div>
       <div className="goal-promise">
         <Sparkle size={22} weight="duotone" />
@@ -115,94 +105,53 @@ function GoalHeader({ goal, contextLabel }) {
   );
 }
 
-function CandidateActions({ candidate, pending, onDecision }) {
-  return (
-    <div className="candidate-actions" aria-label={`${candidate.term} 的学习决定`}>
-      {DECISIONS.map((decision) => (
-        <button
-          className={`decision-button decision-${decision.id} ${candidate.status === decision.id ? "is-selected" : ""}`}
-          disabled={pending}
-          key={decision.id}
-          onClick={() => onDecision(candidate.id, decision.id)}
-          type="button"
-        >
-          {candidate.status === decision.id && decision.id !== "learning" ? <Check size={15} weight="bold" /> : null}
-          {decision.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function CandidateInbox({ data, pendingId, onDecision, onSpeak }) {
-  return (
-    <section className="inbox-view" aria-labelledby="candidate-heading">
-      <div className="candidate-summary">
-        <h2 id="candidate-heading">共 {data.candidates.length} 条推荐表达</h2>
-        <p>逐一判断，选择最适合你的下一步。</p>
-      </div>
-      <div className="candidate-table" role="table" aria-label="推荐表达">
-        <div className="candidate-table-head" role="row">
-          <span aria-hidden="true" /><span>表达</span><span>中文意思</span><span>为什么现在学</span><span>来源</span><span>建议模式</span><span>操作</span>
-        </div>
-        <div className="candidate-table-body">
-          {data.candidates.map((candidate, index) => (
-            <article className={`candidate-row status-${candidate.status}`} key={candidate.id} role="row">
-              <span className="row-index">{index + 1}</span>
-              <div className="term-cell">
-                <strong>{candidate.term}</strong>
-                <button className="speak-button" onClick={() => onSpeak(candidate.term)} type="button" aria-label={`朗读 ${candidate.term}`}>
-                  <SpeakerHigh size={19} weight="regular" />
-                </button>
-              </div>
-              <p className="meaning-cell">{candidate.meaning}</p>
-              <p className="reason-cell">{candidate.rationale}</p>
-              <div className="source-cell"><span>{candidate.sourceLabel}</span><small>{candidate.sourceTime || "刚刚"}</small></div>
-              <div className="mode-cell"><span className={`mode-pill mode-${candidate.mode}`}>{candidate.modeLabel}</span></div>
-              <CandidateActions candidate={candidate} pending={pendingId === candidate.id} onDecision={onDecision} />
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 const LIBRARY_STATUS_LABELS = {
   available: "加入学习",
   learning: "正在学习",
   test: "等待短测",
   known: "已经会了",
   not_now: "近期不用",
-  proposed: "候选表达",
+  proposed: "加入学习",
 };
 
-function LibraryView({ library, pendingId, onAdd, onSpeak }) {
+function PersonalVocabularyView({ vocabulary, pendingId, pendingScan, scanNotice, scanError, onAdd, onSpeak, onScan, onShowScanDetails }) {
   const [query, setQuery] = useState("");
-  const [scenario, setScenario] = useState("");
+  const [context, setContext] = useState("");
   const [level, setLevel] = useState("");
-  const entries = library?.entries || [];
+  const [sourceType, setSourceType] = useState("");
+  const [visibleCount, setVisibleCount] = useState(120);
+  const entries = vocabulary?.entries || [];
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const filtered = entries.filter((entry) => {
-    if (scenario && !entry.scenario_ids.includes(scenario)) return false;
+    if (context && !(entry.contextIds || []).includes(context)) return false;
     if (level && entry.level !== level) return false;
+    if (sourceType && entry.sourceType !== sourceType) return false;
     if (!normalizedQuery) return true;
-    return [entry.term, entry.meaning, ...(entry.scenario_labels || [])].join(" ").toLocaleLowerCase().includes(normalizedQuery);
+    return [entry.term, entry.meaning, ...(entry.scenarioLabels || []), ...(entry.contextLabels || [])].join(" ").toLocaleLowerCase().includes(normalizedQuery);
   });
-  const visible = filtered.slice(0, 80);
+  const visible = filtered.slice(0, visibleCount);
 
   return (
-    <section className="library-view" aria-labelledby="library-heading">
-      <div className="library-hero">
-        <div><span className="eyebrow">生活英语储备池</span><h2 id="library-heading">{library?.entryCount || 0} 个基础词与场景表达</h2><p>这里是完整储备库；候选收件箱仍只挑 5–8 个最贴近当前上下文的内容。</p></div>
-        <div className="library-stat"><strong>{library?.scenarios?.length || 0}</strong><span>生活场景</span></div>
+    <section className="library-view" aria-labelledby="vocabulary-heading">
+      <div className="vocabulary-hero">
+        <div><span className="eyebrow">自动整理 · 上下文默认隐藏</span><h2 id="vocabulary-heading">{vocabulary?.uniqueTermCount || 0} 个个人英语表达</h2><p>这是扫描后形成的完整静态词表。你不需要先选主题；搜索、学习即可，需要时再按上下文筛选或查看来源。</p></div>
+        <button className="vocabulary-update" disabled={pendingScan} onClick={onScan} type="button"><ClockCounterClockwise size={20} weight="bold" />{pendingScan ? "正在扫描全部任务…" : "更新词表"}</button>
+      </div>
+      {scanNotice ? <div className="scan-notice" role="status"><CheckCircle size={19} weight="fill" />{scanNotice}</div> : null}
+      {scanError ? <div className="context-error" role="alert"><WarningCircle size={20} weight="fill" />{scanError}</div> : null}
+      <div className="vocabulary-stats">
+        <div><strong>{vocabulary?.entryCount || 0}</strong><span>词义记录</span></div>
+        <div><strong>{vocabulary?.contextualCount || 0}</strong><span>领域表达</span></div>
+        <div><strong>{vocabulary?.observedCount || 0}</strong><span>历史中直接命中</span></div>
+        <button onClick={onShowScanDetails} type="button">查看扫描与分类详情 →</button>
       </div>
       <div className="library-controls">
-        <label className="library-search"><MagnifyingGlass size={19} /><input aria-label="搜索词库" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索英文、中文或场景…" /></label>
-        <select aria-label="按生活场景筛选" value={scenario} onChange={(event) => setScenario(event.target.value)}><option value="">全部场景</option>{(library?.scenarios || []).map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select>
-        <select aria-label="按难度筛选" value={level} onChange={(event) => setLevel(event.target.value)}><option value="">全部难度</option>{(library?.levels || []).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+        <label className="library-search"><MagnifyingGlass size={19} /><input aria-label="搜索我的词表" value={query} onChange={(event) => { setQuery(event.target.value); setVisibleCount(120); }} placeholder="搜索英文或中文…" /></label>
+        <select aria-label="按上下文筛选" value={context} onChange={(event) => { setContext(event.target.value); setVisibleCount(120); }}><option value="">全部上下文</option>{(vocabulary?.contexts || []).map((item) => <option key={item.id} value={item.id}>{item.label} · {item.wordCount}</option>)}</select>
+        <select aria-label="按词表来源筛选" value={sourceType} onChange={(event) => { setSourceType(event.target.value); setVisibleCount(120); }}><option value="">全部来源</option><option value="contextual">领域表达</option><option value="observed">历史中出现</option><option value="foundation">基础表达</option></select>
+        <select aria-label="按难度筛选" value={level} onChange={(event) => { setLevel(event.target.value); setVisibleCount(120); }}><option value="">全部难度</option>{(vocabulary?.levels || []).map((item) => <option key={item} value={item}>{item}</option>)}</select>
       </div>
-      <div className="library-result-line"><span>找到 {filtered.length} 项</span><small>当前最多显示 80 项，请用搜索或筛选快速缩小范围。</small></div>
+      <div className="library-result-line"><span>找到 {filtered.length} 项</span><small>{vocabulary?.updatedAt ? `词表更新于 ${formatScanTime(vocabulary.updatedAt)}` : "等待首次扫描"}</small></div>
       <div className="library-grid">
         {visible.map((entry) => {
           const available = entry.status === "available";
@@ -210,12 +159,14 @@ function LibraryView({ library, pendingId, onAdd, onSpeak }) {
             <div className="library-copy">
               <div className="library-term"><strong>{entry.term}</strong><button className="speak-button" onClick={() => onSpeak(entry.term)} type="button" aria-label={`朗读 ${entry.term}`}><SpeakerHigh size={18} /></button></div>
               <p>{entry.meaning}</p>
-              <div className="library-tags"><span className={`level-tag level-${entry.level.toLowerCase()}`}>{entry.level}</span>{(entry.scenario_labels || []).map((label) => <span key={label}>{label}</span>)}</div>
+              <div className="library-tags">{entry.level ? <span className={`level-tag level-${entry.level.toLowerCase()}`}>{entry.level}</span> : null}<span>{entry.sourceType === "contextual" ? "领域表达" : entry.sourceType === "observed" ? `历史中出现 · ${entry.taskCount}` : "基础表达"}</span></div>
+              {(entry.contextLabels || []).length || (entry.recentTitles || []).length ? <details className="word-source"><summary>查看来源</summary><p>{(entry.contextLabels || []).length ? `相关分类：${entry.contextLabels.join("、")}` : ""}{(entry.recentTitles || []).length ? ` · 最近任务：${entry.recentTitles.join("、")}` : ""}</p></details> : null}
             </div>
-            <button className={`library-add ${available ? "" : "is-added"}`} disabled={!available || pendingId === entry.id} onClick={() => onAdd(entry)} type="button">{available ? <Plus size={17} weight="bold" /> : <Check size={17} weight="bold" />}{LIBRARY_STATUS_LABELS[entry.status] || entry.status}</button>
+            <button className={`library-add ${available || entry.status === "proposed" ? "" : "is-added"}`} disabled={(!available && entry.status !== "proposed") || pendingId === entry.id} onClick={() => onAdd(entry)} type="button">{available || entry.status === "proposed" ? <Plus size={17} weight="bold" /> : <Check size={17} weight="bold" />}{LIBRARY_STATUS_LABELS[entry.status] || entry.status}</button>
           </article>;
         })}
       </div>
+      {visible.length < filtered.length ? <button className="load-more" onClick={() => setVisibleCount((count) => count + 120)} type="button">再显示 {Math.min(120, filtered.length - visible.length)} 项</button> : null}
       {!visible.length ? <div className="library-empty">没有匹配项。换一个中文、英文或生活场景试试。</div> : null}
     </section>
   );
@@ -268,7 +219,7 @@ function LearningSession({ sessionItems, onExit, onReview, onSpeak, returnLabel 
     sessionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [index, finished, retryCount]);
 
-  if (!current) return <EmptyPanel icon={BookOpenText} title="没有等待复习的内容" body="当前没有到期项目。可以回到词库加入内容，或从候选收件箱选择表达。" actionLabel={`返回${returnLabel}`} onAction={onExit} />;
+  if (!current) return <EmptyPanel icon={BookOpenText} title="没有等待复习的内容" body="当前没有到期项目。可以回到我的词表，选择想学的表达。" actionLabel={`返回${returnLabel}`} onAction={onExit} />;
 
   const rate = async (feedback) => {
     if (pendingFeedback) return;
@@ -346,7 +297,7 @@ function LearningSession({ sessionItems, onExit, onReview, onSpeak, returnLabel 
 }
 
 function MasteryView({ candidates }) {
-  const groups = [{ status: "learning", label: "正在学习" }, { status: "test", label: "等待短测" }, { status: "known", label: "已经会了" }, { status: "proposed", label: "候选表达" }, { status: "not_now", label: "近期不用" }];
+  const groups = [{ status: "learning", label: "正在学习" }, { status: "test", label: "等待短测" }, { status: "known", label: "已经会了" }, { status: "proposed", label: "待选择" }, { status: "not_now", label: "近期不用" }];
   return (
     <section className="list-view">
       <div className="list-view-heading"><ShareNetwork size={30} weight="duotone" /><div><h2>任务—词汇掌握地图</h2><p>这是学习记录，不是对大脑的扫描。</p></div></div>
@@ -375,11 +326,10 @@ function formatScanTime(value) {
   return new Intl.DateTimeFormat("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(date);
 }
 
-function ContextView({ contextIndex, pending, error, onScan, onSelectTopic, scanEnabled }) {
+function ContextView({ contextIndex, pending, error, onScan, scanEnabled }) {
   const coverage = contextIndex?.coverage || {};
   const topics = contextIndex?.topics || [];
   const tasks = contextIndex?.tasks || [];
-  const activeTopicId = contextIndex?.activeTopicId;
   const [taskFilter, setTaskFilter] = useState("all");
   const visibleTasks = tasks.filter((task) => taskFilter === "all" || task.topicId === taskFilter).slice(0, 80);
 
@@ -389,7 +339,7 @@ function ContextView({ contextIndex, pending, error, onScan, onSelectTopic, scan
         <div>
           <span className="eyebrow">本机 Codex 上下文索引</span>
           <h2 id="context-heading">不只看当前对话，看见你的完整任务版图</h2>
-          <p>任务标题与时间做全量索引；最近任务做有限深读。原始对话不写入词汇库，覆盖情况在这里透明展示。</p>
+          <p>所有任务建立元数据索引，并扫描每个任务的首尾内容片段。原始对话不写入词汇库，更新时只重读新增或变化的任务。</p>
         </div>
         <button className="context-scan-button" disabled={pending || !scanEnabled} onClick={onScan} type="button">
           <ClockCounterClockwise size={20} weight="bold" />
@@ -400,7 +350,7 @@ function ContextView({ contextIndex, pending, error, onScan, onSelectTopic, scan
       <div className="coverage-strip">
         <div><strong>{coverage.discoveredTaskCount || 0}</strong><span>发现的唯一任务</span></div>
         <div><strong>{coverage.titledTaskCount || 0}</strong><span>已建立标题索引</span></div>
-        <div><strong>{coverage.deepAnalyzedTaskCount || 0}</strong><span>最近任务有限深读</span></div>
+        <div><strong>{coverage.deepAnalyzedTaskCount || 0}</strong><span>已扫描内容的任务</span></div>
         <div><strong>{topics.length}</strong><span>识别出的主题簇</span></div>
       </div>
       <div className="coverage-note">
@@ -408,16 +358,16 @@ function ContextView({ contextIndex, pending, error, onScan, onSelectTopic, scan
         <span>{coverage.scope || "等待首次扫描"} · 元数据覆盖 {coverage.metadataCoveragePercent || 0}% · 原文持久化：{coverage.rawContentStored ? "是" : "否"} · 更新于 {formatScanTime(contextIndex?.indexedAt)}</span>
       </div>
       <div className="context-section-heading">
-        <div><h3>上下文工作区</h3><p>选择一个主题，只切换本轮候选表达；它是上下文，不是你的学习目标。</p></div>
+        <div><h3>自动分类</h3><p>这些分类默认隐藏，只用于筛选、推荐和来源追溯，不会限制你的完整词表。</p></div>
       </div>
       <div className="topic-grid">
         {topics.map((topic) => (
-          <button className={`topic-card ${topic.id === activeTopicId ? "is-active" : ""}`} key={topic.id} onClick={() => onSelectTopic(topic.id)} type="button">
+          <article className="topic-card" key={topic.id}>
             <span className="topic-card-top"><strong>{topic.label}</strong><b>{topic.taskCount} 个任务</b></span>
             <p>{topic.focus}</p>
-            <span className="topic-meta">深读 {topic.deepAnalyzedCount} · 候选 {topic.candidateCount} · 最近 {formatScanTime(topic.lastActiveAt)}</span>
+            <span className="topic-meta">相关词 {topic.wordCount || topic.candidateCount} · 内容扫描 {topic.deepAnalyzedCount} · 最近 {formatScanTime(topic.lastActiveAt)}</span>
             <span className="topic-examples">{(topic.recentTitles || []).slice(0, 3).join(" · ")}</span>
-          </button>
+          </article>
         ))}
       </div>
       <div className="context-section-heading task-heading">
@@ -443,26 +393,15 @@ function ContextView({ contextIndex, pending, error, onScan, onSelectTopic, scan
 
 export function App() {
   const { data, updateLocal, loading } = useWorkbenchState();
-  const [activeView, setActiveView] = useState("inbox");
+  const [activeView, setActiveView] = useState("vocabulary");
   const [sessionOpen, setSessionOpen] = useState(false);
-  const [pendingId, setPendingId] = useState(null);
   const [pendingLibraryId, setPendingLibraryId] = useState(null);
   const [contextPending, setContextPending] = useState(false);
   const [contextError, setContextError] = useState("");
-  const activeTopicId = data.contextIndex?.activeTopicId;
-  const activeTopic = data.contextIndex?.topics?.find((topic) => topic.id === activeTopicId);
-  const scopedCandidates = data.candidates.filter((candidate) => !activeTopicId || !candidate.topicId || candidate.topicId === activeTopicId);
-  const contextLabel = activeTopic?.label || data.sources.find((source) => source.status === "active" && source.topicId === activeTopicId)?.label || "日常工作与生活";
+  const [contextNotice, setContextNotice] = useState("");
+  const scopedCandidates = data.candidates;
+  const scannedTaskCount = data.contextIndex?.coverage?.deepAnalyzedTaskCount || 0;
   const dueCount = useMemo(() => data.dueCount ?? data.candidates.filter((item) => item.status === "learning").length, [data]);
-
-  const handleDecision = async (itemId, decision) => {
-    setPendingId(itemId);
-    const optimistic = { ...data, candidates: data.candidates.map((candidate) => candidate.id === itemId ? { ...candidate, status: decision } : candidate) };
-    updateLocal(optimistic);
-    const remote = await decideCandidate(itemId, decision);
-    if (remote) updateLocal({ ...remote, connected: true });
-    setPendingId(null);
-  };
 
   const handleReview = async (itemId, mode, feedback, responseMs) => {
     const remote = await recordReview(itemId, mode, feedback, responseMs);
@@ -478,12 +417,11 @@ export function App() {
     if (remote) updateLocal({ ...remote, connected: true });
   };
 
-  const handleLibraryAdd = async (entry) => {
+  const handleVocabularyAdd = async (entry) => {
     setPendingLibraryId(entry.id);
-    const localCandidate = { id: entry.id, term: entry.term, meaning: entry.meaning, rationale: `你从“${entry.scenario_labels.join("、")}”基础词库主动加入`, sourceLabel: "内置生活英语词库", sourceTime: "刚刚", mode: entry.target_modes[0], modeLabel: entry.target_modes[0] === "recognition" ? "理解优先" : "主动表达", status: "learning", anchor: `在“${entry.scenario_labels.join("、")}”场景中自然使用这个表达。` };
-    const optimistic = { ...data, library: { ...data.library, entries: data.library.entries.map((item) => item.id === entry.id ? { ...item, status: "learning" } : item) }, candidates: data.candidates.some((item) => item.term === entry.term && item.meaning === entry.meaning) ? data.candidates : [...data.candidates, localCandidate] };
-    updateLocal(optimistic);
-    const remote = await addLibraryEntry(entry.id);
+    const remote = entry.candidateId
+      ? await decideCandidate(entry.candidateId, "learning")
+      : await addLibraryEntry(entry.lexiconEntryId || entry.id);
     if (remote) updateLocal({ ...remote, connected: true });
     setPendingLibraryId(null);
   };
@@ -491,22 +429,18 @@ export function App() {
   const handleContextScan = async () => {
     setContextPending(true);
     setContextError("");
+    setContextNotice("");
+    const previousCount = data.personalVocabulary?.entryCount || 0;
     const remote = await scanCodexContext();
-    if (remote) updateLocal({ ...remote, connected: true });
+    if (remote) {
+      updateLocal({ ...remote, connected: true });
+      const nextCount = remote.personalVocabulary?.entryCount || 0;
+      const added = Math.max(0, nextCount - previousCount);
+      const coverage = remote.contextIndex?.coverage || {};
+      setContextNotice(`词表已更新：共 ${nextCount} 条记录，新增 ${added} 条；本次重读 ${coverage.newOrChangedTaskCount || 0} 个新建或变化的任务。`);
+    }
     else setContextError("扫描没有完成。请确认当前运行的是真实工作台，并稍后重试。");
     setContextPending(false);
-  };
-
-  const handleTopicSelect = async (topicId) => {
-    setContextError("");
-    const optimistic = { ...data, contextIndex: { ...data.contextIndex, activeTopicId: topicId } };
-    updateLocal(optimistic);
-    const remote = await selectContextTopic(topicId);
-    if (remote) updateLocal({ ...remote, connected: true });
-    else {
-      updateLocal(data);
-      setContextError("主题切换没有保存成功，请重试。");
-    }
   };
 
   const speak = (term) => {
@@ -520,16 +454,15 @@ export function App() {
   const sessionItems = activeView === "review"
     ? (data.reviewQueue || [])
     : (selectedItems.length ? selectedItems : scopedCandidates.slice(0, 3));
-  const returnLabel = { today: "今日学习", inbox: "候选收件箱", library: "词库", review: "复习", map: "掌握地图", context: "上下文地图", sources: "来源管理" }[activeView] || "工作台";
+  const returnLabel = { today: "今日学习", vocabulary: "我的词表", review: "复习", map: "掌握地图", context: "扫描详情", sources: "来源管理" }[activeView] || "工作台";
   const scopedData = { ...data, candidates: scopedCandidates };
   let content;
   if (sessionOpen) content = <LearningSession sessionItems={sessionItems} onExit={() => setSessionOpen(false)} onReview={handleReview} onSpeak={speak} returnLabel={returnLabel} />;
-  else if (activeView === "inbox") content = <CandidateInbox data={scopedData} pendingId={pendingId} onDecision={handleDecision} onSpeak={speak} />;
-  else if (activeView === "library") content = <LibraryView library={data.library} pendingId={pendingLibraryId} onAdd={handleLibraryAdd} onSpeak={speak} />;
-  else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body={`从“${contextLabel}”中先完成到期复习，再加入少量能在真实场景中用到的新表达。`} actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
+  else if (activeView === "vocabulary") content = <PersonalVocabularyView vocabulary={data.personalVocabulary} pendingId={pendingLibraryId} pendingScan={contextPending} scanNotice={contextNotice} scanError={contextError} onAdd={handleVocabularyAdd} onSpeak={speak} onScan={handleContextScan} onShowScanDetails={() => setActiveView("context")} />;
+  else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body="先完成到期复习，再从完整个人词表中加入少量真正想学的表达。" actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
   else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body={dueCount ? "复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" : "今天没有到期项目。新内容只会在你明确加入后进入学习计划。"} actionLabel={dueCount ? "开始复习" : null} onAction={() => setSessionOpen(true)} />;
   else if (activeView === "map") content = <MasteryView candidates={data.candidates} />;
-  else if (activeView === "context") content = <ContextView contextIndex={data.contextIndex} pending={contextPending} error={contextError} onScan={handleContextScan} onSelectTopic={handleTopicSelect} scanEnabled={data.runtime?.contextScanEnabled !== false} />;
+  else if (activeView === "context") content = <ContextView contextIndex={data.contextIndex} pending={contextPending} error={contextError} onScan={handleContextScan} scanEnabled={data.runtime?.contextScanEnabled !== false} />;
   else content = <SourcesView sources={data.sources} onToggle={handleSourceToggle} />;
 
   return (
@@ -537,9 +470,9 @@ export function App() {
       <NavRail activeView={activeView} onNavigate={navigate} dueCount={dueCount} />
       <main className="workspace-main">
         {data.runtime?.mode === "demo" || !data.connected ? <div className="demo-banner"><WarningCircle size={18} weight="fill" />当前显示演示数据，不代表已扫描你的 Codex 历史。</div> : null}
-        <GoalHeader goal={data.goal} contextLabel={contextLabel} /><div className="workspace-content">{content}</div>
+        <GoalHeader goal={data.goal} subtitle={`已自动整理 ${data.personalVocabulary?.uniqueTermCount || 0} 个表达，覆盖 ${scannedTaskCount} 个 Codex 任务`} /><div className="workspace-content">{content}</div>
       </main>
-      <AssistantRail data={{ ...scopedData, summary: activeTopic?.summary || data.summary, focusPoints: activeTopic?.recentTitles?.slice(0, 3) || data.focusPoints }} onStartLearning={() => setSessionOpen(true)} />
+      <AssistantRail data={{ ...scopedData, summary: `完整词表已综合基础英语、领域表达和 ${scannedTaskCount} 个任务的扫描结果。`, focusPoints: ["上下文默认隐藏，不需要先选择主题", "更新词表时优先处理最新和变化的任务", "只有主动加入的表达才进入复习队列"] }} onStartLearning={() => setSessionOpen(true)} />
     </div>
   );
 }

@@ -266,6 +266,34 @@ button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(8, 116, 9
 .deep-dot.is-deep { background: var(--teal); box-shadow: 0 0 0 3px #e1efea; }
 
 .library-view { padding: 34px 40px 56px; }
+.vocabulary-hero {
+  display: flex; margin-bottom: 16px; padding: 26px 28px; border: 1px solid #d6e2de;
+  border-radius: 12px; background: #f3f7f4; align-items: flex-start; justify-content: space-between; gap: 28px;
+}
+.vocabulary-hero h2 {
+  margin: 0 0 8px; font-family: "Noto Serif CJK SC", "Songti SC", STSong, SimSun, Georgia, serif;
+  font-size: 30px; letter-spacing: -0.03em;
+}
+.vocabulary-hero p { max-width: 650px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.vocabulary-update {
+  display: inline-flex; flex: 0 0 auto; min-width: 138px; min-height: 44px; padding: 0 16px;
+  border: 1px solid var(--teal); border-radius: 8px; background: var(--teal); color: white;
+  cursor: pointer; font-size: 12px; font-weight: 600; align-items: center; justify-content: center; gap: 8px;
+}
+.vocabulary-update:hover:not(:disabled) { background: var(--teal-dark); }
+.vocabulary-update:disabled { border-color: #aebbb7; background: #aebbb7; cursor: wait; }
+.scan-notice {
+  display: flex; margin: 0 0 14px; padding: 12px 14px; border-radius: 8px; background: #eaf4ef;
+  color: var(--teal-dark); font-size: 12px; align-items: center; gap: 8px;
+}
+.vocabulary-stats {
+  display: grid; grid-template-columns: repeat(3, minmax(100px, 1fr)) minmax(180px, auto);
+  margin-bottom: 18px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+.vocabulary-stats > div { min-height: 74px; padding: 14px 18px; border-right: 1px solid var(--line); }
+.vocabulary-stats strong { display: block; color: var(--teal-dark); font-size: 22px; }
+.vocabulary-stats span { color: var(--muted); font-size: 10px; }
+.vocabulary-stats button { border: 0; background: #f8faf8; color: var(--teal); cursor: pointer; font-size: 11px; font-weight: 600; }
 .library-hero {
   display: flex; margin-bottom: 24px; padding: 24px 26px; border: 1px solid #dce5e1;
   border-radius: 12px; background: #f4f7f3; align-items: flex-start; justify-content: space-between; gap: 28px;
@@ -278,7 +306,8 @@ button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(8, 116, 9
 .library-stat { min-width: 108px; padding-left: 22px; border-left: 1px solid #d1ddd8; text-align: right; }
 .library-stat strong { display: block; color: var(--teal-dark); font-size: 30px; line-height: 1.1; }
 .library-stat span { color: var(--muted); font-size: 11px; }
-.library-controls { display: grid; grid-template-columns: minmax(230px, 1fr) 148px 112px; gap: 10px; }
+.library-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.library-controls .library-search { grid-column: 1 / -1; }
 .library-search { position: relative; }
 .library-search svg {
   position: absolute; top: 50%; left: 14px; color: #71889a; pointer-events: none; transform: translateY(-50%);
@@ -318,7 +347,16 @@ button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(8, 116, 9
 .library-add:hover:not(:disabled) { border-color: var(--teal); background: #edf5f1; }
 .library-add:disabled { cursor: wait; }
 .library-add.is-added { border-color: #d8dfdc; background: #f1f3f1; color: #7a8b93; cursor: default; }
+.word-source { margin-top: 11px; color: #718492; font-size: 10px; }
+.word-source summary { cursor: pointer; }
+.word-source p { margin: 6px 0 0; line-height: 1.6; }
+.load-more {
+  display: block; min-width: 180px; min-height: 44px; margin: 24px auto 0; padding: 0 20px;
+  border: 1px solid #9db8b0; border-radius: 8px; background: transparent; color: var(--teal);
+  cursor: pointer; font-weight: 600;
+}
 .library-empty { grid-column: 1 / -1; padding: 62px 20px; color: var(--muted); text-align: center; }
+.context-view .topic-card { cursor: default; }
 
 .session-view { max-width: 720px; }
 .back-link { margin-bottom: 30px; padding: 0; border: 0; background: transparent; color: var(--teal); cursor: pointer; }
@@ -389,6 +427,11 @@ button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(8, 116, 9
   .meaning-cell, .reason-cell, .source-cell, .mode-cell, .candidate-actions { grid-column: 2; }
   .assistant-rail { padding-inline: 20px; }
   .library-view { padding: 24px 20px 40px; }
+  .vocabulary-hero { display: block; padding: 20px; }
+  .vocabulary-update { width: 100%; margin-top: 18px; }
+  .vocabulary-stats { grid-template-columns: repeat(2, 1fr); }
+  .vocabulary-stats > div:nth-child(2) { border-right: 0; }
+  .vocabulary-stats button { min-height: 52px; grid-column: 1 / -1; }
   .library-hero { display: block; padding: 20px; }
   .library-stat { margin-top: 18px; padding: 14px 0 0; border-top: 1px solid #d1ddd8; border-left: 0; text-align: left; }
   .library-controls { grid-template-columns: 1fr; }

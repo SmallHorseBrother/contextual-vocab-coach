@@ -38,7 +38,7 @@ python scripts/workbench_server.py
 
 Then open `http://127.0.0.1:4174/`. The server binds to loopback only. Candidate decisions, review feedback, and source pause/resume actions are written atomically through `vocab_store.py`.
 
-The normal workbench start also indexes the local Codex task history. It indexes all task titles and timestamps available in the active and archived session registries, then performs bounded head/tail inspection for the most recent 120 tasks. Change the latter with `--context-depth`; disable startup scanning with `--no-context-scan`. The Context Map shows these coverage levels separately.
+The normal workbench start also indexes local Codex history. It indexes every task title and timestamp available in active and archived registries, then performs bounded head/tail inspection for every rollout by default. Derived task results are cached; later updates reuse unchanged tasks and process new or changed tasks from newest to oldest. Use `--context-depth N` to limit content inspection during development, or `--no-context-scan` to skip startup scanning. Raw conversation content is not persisted.
 
 `init` installs the bundled starter lexicon by default. It contains 540 original entries across 18 everyday scenarios. Use `lexicon-search` to browse without changing the learning queue, and `lexicon-add` only after the learner explicitly chooses an entry. The A1/A2/B1 labels are approximate filtering hints rather than an official assessment. For development or custom packs, use `lexicon-import --input <lexicon.json> --dry-run` before importing; `init --no-starter-lexicon` is available for isolated tests.
 
@@ -55,7 +55,7 @@ Use `--store <directory-or-json-file>` and `--port <port>` when isolation or a d
 - Run `status` before starting a session.
 - Validate generated packs with `--dry-run` before applying them.
 - Resolve an item by ID when two senses share the same term.
-- Keep starter-library browsing separate from contextual recommendations and due review. Never bulk-add the library to learning.
+- The complete personal vocabulary view may merge starter and contextual entries for browsing, but must preserve provenance. Never bulk-add the inventory to learning.
 - Use `decide` to preserve `known` and `not_now` decisions across future imports.
 - Run `due` before introducing new items.
 - Call `review` only after the learner attempts retrieval.

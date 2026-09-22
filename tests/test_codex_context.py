@@ -103,6 +103,20 @@ class CodexContextTests(unittest.TestCase):
         self.assertEqual(selected["profile"]["active_goal_id"], goal_id_before_topic_switch)
         self.assertEqual(active_goal["statement"], context.LEARNING_DIRECTION)
 
+    def test_full_scan_caches_every_rollout_and_reuses_unchanged_results(self) -> None:
+        first = context.scan_into_store(self.store_path, codex_home=self.codex_home, deep_limit=-1)
+
+        self.assertEqual(first["coverage"]["deepAnalyzedTaskCount"], 4)
+        self.assertEqual(first["coverage"]["newOrChangedTaskCount"], 4)
+        self.assertEqual(first["coverage"]["reusedContentTaskCount"], 0)
+        self.assertTrue(all("rolloutFingerprint" in task for task in first["tasks"] if task["hasRollout"]))
+
+        second = context.scan_into_store(self.store_path, codex_home=self.codex_home, deep_limit=-1)
+
+        self.assertEqual(second["coverage"]["deepAnalyzedTaskCount"], 4)
+        self.assertEqual(second["coverage"]["newOrChangedTaskCount"], 0)
+        self.assertEqual(second["coverage"]["reusedContentTaskCount"], 4)
+
 
 if __name__ == "__main__":
     unittest.main()

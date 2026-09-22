@@ -1,6 +1,6 @@
-# Context intake and candidate selection
+# Context intake and vocabulary inventory
 
-Read this reference when establishing or updating a goal, background card, source, or candidate set.
+Read this reference when establishing or updating a goal, source, personal vocabulary snapshot, or optional context classification.
 
 ## Separate the three contexts
 
@@ -14,13 +14,13 @@ The first two can come from authorized conversations or documents. The third mus
 
 The learner does not need a narrow goal. A recurring real context can establish relevance without being promoted into a personal objective.
 
-## Build the background card
+## Build the vocabulary snapshot
 
-Keep one stable learning direction in the learning surface, while preserving multiple context workspaces discovered from the learner's tasks. The default direction is helping the learner express what they already do in daily work and life. Switching context workspaces must not rewrite that direction. Include:
+Keep one stable learning direction in the learning surface. Build one complete personal vocabulary snapshot from every authorized source; preserve contexts as hidden many-to-many metadata. The default direction is helping the learner express what they already do in daily work and life. Include:
 
 - Stable direction, and a narrower goal only when the learner explicitly states or confirms it.
 - Success definition observable in a new situation when an explicit goal exists.
-- Active context focus, such as product building or embodied AI; label it as context, not goal.
+- Optional context classifications, such as product building or embodied AI; do not make one classification the default view.
 - Required modes: recognition, production, or listening.
 - Familiar contexts that are safe and useful as memory anchors.
 - Preferences such as time available and explanation language.
@@ -30,19 +30,19 @@ Keep one stable learning direction in the learning surface, while preserving mul
 
 Do not persist an inferred sensitive fact. Present it for confirmation or omit it.
 
-## Select candidates
+## Build and rank the inventory
 
-Rank with judgment rather than fake precision. A strong candidate:
+Do not restrict the stored inventory to the few items that fit one study session. Retain every defensible, deduplicated expression supported by an authorized source, then rank with judgment. A strong item:
 
-1. Directly helps the active context or task.
+1. Directly helps one or more recurring contexts or current tasks.
 2. Is reusable beyond one sentence.
 3. Matches the required mode and expected level.
 4. Is not already marked known or not now.
 5. Can be explained with a concise, task-relevant sense.
 
-Include verbs, collocations, sentence frames, and connectors when they are more useful than domain nouns. Avoid long pre-generated word books. Default to 5–8 candidates per topic workspace.
+Include verbs, collocations, sentence frames, and connectors when they are more useful than domain nouns. The inventory may contain hundreds or thousands of records; keep only the active learning session small.
 
-Each candidate must carry:
+Each scanned or generated item must carry:
 
 - `term`: the English word or expression.
 - `meaning`: one concise meaning in the current task.
@@ -52,6 +52,8 @@ Each candidate must carry:
 - `source_ids`: authorized sources that support relevance.
 - `priority`: 1–5, used only for ordering.
 - Optional `anchor`, `contrast`, and `evidence_summary`; keep them minimal and non-sensitive.
+
+The initial Codex build should inspect a bounded portion of every available rollout and persist only derived vocabulary links, counts, classifications, and timestamps. Later updates should reuse unchanged task results and process the newest changed tasks first.
 
 ## Apply a pack
 

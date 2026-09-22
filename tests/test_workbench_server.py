@@ -73,6 +73,9 @@ class WorkbenchServerTests(unittest.TestCase):
         self.assertTrue(payload["connected"])
         self.assertEqual(payload["library"]["entryCount"], 540)
         self.assertEqual(len(payload["library"]["scenarios"]), 18)
+        self.assertGreaterEqual(payload["personalVocabulary"]["entryCount"], 540)
+        self.assertGreaterEqual(payload["personalVocabulary"]["uniqueTermCount"], 540)
+        self.assertEqual(payload["personalVocabulary"]["title"], "我的英语词表")
         self.assertEqual(payload["reviewQueue"], [])
 
     def test_decision_and_review_share_durable_store(self) -> None:
@@ -150,6 +153,7 @@ class WorkbenchServerTests(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(scanned["contextIndex"]["coverage"]["discoveredTaskCount"], 1)
+        self.assertEqual(scanned["contextIndex"]["coverage"]["deepAnalyzedTaskCount"], 1)
         self.assertIn("embodied-ai", {topic["id"] for topic in scanned["contextIndex"]["topics"]})
         learning_direction = scanned["goal"]["statement"]
 

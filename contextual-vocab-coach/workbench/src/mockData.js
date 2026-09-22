@@ -78,3 +78,56 @@ export const MOCK_STATE = {
     { id: "current-project-chat", label: "当前项目讨论", kind: "current_conversation", status: "active", summary: "关于健康饮食产品功能、用户价值与路线图的授权对话摘要。" },
   ],
 };
+
+const mockContextEntries = MOCK_STATE.candidates.map((entry) => ({
+  id: entry.id,
+  candidateId: entry.id,
+  lexiconEntryId: null,
+  term: entry.term,
+  meaning: entry.meaning,
+  kind: "phrase",
+  level: "",
+  scenarioIds: [],
+  scenarioLabels: [],
+  contextIds: ["food-health"],
+  contextLabels: ["FoodLink 与健康饮食产品"],
+  taskCount: 1,
+  recentTitles: ["健康产品演示任务"],
+  sourceType: "contextual",
+  status: entry.status,
+  targetModes: [entry.mode],
+}));
+
+const mockFoundationEntries = MOCK_STATE.library.entries.map((entry) => ({
+  id: entry.id,
+  candidateId: null,
+  lexiconEntryId: entry.id,
+  term: entry.term,
+  meaning: entry.meaning,
+  kind: entry.kind,
+  level: entry.level,
+  scenarioIds: entry.scenario_ids,
+  scenarioLabels: entry.scenario_labels,
+  contextIds: [],
+  contextLabels: [],
+  taskCount: 0,
+  recentTitles: [],
+  sourceType: "foundation",
+  status: entry.status,
+  targetModes: entry.target_modes,
+}));
+
+MOCK_STATE.personalVocabulary = {
+  title: "我的英语词表",
+  description: "演示词表",
+  entryCount: mockContextEntries.length + mockFoundationEntries.length,
+  uniqueTermCount: new Set([...mockContextEntries, ...mockFoundationEntries].map((entry) => entry.term.toLocaleLowerCase())).size,
+  contextualCount: mockContextEntries.length,
+  observedCount: 0,
+  foundationCount: mockFoundationEntries.length,
+  contexts: MOCK_STATE.contextIndex.topics.map((topic) => ({ id: topic.id, label: topic.label, wordCount: topic.candidateCount })),
+  levels: MOCK_STATE.library.levels,
+  entries: [...mockContextEntries, ...mockFoundationEntries],
+  updatedAt: null,
+  coverage: MOCK_STATE.contextIndex.coverage,
+};

@@ -1,7 +1,7 @@
 interface:
   display_name: "Contextual Vocab Coach"
   short_description: "Learn useful English from your real work and life"
-  default_prompt: "Use $contextual-vocab-coach to turn my everyday Codex contexts into useful English and start the most relevant practice."
+  default_prompt: "Use $contextual-vocab-coach to scan all my local Codex tasks, build or update my complete personal English vocabulary list, and let me choose what to learn."
 
 policy:
   allow_implicit_invocation: true
