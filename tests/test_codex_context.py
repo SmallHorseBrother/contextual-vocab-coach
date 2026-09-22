@@ -104,18 +104,34 @@ class CodexContextTests(unittest.TestCase):
         self.assertEqual(active_goal["statement"], context.LEARNING_DIRECTION)
 
     def test_full_scan_caches_every_rollout_and_reuses_unchanged_results(self) -> None:
+        untitled_path = next(self.sessions.glob(f"*{self.ids['untitled']}.jsonl"))
+        long_message = {
+            "type": "response_item",
+            "payload": {
+                "type": "message",
+                "role": "user",
+                "content": [{"type": "input_text", "text": "x" * 140_000 + " goal"}],
+            },
+        }
+        untitled_path.write_text(json.dumps(long_message) + "\n", encoding="utf-8")
         first = context.scan_into_store(self.store_path, codex_home=self.codex_home, deep_limit=-1)
 
         self.assertEqual(first["coverage"]["deepAnalyzedTaskCount"], 4)
+        self.assertEqual(first["coverage"]["fullContentScannedTaskCount"], 4)
         self.assertEqual(first["coverage"]["newOrChangedTaskCount"], 4)
         self.assertEqual(first["coverage"]["reusedContentTaskCount"], 0)
+        self.assertGreater(first["coverage"]["bytesReadThisScan"], 140_000)
         self.assertTrue(all("rolloutFingerprint" in task for task in first["tasks"] if task["hasRollout"]))
+        untitled_task = next(task for task in first["tasks"] if task["id"] == self.ids["untitled"])
+        goal_entry = next(row for row in context.STARTER_LEXICON_ENTRIES if row["term"] == "goal")
+        self.assertIn(goal_entry["id"], untitled_task["lexiconEntryIds"])
 
         second = context.scan_into_store(self.store_path, codex_home=self.codex_home, deep_limit=-1)
 
         self.assertEqual(second["coverage"]["deepAnalyzedTaskCount"], 4)
         self.assertEqual(second["coverage"]["newOrChangedTaskCount"], 0)
         self.assertEqual(second["coverage"]["reusedContentTaskCount"], 4)
+        self.assertEqual(second["coverage"]["bytesReadThisScan"], 0)
 
 
 if __name__ == "__main__":

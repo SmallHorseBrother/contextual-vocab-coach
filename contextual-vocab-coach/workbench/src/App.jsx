@@ -326,6 +326,14 @@ function formatScanTime(value) {
   return new Intl.DateTimeFormat("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(date);
 }
 
+function formatBytes(value) {
+  const bytes = Number(value) || 0;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+  return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
+}
+
 function ContextView({ contextIndex, pending, error, onScan, scanEnabled }) {
   const coverage = contextIndex?.coverage || {};
   const topics = contextIndex?.topics || [];
@@ -339,23 +347,23 @@ function ContextView({ contextIndex, pending, error, onScan, scanEnabled }) {
         <div>
           <span className="eyebrow">本机 Codex 上下文索引</span>
           <h2 id="context-heading">不只看当前对话，看见你的完整任务版图</h2>
-          <p>所有任务建立元数据索引，并扫描每个任务的首尾内容片段。原始对话不写入词汇库，更新时只重读新增或变化的任务。</p>
+          <p>首次扫描会逐条读取所有任务中的用户消息。原始对话不写入词汇库，更新时只重读新增或变化的任务。</p>
         </div>
         <button className="context-scan-button" disabled={pending || !scanEnabled} onClick={onScan} type="button">
           <ClockCounterClockwise size={20} weight="bold" />
-          {pending ? "正在扫描…" : scanEnabled ? "重新扫描 Codex" : "演示模式不可扫描"}
+          {pending ? "正在扫描…" : scanEnabled ? "更新词表" : "演示模式不可扫描"}
         </button>
       </div>
       {error ? <div className="context-error" role="alert"><WarningCircle size={20} weight="fill" />{error}</div> : null}
       <div className="coverage-strip">
         <div><strong>{coverage.discoveredTaskCount || 0}</strong><span>发现的唯一任务</span></div>
         <div><strong>{coverage.titledTaskCount || 0}</strong><span>已建立标题索引</span></div>
-        <div><strong>{coverage.deepAnalyzedTaskCount || 0}</strong><span>已扫描内容的任务</span></div>
-        <div><strong>{topics.length}</strong><span>识别出的主题簇</span></div>
+        <div><strong>{coverage.fullContentScannedTaskCount || coverage.deepAnalyzedTaskCount || 0}</strong><span>完整扫描用户消息</span></div>
+        <div><strong>{formatBytes(coverage.contentBytesIndexed)}</strong><span>已索引历史数据</span></div>
       </div>
       <div className="coverage-note">
         <CheckCircle size={19} weight="duotone" />
-        <span>{coverage.scope || "等待首次扫描"} · 元数据覆盖 {coverage.metadataCoveragePercent || 0}% · 原文持久化：{coverage.rawContentStored ? "是" : "否"} · 更新于 {formatScanTime(contextIndex?.indexedAt)}</span>
+        <span>{coverage.scope || "等待首次扫描"} · 本次重读 {coverage.newOrChangedTaskCount || 0} 个、复用 {coverage.reusedContentTaskCount || 0} 个 · 原文持久化：{coverage.rawContentStored ? "是" : "否"} · 更新于 {formatScanTime(contextIndex?.indexedAt)}</span>
       </div>
       <div className="context-section-heading">
         <div><h3>自动分类</h3><p>这些分类默认隐藏，只用于筛选、推荐和来源追溯，不会限制你的完整词表。</p></div>
@@ -380,7 +388,7 @@ function ContextView({ contextIndex, pending, error, onScan, scanEnabled }) {
       <div className="task-index-table" role="table" aria-label="Codex 任务索引">
         {visibleTasks.map((task) => (
           <div className="task-index-row" key={task.id} role="row">
-            <span className={`deep-dot ${task.deepAnalyzed ? "is-deep" : ""}`} title={task.deepAnalyzed ? "已有限深读" : "仅元数据"} />
+            <span className={`deep-dot ${task.deepAnalyzed ? "is-deep" : ""}`} title={task.deepAnalyzed ? "用户消息已完整扫描" : "仅元数据"} />
             <strong>{task.title}</strong>
             <span>{task.topicLabel}</span>
             <small>{formatScanTime(task.updatedAt)}</small>

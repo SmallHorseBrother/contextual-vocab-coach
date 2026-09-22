@@ -27,13 +27,13 @@ Help the learner answer three questions: what English is worth learning now, how
 6. Do not treat assistant-authored text, quoted material, or speculation as a fact about the user. Label practice scenarios as hypothetical when they are not confirmed events.
 7. New context may update candidates and topic assignments, but it must not silently rewrite the learner's stable direction or an explicit goal. It also must not erase accepted items, review history, or decisions such as `known` and `not_now`.
 8. The personal inventory may present foundational and context-specific expressions together, but preserve their provenance. Building a large inventory is allowed; scheduling it all is not. An entry enters the learning loop only after an explicit learner decision.
-9. On the initial build, cover every available Codex task with full metadata indexing and bounded content inspection. Cache derived, non-raw results. On update, process newest changed or added tasks first and reuse unchanged results. Never claim bounded inspection is a full reading of every byte.
+9. On the initial build, cover every available Codex task with full metadata indexing and stream every user-authored message locally. Cache only derived, non-raw results. On update, process newest changed or added tasks first and reuse unchanged results. Do not treat assistant or tool output as learner evidence.
 10. Keep task domains as optional many-to-many classifications. They must not be the default navigation, restrict the complete inventory, rewrite the stable learning direction, or erase decisions and review history.
 
 ## Default workflow
 
 1. Inspect existing state with `status`. If none exists, initialize it.
-2. When running inside Codex Desktop or the local workbench, perform an initial local-only scan of every available active and archived task unless the learner narrows or pauses it. Index all titles and timestamps, inspect a bounded head/tail window from every rollout, cache only derived classifications and vocabulary links, and show exact coverage.
+2. When running inside Codex Desktop or the local workbench, perform an initial local-only scan of every available active and archived task unless the learner narrows or pauses it. Index all titles and timestamps, stream every user-authored message from every rollout, cache only derived classifications and vocabulary links, and show exact coverage and bytes indexed.
 3. Materialize one static personal vocabulary snapshot after the scan. Merge broad foundational English, directly observed known expressions, and context-specific words and phrases. Preserve source and classification metadata without showing it by default.
 4. On an explicit update, scan newest tasks first, reread only new or changed rollouts, expand the snapshot, and preserve `known`, `not_now`, accepted items, and review history.
 5. Do not cap the inventory at 5–8 items per topic. Generate and retain as many defensible expressions as the authorized sources support, deduplicate senses, and rank them. Keep only the active learning and review queue small.

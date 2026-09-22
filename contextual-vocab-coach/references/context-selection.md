@@ -53,7 +53,7 @@ Each scanned or generated item must carry:
 - `priority`: 1–5, used only for ordering.
 - Optional `anchor`, `contrast`, and `evidence_summary`; keep them minimal and non-sensitive.
 
-The initial Codex build should inspect a bounded portion of every available rollout and persist only derived vocabulary links, counts, classifications, and timestamps. Later updates should reuse unchanged task results and process the newest changed tasks first.
+The initial Codex build should stream every user-authored message from every available rollout and persist only derived vocabulary links, counts, classifications, fingerprints, and timestamps. Later updates should reuse unchanged task results and process the newest changed tasks first.
 
 ## Apply a pack
 

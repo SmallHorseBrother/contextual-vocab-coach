@@ -518,7 +518,7 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 "Codex context: "
                 f"{coverage['discoveredTaskCount']} tasks indexed, "
-                f"{coverage['deepAnalyzedTaskCount']} recently inspected"
+                f"{coverage['deepAnalyzedTaskCount']} fully scanned"
             )
         server = create_server(
             state_path,

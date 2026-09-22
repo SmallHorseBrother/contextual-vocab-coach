@@ -4,11 +4,11 @@ Read this reference before using a conversation, transcript, file, folder, or ot
 
 ## Default boundary
 
-When the learner opens the native local workbench or asks for Codex-wide context, treat the local Codex task history as the default source scope. Index task titles and timestamps across active and archived tasks, and use bounded local reads for recent task content. Show exactly how many tasks were discovered, titled, and more deeply inspected.
+When the learner opens the native local workbench or asks for Codex-wide context, treat local Codex task history as the default source scope. Index titles and timestamps across active and archived tasks, and stream every user-authored message locally on the initial scan. Show exactly how many tasks were discovered, titled, and fully processed, plus how many bytes were indexed. On updates, reuse unchanged derived results and rescan only new or changed rollouts.
 
 Do not expand this default to unrelated home folders, cloud drives, browsers, or messaging databases. When the learner explicitly narrows the task scope, honor that narrower boundary.
 
-Store a minimal task identifier, title, topic assignment, source label, and summary rather than raw content. Set `retain_raw` to false unless the learner explicitly asks to retain the original. The bundled scanner is deterministic and local-only; if another command would send conversation text to a remote model, disclose that separately before the call.
+Store only a minimal task identifier, title, topic assignment, vocabulary links, source label, counts, fingerprints, and summaries rather than raw content. Set `retain_raw` to false unless the learner explicitly asks to retain the original. The bundled scanner is deterministic and local-only; if another command would send conversation text to a remote model, disclose that separately before the call.
 
 ## Source truth
 

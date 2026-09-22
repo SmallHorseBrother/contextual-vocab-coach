@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Build a transparent, local-only context index from Codex task history.
 
-The scanner intentionally separates complete task-metadata coverage from bounded
-message inspection. It indexes every task title available in
-``session_index.jsonl`` and every rollout identifier found on disk, then reads a
-small head/tail window from every rollout on the initial scan. Later scans reuse
-unchanged derived results. Raw conversation text is never written to the
-vocabulary store.
+The scanner intentionally separates complete task-metadata coverage from full
+user-message inspection. It indexes every task title available in
+``session_index.jsonl`` and every rollout identifier found on disk, then streams
+every user-authored message on the initial scan. Later scans reuse unchanged
+derived results. Raw conversation text is never written to the vocabulary store.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -23,7 +23,7 @@ import vocab_store as store
 
 
 ROLLOUT_ID = re.compile(r"([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})", re.IGNORECASE)
-SEGMENT_BYTES = 64 * 1024
+CONTENT_SCAN_VERSION = 2
 
 LEARNING_DIRECTION = "把我日常正在做的事，用英语表达出来"
 LEARNING_SUCCESS = "遇到熟悉的工作和生活场景时，能直接调用合适的英文表达，而不是逐句翻译"
@@ -255,56 +255,71 @@ def discover_rollouts(codex_home: Path) -> dict[str, Path]:
     return rollouts
 
 
-def _complete_lines(segment: bytes, *, drop_first: bool, drop_last: bool) -> list[bytes]:
-    lines = segment.splitlines()
-    if drop_first and lines:
-        lines = lines[1:]
-    if drop_last and lines:
-        lines = lines[:-1]
-    return lines
-
-
-def read_recent_user_text(path: Path) -> tuple[str, int]:
-    """Read bounded head/tail windows and return user text without persisting it."""
-    size = path.stat().st_size
+def iter_user_texts(path: Path) -> Iterable[str]:
+    """Stream every distinct user-authored message without retaining raw text."""
+    seen: set[bytes] = set()
     with path.open("rb") as handle:
-        head = handle.read(SEGMENT_BYTES)
-        tail = b""
-        if size > SEGMENT_BYTES:
-            handle.seek(max(0, size - SEGMENT_BYTES))
-            tail = handle.read(SEGMENT_BYTES)
-    raw_lines = _complete_lines(head, drop_first=False, drop_last=size > SEGMENT_BYTES)
-    if tail:
-        raw_lines.extend(_complete_lines(tail, drop_first=True, drop_last=False))
-
-    texts: list[str] = []
-    message_count = 0
-    seen: set[str] = set()
-    for raw in raw_lines:
-        try:
-            row = json.loads(raw.decode("utf-8", errors="replace"))
-        except json.JSONDecodeError:
-            continue
-        payload = row.get("payload", {})
-        if row.get("type") != "response_item" or payload.get("type") != "message" or payload.get("role") != "user":
-            continue
-        chunks: list[str] = []
-        for part in payload.get("content", []):
-            if not isinstance(part, dict):
+        for raw in handle:
+            # Most rollout bytes are tool output. Avoid decoding and parsing lines
+            # that cannot possibly be a user message.
+            if b'"role":"user"' not in raw and b'"role": "user"' not in raw:
                 continue
-            value = part.get("text") or part.get("input_text")
-            if isinstance(value, str):
-                chunks.append(value)
-        text = " ".join(chunks).strip()
-        if not text or text in seen:
-            continue
-        seen.add(text)
+            try:
+                row = json.loads(raw.decode("utf-8", errors="replace"))
+            except json.JSONDecodeError:
+                continue
+            payload = row.get("payload", {})
+            if row.get("type") != "response_item" or payload.get("type") != "message" or payload.get("role") != "user":
+                continue
+            chunks: list[str] = []
+            for part in payload.get("content", []):
+                if not isinstance(part, dict):
+                    continue
+                value = part.get("text") or part.get("input_text")
+                if isinstance(value, str):
+                    chunks.append(value)
+            text = " ".join(chunks).strip()
+            if not text:
+                continue
+            # Ambient state and environment blocks are implementation noise, not user intent.
+            text = re.sub(r"<in-app-browser-context[\s\S]*?</in-app-browser-context>", " ", text)
+            text = re.sub(r"<environment_context>[\s\S]*?</environment_context>", " ", text)
+            text = text.strip()
+            if not text:
+                continue
+            digest = hashlib.blake2b(text.encode("utf-8", errors="replace"), digest_size=16).digest()
+            if digest in seen:
+                continue
+            seen.add(digest)
+            yield text
+
+
+def analyze_rollout(path: Path, *, title: str) -> tuple[str, int, list[str], int]:
+    """Scan all user messages and return a topic plus derived vocabulary links."""
+    matched_entries = set(match_starter_lexicon(title))
+    matched_keywords: dict[str, set[str]] = {topic["id"]: set() for topic in TOPICS[:-1]}
+    message_count = 0
+    for text in iter_user_texts(path):
         message_count += 1
-        # Ambient state and environment blocks are implementation noise, not user intent.
-        text = re.sub(r"<in-app-browser-context[\s\S]*?</in-app-browser-context>", " ", text)
-        text = re.sub(r"<environment_context>[\s\S]*?</environment_context>", " ", text)
-        texts.append(text[:6000])
-    return "\n".join(texts), message_count
+        matched_entries.update(match_starter_lexicon(text))
+        haystack = text.casefold()
+        for topic in TOPICS[:-1]:
+            matched_keywords[topic["id"]].update(
+                keyword for keyword in topic["keywords"] if keyword.casefold() in haystack
+            )
+
+    title_text = title.casefold()
+    scores: list[tuple[int, int, str]] = []
+    for order, topic in enumerate(TOPICS[:-1]):
+        score = 0
+        for keyword in topic["keywords"]:
+            base = 3 if len(keyword) >= 4 else 2
+            in_title = keyword.casefold() in title_text
+            if keyword in matched_keywords[topic["id"]] or in_title:
+                score += base + (base * 100 if in_title else 0)
+        scores.append((score, -order, topic["id"]))
+    score, _, topic_id = max(scores, default=(0, 0, "general"))
+    return (topic_id if score else "general", score, sorted(matched_entries), message_count)
 
 
 def match_starter_lexicon(text: str) -> list[str]:
@@ -368,6 +383,8 @@ def build_context_index(
             **base,
             "hasRollout": task_id in rollouts,
             "rolloutFingerprint": rollout_fingerprint,
+            "contentBytes": stat.st_size if rollout is not None else 0,
+            "contentScanVersion": 0,
             "deepAnalyzed": False,
             "messageCount": None,
             "lexiconEntryIds": [],
@@ -383,15 +400,17 @@ def build_context_index(
     read_failures = 0
     changed_tasks = 0
     reused_tasks = 0
+    bytes_read_this_scan = 0
     for record in records:
-        content = ""
         if record["id"] in deep_ids:
             previous = previous_tasks.get(record["id"], {})
             if (
                 previous.get("rolloutFingerprint") == record["rolloutFingerprint"]
                 and previous.get("deepAnalyzed") is True
+                and previous.get("contentScanVersion") == CONTENT_SCAN_VERSION
             ):
                 record["deepAnalyzed"] = True
+                record["contentScanVersion"] = CONTENT_SCAN_VERSION
                 record["messageCount"] = previous.get("messageCount")
                 record["lexiconEntryIds"] = list(previous.get("lexiconEntryIds", []))
                 record["topicId"] = previous.get("topicId", "general")
@@ -400,18 +419,27 @@ def build_context_index(
                 reused_tasks += 1
                 continue
             try:
-                content, message_count = read_recent_user_text(rollouts[record["id"]])
+                topic_id, score, entry_ids, message_count = analyze_rollout(
+                    rollouts[record["id"]],
+                    title=record["title"],
+                )
                 record["deepAnalyzed"] = True
+                record["contentScanVersion"] = CONTENT_SCAN_VERSION
                 record["messageCount"] = message_count
+                record["lexiconEntryIds"] = entry_ids
+                record["topicId"] = topic_id
+                record["topicLabel"] = TOPIC_BY_ID[topic_id]["label"]
+                record["score"] = score
                 changed_tasks += 1
+                bytes_read_this_scan += record["contentBytes"]
+                continue
             except OSError:
                 read_failures += 1
-        combined = f"{record['title']}\n{content}"
-        topic_id, score = classify(content, title=record["title"])
+        topic_id, score = classify("", title=record["title"])
         record["topicId"] = topic_id
         record["topicLabel"] = TOPIC_BY_ID[topic_id]["label"]
         record["score"] = score
-        record["lexiconEntryIds"] = match_starter_lexicon(combined)
+        record["lexiconEntryIds"] = match_starter_lexicon(record["title"])
 
     lexicon_matches: dict[str, dict[str, Any]] = {}
     topic_lexicon_ids: dict[str, set[str]] = {topic["id"]: set() for topic in TOPICS}
@@ -463,15 +491,24 @@ def build_context_index(
             "titledTaskCount": len(indexed),
             "rolloutTaskCount": len(rollouts),
             "deepAnalyzedTaskCount": sum(1 for record in records if record["deepAnalyzed"]),
+            "fullContentScannedTaskCount": sum(
+                1 for record in records if record["contentScanVersion"] == CONTENT_SCAN_VERSION
+            ),
             "newOrChangedTaskCount": changed_tasks,
             "reusedContentTaskCount": reused_tasks,
+            "contentBytesIndexed": sum(
+                record["contentBytes"]
+                for record in records
+                if record["contentScanVersion"] == CONTENT_SCAN_VERSION
+            ),
+            "bytesReadThisScan": bytes_read_this_scan,
             "messageCount": sum(record["messageCount"] or 0 for record in records),
             "matchedLexiconCount": len(lexicon_matches),
             "metadataCoveragePercent": round((len(indexed) / len(all_ids) * 100), 1) if all_ids else 0,
             "readFailures": read_failures,
             "earliestTaskAt": min(timestamps) if timestamps else "",
             "latestTaskAt": max(timestamps) if timestamps else "",
-            "scope": "本机 Codex 活跃与已归档任务；全量任务元数据 + 每个任务首尾内容扫描；更新时复用未变化结果",
+            "scope": "本机 Codex 活跃与已归档任务；首次逐条扫描每个任务的全部用户消息；更新时只重扫新增或变化任务",
             "rawContentStored": False,
         },
         "topics": topic_rows,
@@ -613,7 +650,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--store", help="Vocabulary store path")
     parser.add_argument("--codex-home", help="Codex data directory")
-    parser.add_argument("--deep-limit", type=int, default=-1, help="Tasks to inspect with bounded head/tail reads; -1 scans all")
+    parser.add_argument("--deep-limit", type=int, default=-1, help="Tasks whose complete user-message streams are scanned; -1 scans all")
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("scan", help="Scan local Codex history and update the vocabulary store")
     select = subparsers.add_parser("select", help="Select an indexed topic as the active learning context")
