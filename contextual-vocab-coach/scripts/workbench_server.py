@@ -125,7 +125,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
     if not focus_points:
         focus_points = [candidate["rationale"] for candidate in candidates[:3]]
     if not focus_points:
-        focus_points = ["先在 Codex 中确认学习目标并导入一份授权上下文"]
+        focus_points = ["扫描或选择一个上下文，让候选表达贴近日常任务"]
     if active_topic:
         summary = active_topic.get("summary", summary)
         focus_points = active_topic.get("recentTitles", focus_points)[:3]
@@ -133,8 +133,8 @@ def workbench_state(path: Path) -> dict[str, Any]:
     return {
         "connected": True,
         "goal": {
-            "statement": goal["statement"] if goal else "尚未设置学习目标",
-            "successDefinition": goal["success_definition"] if goal else "先和 Codex 说明你近期需要完成的真实任务",
+            "statement": goal["statement"] if goal else codex_context.LEARNING_DIRECTION,
+            "successDefinition": goal["success_definition"] if goal else codex_context.LEARNING_SUCCESS,
         },
         "summary": summary,
         "focusPoints": focus_points,

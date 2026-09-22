@@ -9,10 +9,10 @@ export const MOCK_STATE = {
   connected: false,
   runtime: { mode: "demo", contextScanEnabled: false },
   goal: {
-    statement: "用英语介绍我的产品",
-    successDefinition: "不逐句翻译，完成一段两分钟的产品介绍",
+    statement: "把我日常正在做的事，用英语表达出来",
+    successDefinition: "遇到熟悉的工作和生活场景时，能直接调用合适的英文表达，而不是逐句翻译",
   },
-  summary: "你正在与团队讨论一款面向全球用户的健康饮食产品，涉及功能设计、目标用户、产品价值和市场策略。我从这段对话中提取了 5 个在你当前目标下最有学习价值的英语表达。",
+  summary: "你正在与团队讨论一款面向全球用户的健康饮食产品，涉及功能设计、目标用户、产品价值和市场策略。我从这个上下文中提取了 5 个现在最可能用得上的英语表达。",
   focusPoints: [
     "介绍产品的核心功能和使用场景",
     "说明如何根据饮食偏好提供个性化建议",
@@ -33,8 +33,8 @@ export const MOCK_STATE = {
       rawContentStored: false,
     },
     topics: [
-      { id: "food-health", label: "FoodLink 与健康饮食产品", goal: "用英语介绍健康饮食产品与核心能力", taskCount: 1, deepAnalyzedCount: 0, candidateCount: 5, recentTitles: ["健康产品演示任务"] },
-      { id: "embodied-ai", label: "具身智能与机器人", goal: "用英语讲清具身智能比赛与机器人方案", taskCount: 1, deepAnalyzedCount: 0, candidateCount: 0, recentTitles: ["具身智能比赛演示任务"] },
+      { id: "food-health", label: "FoodLink 与健康饮食产品", focus: "饮食产品、识别能力、健康建议与用户价值", taskCount: 1, deepAnalyzedCount: 0, candidateCount: 5, recentTitles: ["健康产品演示任务"] },
+      { id: "embodied-ai", label: "具身智能与机器人", focus: "比赛任务、机器人感知、抓取方案、实验结果与下一步改进", taskCount: 1, deepAnalyzedCount: 0, candidateCount: 0, recentTitles: ["具身智能比赛演示任务"] },
     ],
     tasks: [
       { id: "demo-food", title: "健康产品演示任务", topicId: "food-health", topicLabel: "FoodLink 与健康饮食产品", deepAnalyzed: false },

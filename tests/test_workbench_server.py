@@ -66,7 +66,7 @@ class WorkbenchServerTests(unittest.TestCase):
     def test_state_exposes_seeded_candidates_without_raw_context(self) -> None:
         status, payload = self.request("/api/state")
         self.assertEqual(status, 200)
-        self.assertEqual(payload["goal"]["statement"], "用英语介绍我的产品")
+        self.assertEqual(payload["goal"]["statement"], server_module.codex_context.LEARNING_DIRECTION)
         self.assertEqual(len(payload["candidates"]), 5)
         self.assertEqual(payload["focusPoints"][0], "介绍产品的核心功能和使用场景")
         self.assertNotIn("locator", payload["sources"][0])
@@ -151,11 +151,13 @@ class WorkbenchServerTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(scanned["contextIndex"]["coverage"]["discoveredTaskCount"], 1)
         self.assertIn("embodied-ai", {topic["id"] for topic in scanned["contextIndex"]["topics"]})
+        learning_direction = scanned["goal"]["statement"]
 
         status, selected = self.request("/api/context-topic", {"topic_id": "embodied-ai"})
         self.assertEqual(status, 200)
         self.assertEqual(selected["contextIndex"]["activeTopicId"], "embodied-ai")
-        self.assertIn("具身智能", selected["goal"]["statement"])
+        self.assertEqual(selected["goal"]["statement"], learning_direction)
+        self.assertEqual(selected["goal"]["statement"], server_module.codex_context.LEARNING_DIRECTION)
 
 
 if __name__ == "__main__":

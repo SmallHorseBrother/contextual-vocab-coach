@@ -94,18 +94,18 @@ function NavRail({ activeView, onNavigate, dueCount }) {
   );
 }
 
-function GoalHeader({ goal, sourceLabel }) {
+function GoalHeader({ goal, contextLabel }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="goal-header">
       <div className="goal-switcher">
-        <span className="eyebrow">当前学习目标</span>
-        <button aria-expanded={menuOpen} className="goal-title" type="button" aria-label="查看学习目标" onClick={() => setMenuOpen((value) => !value)}>
-          {goal?.statement || "尚未设置学习目标"}
+        <span className="eyebrow">长期学习方向</span>
+        <button aria-expanded={menuOpen} className="goal-title" type="button" aria-label="查看学习方向" onClick={() => setMenuOpen((value) => !value)}>
+          {goal?.statement || "把我日常正在做的事，用英语表达出来"}
           <CaretDown size={24} weight="bold" />
         </button>
-        <p>来自：{sourceLabel || "尚未选择来源"}</p>
-        {menuOpen ? <div className="goal-menu"><strong>{goal?.statement || "尚未设置学习目标"}</strong><span>{goal?.successDefinition || "请先在 Codex 中确认一个真实任务。"}</span><small>可在 Context Map 中切换任务主题。</small></div> : null}
+        <p>当前上下文：{contextLabel || "日常工作与生活"}</p>
+        {menuOpen ? <div className="goal-menu"><strong>{goal?.statement || "把我日常正在做的事，用英语表达出来"}</strong><span>{goal?.successDefinition || "遇到熟悉场景时，能直接调用合适的英文表达。"}</span><small>Context Map 只切换本轮内容，不会改写这个方向。</small></div> : null}
       </div>
       <div className="goal-promise">
         <Sparkle size={22} weight="duotone" />
@@ -194,7 +194,7 @@ function LibraryView({ library, pendingId, onAdd, onSpeak }) {
   return (
     <section className="library-view" aria-labelledby="library-heading">
       <div className="library-hero">
-        <div><span className="eyebrow">生活英语储备池</span><h2 id="library-heading">{library?.entryCount || 0} 个基础词与场景表达</h2><p>这里是完整储备库；候选收件箱仍只挑 5–8 个最适合你当前目标的内容。</p></div>
+        <div><span className="eyebrow">生活英语储备池</span><h2 id="library-heading">{library?.entryCount || 0} 个基础词与场景表达</h2><p>这里是完整储备库；候选收件箱仍只挑 5–8 个最贴近当前上下文的内容。</p></div>
         <div className="library-stat"><strong>{library?.scenarios?.length || 0}</strong><span>生活场景</span></div>
       </div>
       <div className="library-controls">
@@ -408,13 +408,13 @@ function ContextView({ contextIndex, pending, error, onScan, onSelectTopic, scan
         <span>{coverage.scope || "等待首次扫描"} · 元数据覆盖 {coverage.metadataCoveragePercent || 0}% · 原文持久化：{coverage.rawContentStored ? "是" : "否"} · 更新于 {formatScanTime(contextIndex?.indexedAt)}</span>
       </div>
       <div className="context-section-heading">
-        <div><h3>主题工作区</h3><p>选择一个主题，候选词汇和学习目标会立即切换；不同领域不会混成一张词表。</p></div>
+        <div><h3>上下文工作区</h3><p>选择一个主题，只切换本轮候选表达；它是上下文，不是你的学习目标。</p></div>
       </div>
       <div className="topic-grid">
         {topics.map((topic) => (
           <button className={`topic-card ${topic.id === activeTopicId ? "is-active" : ""}`} key={topic.id} onClick={() => onSelectTopic(topic.id)} type="button">
             <span className="topic-card-top"><strong>{topic.label}</strong><b>{topic.taskCount} 个任务</b></span>
-            <p>{topic.goal}</p>
+            <p>{topic.focus}</p>
             <span className="topic-meta">深读 {topic.deepAnalyzedCount} · 候选 {topic.candidateCount} · 最近 {formatScanTime(topic.lastActiveAt)}</span>
             <span className="topic-examples">{(topic.recentTitles || []).slice(0, 3).join(" · ")}</span>
           </button>
@@ -452,7 +452,7 @@ export function App() {
   const activeTopicId = data.contextIndex?.activeTopicId;
   const activeTopic = data.contextIndex?.topics?.find((topic) => topic.id === activeTopicId);
   const scopedCandidates = data.candidates.filter((candidate) => !activeTopicId || !candidate.topicId || candidate.topicId === activeTopicId);
-  const sourceLabel = data.sources.find((source) => source.status === "active" && source.topicId === activeTopicId)?.label || data.sources.find((source) => source.status === "active" && !source.isBundled)?.label || data.sources.find((source) => source.status === "active")?.label || data.sources[0]?.label;
+  const contextLabel = activeTopic?.label || data.sources.find((source) => source.status === "active" && source.topicId === activeTopicId)?.label || "日常工作与生活";
   const dueCount = useMemo(() => data.dueCount ?? data.candidates.filter((item) => item.status === "learning").length, [data]);
 
   const handleDecision = async (itemId, decision) => {
@@ -526,7 +526,7 @@ export function App() {
   if (sessionOpen) content = <LearningSession sessionItems={sessionItems} onExit={() => setSessionOpen(false)} onReview={handleReview} onSpeak={speak} returnLabel={returnLabel} />;
   else if (activeView === "inbox") content = <CandidateInbox data={scopedData} pendingId={pendingId} onDecision={handleDecision} onSpeak={speak} />;
   else if (activeView === "library") content = <LibraryView library={data.library} pendingId={pendingLibraryId} onAdd={handleLibraryAdd} onSpeak={speak} />;
-  else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body={`围绕“${data.goal?.statement || "当前目标"}”，先完成到期复习，再加入少量新表达。`} actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
+  else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body={`从“${contextLabel}”中先完成到期复习，再加入少量能在真实场景中用到的新表达。`} actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
   else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body={dueCount ? "复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" : "今天没有到期项目。新内容只会在你明确加入后进入学习计划。"} actionLabel={dueCount ? "开始复习" : null} onAction={() => setSessionOpen(true)} />;
   else if (activeView === "map") content = <MasteryView candidates={data.candidates} />;
   else if (activeView === "context") content = <ContextView contextIndex={data.contextIndex} pending={contextPending} error={contextError} onScan={handleContextScan} onSelectTopic={handleTopicSelect} scanEnabled={data.runtime?.contextScanEnabled !== false} />;
@@ -537,7 +537,7 @@ export function App() {
       <NavRail activeView={activeView} onNavigate={navigate} dueCount={dueCount} />
       <main className="workspace-main">
         {data.runtime?.mode === "demo" || !data.connected ? <div className="demo-banner"><WarningCircle size={18} weight="fill" />当前显示演示数据，不代表已扫描你的 Codex 历史。</div> : null}
-        <GoalHeader goal={data.goal} sourceLabel={sourceLabel} /><div className="workspace-content">{content}</div>
+        <GoalHeader goal={data.goal} contextLabel={contextLabel} /><div className="workspace-content">{content}</div>
       </main>
       <AssistantRail data={{ ...scopedData, summary: activeTopic?.summary || data.summary, focusPoints: activeTopic?.recentTitles?.slice(0, 3) || data.focusPoints }} onStartLearning={() => setSessionOpen(true)} />
     </div>

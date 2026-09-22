@@ -6,18 +6,21 @@ Read this reference when establishing or updating a goal, background card, sourc
 
 | Context | Question it answers | Reliable inputs |
 |---|---|---|
-| Need | What is worth learning now? | Explicit goal, near-term task, selected source |
+| Need | What is worth learning now? | Recurring real contexts, near-term task, selected source, optional explicit goal |
 | Familiarity | What can make it memorable? | Confirmed experiences, interests, known vocabulary |
 | Ability | What is actually weak? | Retrieval attempts, comprehension checks, review history |
 
 The first two can come from authorized conversations or documents. The third must primarily come from learner behavior. English written by an assistant is not evidence that the learner can produce it.
 
+The learner does not need a narrow goal. A recurring real context can establish relevance without being promoted into a personal objective.
+
 ## Build the background card
 
-Keep one active topic goal in the learning surface, while preserving multiple topic workspaces discovered from the learner's tasks. Include:
+Keep one stable learning direction in the learning surface, while preserving multiple context workspaces discovered from the learner's tasks. The default direction is helping the learner express what they already do in daily work and life. Switching context workspaces must not rewrite that direction. Include:
 
-- Goal stated as a real outcome, such as “explain my product without translating sentence by sentence.”
-- Success definition observable in a new situation.
+- Stable direction, and a narrower goal only when the learner explicitly states or confirms it.
+- Success definition observable in a new situation when an explicit goal exists.
+- Active context focus, such as product building or embodied AI; label it as context, not goal.
 - Required modes: recognition, production, or listening.
 - Familiar contexts that are safe and useful as memory anchors.
 - Preferences such as time available and explanation language.
@@ -31,7 +34,7 @@ Do not persist an inferred sensitive fact. Present it for confirmation or omit i
 
 Rank with judgment rather than fake precision. A strong candidate:
 
-1. Directly helps the active task.
+1. Directly helps the active context or task.
 2. Is reusable beyond one sentence.
 3. Matches the required mode and expected level.
 4. Is not already marked known or not now.
@@ -58,8 +61,8 @@ Create a temporary JSON file shaped like this, then validate with `apply-pack --
 {
   "profile": {
     "goal": {
-      "statement": "Explain my product's core function in English",
-      "success_definition": "Give a two-minute explanation without translating line by line",
+      "statement": "Express what I do in everyday work and life in English",
+      "success_definition": "Recall useful English directly in familiar real situations instead of translating line by line",
       "focus_modes": ["production", "recognition"],
       "confirmed": true
     },

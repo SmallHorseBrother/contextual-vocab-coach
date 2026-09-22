@@ -24,13 +24,15 @@ import vocab_store as store
 ROLLOUT_ID = re.compile(r"([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})", re.IGNORECASE)
 SEGMENT_BYTES = 384 * 1024
 
+LEARNING_DIRECTION = "把我日常正在做的事，用英语表达出来"
+LEARNING_SUCCESS = "遇到熟悉的工作和生活场景时，能直接调用合适的英文表达，而不是逐句翻译"
+
 
 TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "embodied-ai",
         "label": "具身智能与机器人",
-        "goal": "用英语讲清具身智能比赛与机器人方案",
-        "success": "能介绍比赛任务、感知与抓取方案、实验结果和下一步改进",
+        "focus": "比赛任务、机器人感知、抓取方案、实验结果与下一步改进",
         "keywords": (
             "具身", "机器人", "机械臂", "抓取", "夹爪", "灵巧", "操作", "强化学习",
             "仿真", "小球", "开箱", "有盖", "无盖", "x2", "grasp", "robot", "manipulation",
@@ -50,8 +52,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "food-health",
         "label": "FoodLink 与健康饮食产品",
-        "goal": "用英语介绍健康饮食产品与核心能力",
-        "success": "能清晰说明用户问题、识别能力、健康建议和产品价值",
+        "focus": "饮食产品、识别能力、健康建议与用户价值",
         "keywords": (
             "foodlink", "食探", "食物", "饮食", "营养", "过敏原", "葡萄", "热量", "卡路里",
             "健康", "膳食", "餐", "运动消耗", "food", "nutrition", "diet", "allergen", "calorie", "portion",
@@ -70,8 +71,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "ai-research",
         "label": "AI 研究、论文与模型评测",
-        "goal": "用英语讨论 AI 论文、模型和实验结论",
-        "success": "能概括研究问题、实验设置、指标、局限和结论",
+        "focus": "研究问题、模型评测、实验设置、局限与结论",
         "keywords": (
             "论文", "acl", "模型", "评测", "seed", "训练", "推理", "数据集", "微调", "大模型",
             "paper", "model", "benchmark", "evaluation", "inference", "dataset", "fine-tun", "llm",
@@ -89,8 +89,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "product-building",
         "label": "产品构建与创业",
-        "goal": "用英语讨论产品需求、路线图与用户价值",
-        "success": "能说明用户问题、功能优先级、验证方法和商业价值",
+        "focus": "用户问题、功能优先级、验证方法与产品价值",
         "keywords": (
             "产品", "需求", "用户", "路线图", "创业", "商业", "市场", "功能", "体验", "原型",
             "product", "roadmap", "user", "market", "startup", "feature", "prototype", "需求分析",
@@ -108,8 +107,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "content-creation",
         "label": "内容创作与传播",
-        "goal": "用英语策划、制作并传播内容",
-        "success": "能讨论选题、脚本、视觉素材、剪辑和发布策略",
+        "focus": "选题、脚本、视觉素材、剪辑与发布",
         "keywords": (
             "视频", "小红书", "自媒体", "素材", "脚本", "剪映", "字幕", "推广", "ppt", "演示文稿",
             "content", "video", "caption", "subtitle", "presentation", "social media", "剪辑",
@@ -126,8 +124,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "engineering-ops",
         "label": "工程开发与基础设施",
-        "goal": "用英语排查工程问题并解释技术方案",
-        "success": "能描述现象、定位原因、比较方案并汇报修复结果",
+        "focus": "问题现象、根因、技术方案与修复结果",
         "keywords": (
             "ssh", "服务器", "部署", "脚本", "github", "接口", "api", "排查", "迁移", "修复", "调试",
             "代码", "仓库", "server", "deploy", "debug", "repository", "pipeline", "连接",
@@ -145,8 +142,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "english-learning",
         "label": "英语学习系统",
-        "goal": "用英语讨论语言学习方法与记忆设计",
-        "success": "能说明上下文学习、主动回忆和间隔复习的设计逻辑",
+        "focus": "上下文学习、主动回忆与间隔复习",
         "keywords": (
             "英语", "单词", "词汇", "背单词", "学习 skill", "学习系统", "上下文驱动", "vocab",
             "上下文扫描", "english", "language learning", "flashcard", "spaced repetition", "contextual",
@@ -163,8 +159,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
     {
         "id": "general",
         "label": "其他工作与生活",
-        "goal": "积累跨任务可复用的英语表达",
-        "success": "能在新的工作与生活任务中自然使用通用表达",
+        "focus": "跨任务可复用的日常工作与生活表达",
         "keywords": (),
         "vocabulary": (
             ("clarify the goal", "澄清目标", "phrase", "在新任务开始时对齐预期"),
@@ -350,8 +345,7 @@ def build_context_index(codex_home: Path, *, deep_limit: int = 120) -> dict[str,
         topic_rows.append({
             "id": topic["id"],
             "label": topic["label"],
-            "goal": topic["goal"],
-            "successDefinition": topic["success"],
+            "focus": topic["focus"],
             "summary": f"从 {len(matches)} 个 Codex 任务中识别出的主题，最近包括：{'、'.join(row['title'] for row in matches[:3])}。",
             "taskCount": len(matches),
             "deepAnalyzedCount": sum(1 for row in matches if row["deepAnalyzed"]),
@@ -389,12 +383,35 @@ def _source_id(topic_id: str) -> str:
     return f"codex-topic-{topic_id}"
 
 
+def ensure_learning_direction(state: dict[str, Any], now: str) -> str:
+    """Keep one learner-confirmed direction independent from topic filters."""
+    goal_id = store.stable_id("goal", LEARNING_DIRECTION)
+    existing = state["goals"].get(goal_id, {})
+    state["goals"][goal_id] = {
+        "id": goal_id,
+        "statement": LEARNING_DIRECTION,
+        "success_definition": LEARNING_SUCCESS,
+        "focus_modes": ["production", "recognition"],
+        "confirmed": True,
+        "status": "active",
+        "created_at": existing.get("created_at", now),
+        "updated_at": now,
+    }
+    for other_id, goal in state["goals"].items():
+        if other_id != goal_id:
+            goal["status"] = "inactive"
+    state["profile"]["active_goal_id"] = goal_id
+    return goal_id
+
+
 def apply_context_index(state: dict[str, Any], context_index: dict[str, Any], now: str) -> None:
     previous = state.get("context_index", {})
     previous_active = previous.get("activeTopicId")
     valid_topic_ids = {topic["id"] for topic in context_index["topics"]}
     if previous_active in valid_topic_ids:
         context_index["activeTopicId"] = previous_active
+
+    learning_goal_id = ensure_learning_direction(state, now)
 
     for topic_row in context_index["topics"]:
         topic = TOPIC_BY_ID[topic_row["id"]]
@@ -416,19 +433,6 @@ def apply_context_index(state: dict[str, Any], context_index: dict[str, Any], no
             "added_at": existing_source.get("added_at", now),
             "updated_at": now,
         }
-        goal_id = store.stable_id("goal", topic["goal"])
-        existing_goal = state["goals"].get(goal_id, {})
-        state["goals"][goal_id] = {
-            "id": goal_id,
-            "statement": topic["goal"],
-            "success_definition": topic["success"],
-            "focus_modes": ["production", "recognition"],
-            "confirmed": False,
-            "status": "inactive",
-            "topic_id": topic["id"],
-            "created_at": existing_goal.get("created_at", now),
-            "updated_at": now,
-        }
         for position, (term, meaning, kind, rationale) in enumerate(topic["vocabulary"]):
             item_id = store.stable_id("item", term, meaning)
             existing = state["candidates"].get(item_id)
@@ -440,7 +444,7 @@ def apply_context_index(state: dict[str, Any], context_index: dict[str, Any], no
                 "rationale": f"{rationale}；来自“{topic['label']}”任务簇",
                 "target_modes": ["production", "recognition"],
                 "source_ids": [source_id],
-                "goal_ids": [goal_id],
+                "goal_ids": [learning_goal_id],
                 "priority": 5 if position < 3 else 4,
                 "evidence_summary": f"local Codex topic cluster with {topic_row['taskCount']} tasks",
                 "suggested_anchor": f"结合你最近的“{topic_row['recentTitles'][0]}”任务自然使用这个表达。",
@@ -451,14 +455,9 @@ def apply_context_index(state: dict[str, Any], context_index: dict[str, Any], no
                 "updated_at": now,
             }
             state["candidates"][item_id] = candidate
+            if item_id in state["learning_items"]:
+                state["learning_items"][item_id]["goal_ids"] = [learning_goal_id]
 
-    active_topic_id = context_index.get("activeTopicId")
-    active_topic = TOPIC_BY_ID.get(active_topic_id or "")
-    if active_topic:
-        active_goal_id = store.stable_id("goal", active_topic["goal"])
-        for goal in state["goals"].values():
-            goal["status"] = "active" if goal["id"] == active_goal_id else "inactive"
-        state["profile"]["active_goal_id"] = active_goal_id
     state["context_index"] = context_index
     state["updated_at"] = now
     store.add_event(
@@ -494,13 +493,9 @@ def select_topic(state_path: Path, topic_id: str) -> None:
     valid = {topic["id"] for topic in context_index.get("topics", [])}
     if topic_id not in valid:
         raise store.StoreError(f"Unknown context topic: {topic_id}")
-    topic = TOPIC_BY_ID[topic_id]
-    goal_id = store.stable_id("goal", topic["goal"])
     context_index["activeTopicId"] = topic_id
-    for goal in state["goals"].values():
-        goal["status"] = "active" if goal["id"] == goal_id else "inactive"
-    state["profile"]["active_goal_id"] = goal_id
     now = store.iso_now()
+    ensure_learning_direction(state, now)
     state["updated_at"] = now
     store.add_event(state, now, "context_topic_selected", topic_id=topic_id)
     store.save_state(state_path, state)

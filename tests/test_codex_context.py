@@ -67,6 +67,9 @@ class CodexContextTests(unittest.TestCase):
         self.assertTrue({"embodied-ai", "food-health", "english-learning", "general"} <= topics)
 
         state = context.store.load_state(self.store_path)
+        active_goal = state["goals"][state["profile"]["active_goal_id"]]
+        self.assertEqual(active_goal["statement"], context.LEARNING_DIRECTION)
+        self.assertTrue(active_goal["confirmed"])
         candidate_topics = {candidate.get("topic_id") for candidate in state["candidates"].values()}
         self.assertTrue({"embodied-ai", "food-health", "english-learning"} <= candidate_topics)
         serialized = json.dumps(state, ensure_ascii=False)
@@ -79,6 +82,7 @@ class CodexContextTests(unittest.TestCase):
     def test_rescan_preserves_decisions_and_topic_selection(self) -> None:
         context.scan_into_store(self.store_path, codex_home=self.codex_home, deep_limit=2)
         state = context.store.load_state(self.store_path)
+        goal_id_before_topic_switch = state["profile"]["active_goal_id"]
         robot_candidate = next(
             candidate for candidate in state["candidates"].values() if candidate.get("topic_id") == "embodied-ai"
         )
@@ -96,7 +100,8 @@ class CodexContextTests(unittest.TestCase):
         selected = context.store.load_state(self.store_path)
         self.assertEqual(selected["context_index"]["activeTopicId"], "embodied-ai")
         active_goal = selected["goals"][selected["profile"]["active_goal_id"]]
-        self.assertEqual(active_goal["topic_id"], "embodied-ai")
+        self.assertEqual(selected["profile"]["active_goal_id"], goal_id_before_topic_switch)
+        self.assertEqual(active_goal["statement"], context.LEARNING_DIRECTION)
 
 
 if __name__ == "__main__":
