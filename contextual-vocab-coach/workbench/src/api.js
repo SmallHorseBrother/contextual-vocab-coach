@@ -48,3 +48,24 @@ export function selectContextTopic(topicId) {
     body: JSON.stringify({ topic_id: topicId }),
   });
 }
+
+export function updateGraphRelation(edgeId, action, type = null) {
+  return request("/api/graph/relation", {
+    method: "POST",
+    body: JSON.stringify({ edge_id: edgeId, action, type }),
+  });
+}
+
+export function markGraphSeen(nodeIds = null) {
+  return request("/api/graph/seen", {
+    method: "POST",
+    body: JSON.stringify({ node_ids: nodeIds }),
+  });
+}
+
+export function addGraphExpression(term, meaning, topicId = "") {
+  return request("/api/graph/add", {
+    method: "POST",
+    body: JSON.stringify({ term, meaning, topic_id: topicId }),
+  });
+}

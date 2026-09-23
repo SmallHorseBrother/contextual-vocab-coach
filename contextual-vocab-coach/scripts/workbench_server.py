@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import tempfile
 import threading
 from http import HTTPStatus
@@ -20,6 +21,7 @@ from urllib.parse import urlparse
 
 import vocab_store as store
 import codex_context
+import knowledge_graph
 
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
@@ -40,7 +42,7 @@ def personal_vocabulary_payload(
     library: dict[str, Any],
 ) -> dict[str, Any]:
     """Merge the broad starter reservoir and scanned contextual expressions."""
-    topic_labels = {row["id"]: row["label"] for row in context_index.get("topics", [])}
+    topic_labels = {topic["id"]: topic["label"] for topic in codex_context.TOPICS}
     matches = {row["entryId"]: row for row in context_index.get("lexiconMatches", [])}
     source_labels = {row["id"]: row["label"] for row in state["sources"].values()}
     entries: dict[tuple[str, str], dict[str, Any]] = {}
@@ -60,6 +62,7 @@ def personal_vocabulary_payload(
             "scenarioIds": list(row.get("scenario_ids", [])),
             "scenarioLabels": list(row.get("scenario_labels", [])),
             "contextIds": context_ids,
+            "primaryContextId": context_ids[0] if context_ids else None,
             "contextLabels": [topic_labels[item] for item in context_ids if item in topic_labels],
             "taskCount": int(match.get("taskCount", 0)),
             "recentTitles": list(match.get("recentTitles", [])),
@@ -92,6 +95,7 @@ def personal_vocabulary_payload(
             "scenarioIds": existing.get("scenarioIds", []) if existing else [],
             "scenarioLabels": existing.get("scenarioLabels", []) if existing else [],
             "contextIds": list(dict.fromkeys([*(existing.get("contextIds", []) if existing else []), *context_ids])),
+            "primaryContextId": candidate.get("topic_id"),
             "taskCount": existing.get("taskCount", 0) if existing else 0,
             "recentTitles": existing.get("recentTitles", []) if existing else [],
             "lastSeenAt": existing.get("lastSeenAt", "") if existing else "",
@@ -234,6 +238,11 @@ def workbench_state(path: Path) -> dict[str, Any]:
 
     library = store.lexicon_payload(state, limit=2000)
     personal_vocabulary = personal_vocabulary_payload(state, context_index, library)
+    with STATE_LOCK:
+        graph_state = store.load_state(path)
+        if knowledge_graph.sync_graph(graph_state, personal_vocabulary["entries"], context_index, store.iso_now()):
+            store.save_state(path, graph_state)
+    graph_payload = knowledge_graph.payload(graph_state, personal_vocabulary["entries"])
 
     return {
         "connected": True,
@@ -248,6 +257,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
         "reviewQueue": review_queue,
         "library": library,
         "personalVocabulary": personal_vocabulary,
+        "knowledgeGraph": graph_payload,
         "candidates": candidate_rows,
         "sources": [
             {
@@ -334,6 +344,77 @@ def apply_context_topic(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
     return workbench_state(path)
 
 
+def apply_graph_relation(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    with STATE_LOCK:
+        state = store.load_state(path)
+        knowledge_graph.change_relation(
+            state,
+            str(payload.get("edge_id", "")),
+            str(payload.get("action", "")),
+            payload.get("type"),
+            store.iso_now(),
+        )
+        store.save_state(path, state)
+    return workbench_state(path)
+
+
+def apply_graph_seen(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    node_ids = payload.get("node_ids")
+    if node_ids is not None and (not isinstance(node_ids, list) or not all(isinstance(ident, str) for ident in node_ids)):
+        raise store.StoreError("node_ids 必须是字符串列表")
+    with STATE_LOCK:
+        state = store.load_state(path)
+        knowledge_graph.mark_seen(state, node_ids, store.iso_now())
+        store.save_state(path, state)
+    return workbench_state(path)
+
+
+def apply_graph_add(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    term = str(payload.get("term", "")).strip()
+    meaning = str(payload.get("meaning", "")).strip()
+    requested_topic = str(payload.get("topic_id", "")).strip()
+    if not (2 <= len(term) <= 80 and re.search(r"[A-Za-z]", term)):
+        raise store.StoreError("英文表达需要包含字母，长度为 2–80 个字符")
+    if not 1 <= len(meaning) <= 80:
+        raise store.StoreError("中文含义长度为 1–80 个字符")
+    with STATE_LOCK:
+        state = store.load_state(path)
+        valid_topics = set(codex_context.TOPIC_BY_ID)
+        if requested_topic and requested_topic not in valid_topics:
+            raise store.StoreError("未知的任务领域")
+        topic_id = requested_topic or codex_context.classify(f"{term} {meaning}")[0]
+        if topic_id not in valid_topics:
+            topic_id = "general" if "general" in valid_topics else None
+        item_id = store.stable_id("item", term, meaning)
+        if item_id not in state["candidates"]:
+            now = store.iso_now()
+            source_id = "learner-added-expressions"
+            state["sources"].setdefault(source_id, {
+                "id": source_id, "label": "我添加的表达", "kind": "learner_entry",
+                "locator": "local workbench", "authorized": True, "retain_raw": False,
+                "summary": "由学习者在本机工作台主动添加的英语表达。", "status": "active",
+                "added_at": now, "updated_at": now,
+            })
+            goal_id = state["profile"].get("active_goal_id")
+            state["candidates"][item_id] = {
+                "id": item_id, "term": term, "meaning": meaning,
+                "kind": "word" if len(term.split()) == 1 else "phrase",
+                "rationale": "你在工作台主动添加了这个表达，可在图谱中查看系统找到的联系。",
+                "target_modes": ["production", "recognition"], "source_ids": [source_id],
+                "goal_ids": [goal_id] if goal_id else [], "priority": 4,
+                "evidence_summary": "learner-added expression", "suggested_anchor": "在你熟悉的任务中自然使用这个表达。",
+                "contrast": "", "status": "proposed", "topic_id": topic_id,
+                "created_at": now, "updated_at": now,
+            }
+            state["updated_at"] = now
+            store.add_event(state, now, "graph_expression_added", item_id=item_id)
+            errors = store.state_errors(state)
+            if errors:
+                raise store.StoreError("New expression produced an invalid state: " + "; ".join(errors))
+            store.save_state(path, state)
+    return workbench_state(path)
+
+
 def make_handler(
     state_path: Path,
     client_dir: Path = CLIENT_DIR,
@@ -376,6 +457,9 @@ def make_handler(
                 "/api/source-status": apply_source_status,
                 "/api/library-decision": apply_library_decision,
                 "/api/context-topic": apply_context_topic,
+                "/api/graph/relation": apply_graph_relation,
+                "/api/graph/seen": apply_graph_seen,
+                "/api/graph/add": apply_graph_add,
             }
             request_path = urlparse(self.path).path
             if request_path == "/api/context-scan":

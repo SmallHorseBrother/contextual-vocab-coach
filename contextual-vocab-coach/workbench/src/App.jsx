@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpenText,
   Books,
@@ -22,7 +22,8 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react";
 import { MOCK_STATE } from "./mockData.js";
-import { addLibraryEntry, decideCandidate, fetchWorkbenchState, recordReview, scanCodexContext, setSourceStatus } from "./api.js";
+import { addGraphExpression, addLibraryEntry, decideCandidate, fetchWorkbenchState, markGraphSeen, recordReview, scanCodexContext, setSourceStatus, updateGraphRelation } from "./api.js";
+import { GraphInspector, GraphMap } from "./GraphMap.jsx";
 import { FEEDBACK_CONFIRMATIONS, FEEDBACK_ORDER, getSessionPrompt, nextSessionStep } from "./sessionFlow.js";
 
 const NAV_ITEMS = [
@@ -459,6 +460,15 @@ export function App() {
   const [contextPending, setContextPending] = useState(false);
   const [contextError, setContextError] = useState("");
   const [contextNotice, setContextNotice] = useState("");
+  const [graphSelection, setGraphSelection] = useState({ nodeId: null, edgeId: null });
+  const [graphPhase, setGraphPhase] = useState("after");
+  const [pendingGraphEdgeId, setPendingGraphEdgeId] = useState(null);
+  const [pendingGraphAdd, setPendingGraphAdd] = useState(false);
+  const graph = data.knowledgeGraph;
+  const defaultGraphNodeId = graph?.nodes?.find((node) => node.term === "deployment pipeline")?.id || graph?.nodes?.[0]?.id || null;
+  const selectedGraphNodeId = graphSelection.nodeId && graph?.nodes?.some((node) => node.id === graphSelection.nodeId) ? graphSelection.nodeId : defaultGraphNodeId;
+  const selectGraphNode = useCallback((nodeId) => setGraphSelection({ nodeId, edgeId: null }), []);
+  const selectGraphEdge = useCallback((edgeId) => setGraphSelection((current) => ({ ...current, edgeId })), []);
   const scopedCandidates = data.candidates;
   const scannedTaskCount = data.contextIndex?.coverage?.deepAnalyzedTaskCount || 0;
   const dueCount = useMemo(() => data.dueCount ?? data.candidates.filter((item) => item.status === "learning").length, [data]);
@@ -494,6 +504,7 @@ export function App() {
     const remote = await scanCodexContext();
     if (remote) {
       updateLocal({ ...remote, connected: true });
+      setGraphPhase("after");
       const nextCount = remote.personalVocabulary?.entryCount || 0;
       const added = Math.max(0, nextCount - previousCount);
       const coverage = remote.contextIndex?.coverage || {};
@@ -501,6 +512,35 @@ export function App() {
     }
     else setContextError("扫描没有完成。请确认当前运行的是真实工作台，并稍后重试。");
     setContextPending(false);
+  };
+
+  const handleGraphRelation = async (edgeId, action, type = null) => {
+    setPendingGraphEdgeId(edgeId);
+    const remote = await updateGraphRelation(edgeId, action, type);
+    if (remote) updateLocal({ ...remote, connected: true });
+    else setContextError("关系没有保存成功，请稍后重试。");
+    setPendingGraphEdgeId(null);
+  };
+
+  const handleGraphSeen = async (nodeIds) => {
+    const remote = await markGraphSeen(nodeIds);
+    if (remote) updateLocal({ ...remote, connected: true });
+    else setContextError("新词状态没有保存成功，请稍后重试。");
+  };
+
+  const handleGraphAdd = async ({ term, meaning, topicId }) => {
+    setPendingGraphAdd(true);
+    setContextError("");
+    const remote = await addGraphExpression(term, meaning, topicId);
+    if (remote) {
+      updateLocal({ ...remote, connected: true });
+      setGraphPhase("after");
+      const inserted = remote.knowledgeGraph?.nodes?.find((node) => node.term.toLocaleLowerCase() === term.trim().toLocaleLowerCase() && node.meaning === meaning.trim());
+      if (inserted) selectGraphNode(inserted.id);
+    }
+    else setContextError("没有添加成功。请检查英文表达和中文含义后重试。");
+    setPendingGraphAdd(false);
+    return Boolean(remote);
   };
 
   const speak = (term) => {
@@ -521,18 +561,20 @@ export function App() {
   else if (activeView === "vocabulary") content = <PersonalVocabularyView vocabulary={data.personalVocabulary} pendingId={pendingLibraryId} pendingScan={contextPending} scanNotice={contextNotice} scanError={contextError} onAdd={handleVocabularyAdd} onSpeak={speak} onScan={handleContextScan} onShowScanDetails={() => setActiveView("context")} />;
   else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body="先完成到期复习，再从完整个人词表中加入少量真正想学的表达。" actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
   else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body={dueCount ? "复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" : "今天没有到期项目。新内容只会在你明确加入后进入学习计划。"} actionLabel={dueCount ? "开始复习" : null} onAction={() => setSessionOpen(true)} />;
-  else if (activeView === "map") content = <MasteryView candidates={data.candidates} topics={data.contextIndex?.topics} coverage={data.contextIndex?.coverage} vocabularyCount={data.personalVocabulary?.uniqueTermCount || 0} />;
+  else if (activeView === "map") content = <GraphMap graph={graph} topics={data.contextIndex?.topics || []} onScan={handleContextScan} pendingScan={contextPending} onAdd={handleGraphAdd} pendingAdd={pendingGraphAdd} onSeen={handleGraphSeen} selectedNodeId={selectedGraphNodeId} selectedEdgeId={graphSelection.edgeId} onSelectNode={selectGraphNode} onSelectEdge={selectGraphEdge} scanError={contextError} phase={graphPhase} onPhase={setGraphPhase} />;
   else if (activeView === "context") content = <ContextView contextIndex={data.contextIndex} pending={contextPending} error={contextError} onScan={handleContextScan} scanEnabled={data.runtime?.contextScanEnabled !== false} />;
   else content = <SourcesView sources={data.sources} onToggle={handleSourceToggle} />;
 
   return (
-    <div className={`workbench-shell ${loading ? "is-loading" : ""}`}>
+    <div className={`workbench-shell ${loading ? "is-loading" : ""} ${activeView === "map" && !sessionOpen ? "is-map" : ""}`}>
       <NavRail activeView={activeView} onNavigate={navigate} dueCount={dueCount} />
       <main className="workspace-main">
         {data.runtime?.mode === "demo" || !data.connected ? <div className="demo-banner"><WarningCircle size={18} weight="fill" />当前显示演示数据，不代表已扫描你的 Codex 历史。</div> : null}
         <GoalHeader goal={data.goal} subtitle={`已自动整理 ${data.personalVocabulary?.uniqueTermCount || 0} 个表达，覆盖 ${scannedTaskCount} 个 Codex 任务`} /><div className="workspace-content">{content}</div>
       </main>
-      <AssistantRail data={{ ...scopedData, summary: `完整词表已综合基础英语、领域表达和 ${scannedTaskCount} 个任务的扫描结果。`, focusPoints: ["上下文默认隐藏，不需要先选择主题", "更新词表时优先处理最新和变化的任务", "只有主动加入的表达才进入复习队列"] }} onStartLearning={() => setSessionOpen(true)} />
+      {activeView === "map" && !sessionOpen
+        ? <GraphInspector graph={graph} selectedNodeId={selectedGraphNodeId} selectedEdgeId={graphSelection.edgeId} onSelectEdge={selectGraphEdge} onRelation={handleGraphRelation} pendingEdgeId={pendingGraphEdgeId} onSeen={handleGraphSeen} phase={graphPhase} />
+        : <AssistantRail data={{ ...scopedData, summary: `完整词表已综合基础英语、领域表达和 ${scannedTaskCount} 个任务的扫描结果。`, focusPoints: ["上下文默认隐藏，不需要先选择主题", "更新词表时优先处理最新和变化的任务", "只有主动加入的表达才进入复习队列"] }} onStartLearning={() => setSessionOpen(true)} />}
     </div>
   );
 }

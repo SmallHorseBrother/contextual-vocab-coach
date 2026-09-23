@@ -14,6 +14,7 @@ Help the learner answer three questions: what English is worth learning now, how
 - Before reading or changing persistent state, read [references/store-cli.md](references/store-cli.md).
 - For basic everyday vocabulary, search the bundled starter lexicon before inventing a generic list. Treat it as a broad reservoir, not evidence that every entry is unknown or due.
 - When the learner asks for a visual interface, complete word list, or workbench, start the bundled local workbench after reading the store reference. Open its loopback URL in an available browser surface and keep the server running for the learner's session.
+- When the learner asks about the knowledge graph, new-word attachment, or relation review, use the workbench's graph view. Explain that freshness and mastery are separate: seeing a new node removes its new badge but never marks it known or schedules review. Explain that relation scores are local heuristic clues, not calibrated probabilities or model-derived synonyms.
 - For status, show the task-to-vocabulary mastery view from the store. Do not invent a neurological or cognitive diagnosis.
 - For pause, deletion, or source inspection, follow the privacy operations in the store reference.
 
@@ -29,6 +30,7 @@ Help the learner answer three questions: what English is worth learning now, how
 8. The personal inventory may present foundational and context-specific expressions together, but preserve their provenance. Building a large inventory is allowed; scheduling it all is not. An entry enters the learning loop only after an explicit learner decision.
 9. On the initial build, cover every available Codex task with full metadata indexing and stream every user-authored message locally. Cache only derived, non-raw results. On update, process newest changed or added tasks first and reuse unchanged results. Do not treat assistant or tool output as learner evidence.
 10. Keep task domains as optional many-to-many classifications. They must not be the default navigation, restrict the complete inventory, rewrite the stable learning direction, or erase decisions and review history.
+11. In the knowledge graph, infer only relationships supported by shared meanings, expression composition, task co-occurrence, or labeled topical/scenario clues. Preserve human accept, ignore, and relation-type decisions across updates. Do not force an edge for a node with insufficient evidence. When the learner adds an expression manually, keep it out of the review queue until they explicitly choose to study it.
 
 ## Default workflow
 

@@ -129,6 +129,7 @@ TOPICS: tuple[dict[str, Any], ...] = (
         "keywords": (
             "ssh", "服务器", "部署", "脚本", "github", "接口", "api", "排查", "迁移", "修复", "调试",
             "代码", "仓库", "server", "deploy", "debug", "repository", "pipeline", "连接",
+            "持续交付", "continuous delivery", "持续集成", "continuous integration", "ci/cd",
         ),
         "vocabulary": (
             ("root cause", "根本原因", "collocation", "概括问题真正发生在哪里"),
