@@ -29,7 +29,7 @@ const NAV_ITEMS = [
   { id: "today", label: "今日学习", icon: House },
   { id: "vocabulary", label: "我的词表", icon: Books },
   { id: "review", label: "复习", icon: ClockCounterClockwise },
-  { id: "map", label: "学习记录", icon: ShareNetwork },
+  { id: "map", label: "词汇地图", icon: ShareNetwork },
   { id: "sources", label: "来源与扫描", icon: Database },
 ];
 
@@ -296,16 +296,68 @@ function LearningSession({ sessionItems, onExit, onReview, onSpeak, returnLabel 
   );
 }
 
-function MasteryView({ candidates }) {
-  const groups = [{ status: "learning", label: "正在学习" }, { status: "test", label: "等待短测" }, { status: "known", label: "已经会了" }, { status: "proposed", label: "待选择" }, { status: "not_now", label: "近期不用" }];
+const MAP_STATUS = [
+  { status: "learning", label: "正在学习" },
+  { status: "test", label: "等待短测" },
+  { status: "known", label: "已经会了" },
+  { status: "proposed", label: "待选择" },
+  { status: "not_now", label: "近期不用" },
+];
+
+function MasteryView({ candidates, topics = [], coverage = {}, vocabularyCount = 0 }) {
+  const topicById = new Map(topics.map((topic) => [topic.id, topic]));
+  const topicIds = [...new Set(candidates.map((item) => item.topicId || "uncategorized"))];
+  const mapTopics = topicIds.map((topicId) => {
+    const topic = topicById.get(topicId);
+    return {
+      id: topicId,
+      label: topic?.label || candidates.find((item) => (item.topicId || "uncategorized") === topicId)?.sourceLabel || "其他表达",
+      focus: topic?.focus || "跨任务可复用的英语表达",
+      taskCount: topic?.taskCount || 0,
+      items: candidates.filter((item) => (item.topicId || "uncategorized") === topicId),
+    };
+  }).sort((left, right) => right.items.length - left.items.length || right.taskCount - left.taskCount);
+  const discoveredTaskCount = coverage.deepAnalyzedTaskCount || coverage.discoveredTaskCount || 0;
+
   return (
-    <section className="list-view">
-      <div className="list-view-heading"><ShareNetwork size={30} weight="duotone" /><div><h2>任务—词汇掌握地图</h2><p>这是学习记录，不是对大脑的扫描。</p></div></div>
-      {groups.map((group) => {
-        const items = candidates.filter((item) => item.status === group.status);
-        if (!items.length) return null;
-        return <div className="mastery-group" key={group.status}><h3>{group.label}</h3>{items.map((item) => <div className="mastery-row" key={item.id}><span className={`status-dot dot-${group.status}`} /><strong>{item.term}</strong><span>{item.meaning}</span><small>{item.modeLabel}</small></div>)}</div>;
-      })}
+    <section className="mastery-view" aria-labelledby="mastery-heading">
+      <div className="list-view-heading"><ShareNetwork size={30} weight="duotone" /><div><span className="eyebrow">从真实任务到可用英语</span><h2 id="mastery-heading">我的词汇关系地图</h2><p>{vocabularyCount} 个个人表达保存在完整词表中；这里把与真实任务直接相关的 {candidates.length} 个重点表达按主题和学习状态连起来。</p></div></div>
+      <div className="mastery-legend" aria-label="学习状态图例">
+        {MAP_STATUS.map((item) => {
+          const count = candidates.filter((candidate) => candidate.status === item.status).length;
+          return <span className={`legend-${item.status}`} key={item.status}><i aria-hidden="true" />{item.label}<b>{count}</b></span>;
+        })}
+      </div>
+      <div className="mastery-map">
+        <div className="mastery-root-node">
+          <ShareNetwork size={28} weight="duotone" aria-hidden="true" />
+          <div><span>真实使用场景</span><strong>{discoveredTaskCount} 个 Codex 任务</strong><small>用户消息在本机扫描，原文不写入学习档案</small></div>
+          <b>{mapTopics.length} 个主题路径</b>
+        </div>
+        <div className="mastery-topic-grid">
+          {mapTopics.map((topic) => (
+            <article className="mastery-topic-branch" key={topic.id}>
+              <header className="mastery-topic-node">
+                <div><span>主题节点</span><h3>{topic.label}</h3><p>{topic.focus}</p></div>
+                <b>{topic.items.length} 个表达</b>
+              </header>
+              <div className="mastery-word-branches">
+                {topic.items.map((item) => {
+                  const status = MAP_STATUS.find((entry) => entry.status === item.status);
+                  return (
+                    <div className={`mastery-word-node status-${item.status}`} key={item.id}>
+                      <i aria-hidden="true" />
+                      <div><strong>{item.term}</strong><small>{item.meaning}</small></div>
+                      <span>{status?.label || item.status}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <footer>{topic.taskCount ? `${topic.taskCount} 个任务提供了这个主题的使用背景` : "来自已整理的学习来源"}</footer>
+            </article>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
@@ -462,14 +514,14 @@ export function App() {
   const sessionItems = activeView === "review"
     ? (data.reviewQueue || [])
     : (selectedItems.length ? selectedItems : scopedCandidates.slice(0, 3));
-  const returnLabel = { today: "今日学习", vocabulary: "我的词表", review: "复习", map: "掌握地图", context: "扫描详情", sources: "来源管理" }[activeView] || "工作台";
+  const returnLabel = { today: "今日学习", vocabulary: "我的词表", review: "复习", map: "词汇地图", context: "扫描详情", sources: "来源管理" }[activeView] || "工作台";
   const scopedData = { ...data, candidates: scopedCandidates };
   let content;
   if (sessionOpen) content = <LearningSession sessionItems={sessionItems} onExit={() => setSessionOpen(false)} onReview={handleReview} onSpeak={speak} returnLabel={returnLabel} />;
   else if (activeView === "vocabulary") content = <PersonalVocabularyView vocabulary={data.personalVocabulary} pendingId={pendingLibraryId} pendingScan={contextPending} scanNotice={contextNotice} scanError={contextError} onAdd={handleVocabularyAdd} onSpeak={speak} onScan={handleContextScan} onShowScanDetails={() => setActiveView("context")} />;
   else if (activeView === "today") content = <EmptyPanel icon={Target} title="今天最值得学的英语" body="先完成到期复习，再从完整个人词表中加入少量真正想学的表达。" actionLabel="开始今天的学习" onAction={() => setSessionOpen(true)} />;
   else if (activeView === "review") content = <EmptyPanel icon={ListChecks} title={`${dueCount} 项等待复习`} body={dueCount ? "复习会更换措辞或使用场景，检查你是否真正能够迁移使用。" : "今天没有到期项目。新内容只会在你明确加入后进入学习计划。"} actionLabel={dueCount ? "开始复习" : null} onAction={() => setSessionOpen(true)} />;
-  else if (activeView === "map") content = <MasteryView candidates={data.candidates} />;
+  else if (activeView === "map") content = <MasteryView candidates={data.candidates} topics={data.contextIndex?.topics} coverage={data.contextIndex?.coverage} vocabularyCount={data.personalVocabulary?.uniqueTermCount || 0} />;
   else if (activeView === "context") content = <ContextView contextIndex={data.contextIndex} pending={contextPending} error={contextError} onScan={handleContextScan} scanEnabled={data.runtime?.contextScanEnabled !== false} />;
   else content = <SourcesView sources={data.sources} onToggle={handleSourceToggle} />;
 
