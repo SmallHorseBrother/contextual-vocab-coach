@@ -1,6 +1,6 @@
 ---
 name: contextual-vocab-coach
-description: Build and update a broad personal English vocabulary inventory from local Codex history, everyday language, user-selected sources, and optional goals, then run a smaller retrieval and review loop from that inventory. Use when a learner wants a full generated word list, incremental rescanning, source traceability, contextual filtering, active practice, or review. Not for generic exam drilling disconnected from real use.
+description: Build and update a broad personal English vocabulary inventory from user-supplied writing or speech, optional local Codex history, and everyday language, then run a smaller retrieval and review loop. Use when a learner wants a controllable 500/1000/2500-word recommendation list, no-Codex onboarding, incremental context updates, source traceability, a knowledge graph, active practice, or review.
 ---
 
 # Contextual Vocab Coach
@@ -12,7 +12,7 @@ Help the learner answer three questions: what English is worth learning now, how
 - For an initial vocabulary build, incremental Codex scan, optional goal, selected conversation, pasted text, or authorized file, read [references/context-selection.md](references/context-selection.md) and [references/privacy.md](references/privacy.md).
 - For learning or review, read [references/session-design.md](references/session-design.md).
 - Before reading or changing persistent state, read [references/store-cli.md](references/store-cli.md).
-- For basic everyday vocabulary, search the bundled starter lexicon before inventing a generic list. Treat it as a broad reservoir, not evidence that every entry is unknown or due.
+- For basic everyday vocabulary, search the bundled starter and expanded lexicons before inventing a generic list. Treat them as a broad reservoir, not evidence that every entry is unknown or due. The expanded ECDICT-derived senses and difficulty hints need context-sensitive checking.
 - When the learner asks for a visual interface, complete word list, or workbench, start the bundled local workbench after reading the store reference. Open its loopback URL in an available browser surface and keep the server running for the learner's session.
 - When the learner asks about the knowledge graph, new-word attachment, or relation review, use the workbench's graph view. Explain that freshness and mastery are separate: seeing a new node removes its new badge but never marks it known or schedules review. Explain that relation scores are local heuristic clues, not calibrated probabilities or model-derived synonyms.
 - For status, show the task-to-vocabulary mastery view from the store. Do not invent a neurological or cognitive diagnosis.
@@ -21,6 +21,7 @@ Help the learner answer three questions: what English is worth learning now, how
 ## Non-negotiable distinctions
 
 1. Build one broad personal vocabulary inventory by default. Context is hidden organizational metadata for ranking, filtering, and traceability; do not require the learner to choose a context before viewing or learning words.
+   A learner without Codex can start immediately: run the workbench with `--no-context-scan`, import a 20–12000-character passage through "我的上下文", and append more later. The user may choose a 500, 1000, or 2500-item recommendation view without changing the study queue.
 2. Do not require the learner to invent a narrow goal. Default to helping them express the work and life contexts they actually encounter. Treat current tasks as relevance contexts, and create a narrower goal only when the learner explicitly states one.
 3. Preserve words, phrases, collocations, and connective language that help complete the task. Do not over-select specialist nouns.
 4. Personal context helps encode a memory. A later test must change the wording or situation so recall is not tied to one story.
@@ -35,9 +36,9 @@ Help the learner answer three questions: what English is worth learning now, how
 ## Default workflow
 
 1. Inspect existing state with `status`. If none exists, initialize it.
-2. When running inside Codex Desktop or the local workbench, perform an initial local-only scan of every available active and archived task unless the learner narrows or pauses it. Index all titles and timestamps, stream every user-authored message from every rollout, cache only derived classifications and vocabulary links, and show exact coverage and bytes indexed.
-3. Materialize one static personal vocabulary snapshot after the scan. Merge broad foundational English, directly observed known expressions, and context-specific words and phrases. Preserve source and classification metadata without showing it by default.
-4. On an explicit update, scan newest tasks first, reread only new or changed rollouts, expand the snapshot, and preserve `known`, `not_now`, accepted items, and review history.
+2. When Codex history is available and scanning is enabled, perform an initial local-only scan of every available active and archived task unless the learner narrows or pauses it. Index all titles and timestamps, stream every user-authored message from every rollout, cache only derived classifications and vocabulary links, and show exact coverage and bytes indexed. Without Codex, open the context composer instead and never represent the bundled dictionary as scanned personal history.
+3. Materialize one static personal vocabulary snapshot after source intake. Merge broad foundational English, directly observed expressions, and context-specific words and phrases. Preserve source and classification metadata without showing it by default. Offer 500/1000/2500 as ranked views over the same larger offline pool.
+4. On an explicit Codex update, scan newest tasks first and reread only new or changed rollouts. On a manual update, append the new text to the named personal source and rerank the snapshot. In either case preserve `known`, `not_now`, accepted items, and review history; never persist the raw manual passage.
 5. Do not cap the inventory at 5–8 items per topic. Generate and retain as many defensible expressions as the authorized sources support, deduplicate senses, and rank them. Keep only the active learning and review queue small.
 6. Let the learner mark each candidate `known`, `not_now`, `test`, or `learning`. If the learner asked to start immediately, test uncertain items instead of silently asserting ignorance.
 7. Teach 3–5 accepted weak items using a familiar anchor, clear meaning, contrast when useful, and active retrieval. Do not reveal the answer during the retrieval attempt.
@@ -45,7 +46,7 @@ Help the learner answer three questions: what English is worth learning now, how
 9. On later sessions, serve due items first, change the test context, and then add at most a small number of new candidates.
 10. End with a compact summary: what was learned, what is due next, and one real task in which to use it.
 
-When a visual surface is useful, default to the complete personal vocabulary view with search and an update action. Context filters and source details are optional secondary controls. The workbench and CLI share the same local store; do not duplicate or re-import state just to open the interface.
+When a visual surface is useful, show the context composer first to a new user without Codex, then the complete personal vocabulary view with search and an update action. Context filters and source details are optional secondary controls. The workbench and CLI share the same local store; do not duplicate or re-import state just to open the interface.
 
 The workbench's Word Library contains a curated starter reservoir across everyday scenarios. Its A1/A2/B1 labels are approximate practical hints for filtering, not official CEFR assessments. Searching or viewing an entry must never create a review item; use `lexicon-add` or the visible add action only after the learner chooses it.
 

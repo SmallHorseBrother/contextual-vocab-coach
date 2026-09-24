@@ -617,6 +617,7 @@ def scan_into_store(state_path: Path, *, codex_home: Path | None = None, deep_li
     if not state_path.exists():
         state = store.empty_state(utc_now())
         store.ensure_starter_lexicon(state, utc_now())
+        store.ensure_expanded_lexicon(state, utc_now())
     else:
         state = store.load_state(state_path)
     now = store.iso_now()

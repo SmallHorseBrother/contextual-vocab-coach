@@ -69,3 +69,17 @@ export function addGraphExpression(term, meaning, topicId = "") {
     body: JSON.stringify({ term, meaning, topic_id: topicId }),
   });
 }
+
+export function appendPersonalContext(label, text) {
+  return request("/api/personal-context", {
+    method: "POST",
+    body: JSON.stringify({ label, text }),
+  });
+}
+
+export function setVocabularyTarget(target) {
+  return request("/api/vocabulary-target", {
+    method: "POST",
+    body: JSON.stringify({ target }),
+  });
+}

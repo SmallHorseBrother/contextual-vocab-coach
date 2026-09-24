@@ -21,6 +21,7 @@ from urllib.parse import urlparse
 
 import vocab_store as store
 import codex_context
+import context_intake
 import knowledge_graph
 
 
@@ -44,12 +45,21 @@ def personal_vocabulary_payload(
     """Merge the broad starter reservoir and scanned contextual expressions."""
     topic_labels = {topic["id"]: topic["label"] for topic in codex_context.TOPICS}
     matches = {row["entryId"]: row for row in context_index.get("lexiconMatches", [])}
+    personal_hits, personal_topics = context_intake.active_hit_counts(state)
+    hit_topics: dict[str, set[str]] = {}
+    for source_id, record in state.get("personal_contexts", {}).items():
+        if state["sources"].get(source_id, {}).get("status") != "active":
+            continue
+        for segment in record.get("segments", []):
+            for ident in segment.get("lexicon_ids", []):
+                hit_topics.setdefault(ident, set()).add(segment.get("topic_id", "general"))
     source_labels = {row["id"]: row["label"] for row in state["sources"].values()}
     entries: dict[tuple[str, str], dict[str, Any]] = {}
 
     for row in library.get("entries", []):
         match = matches.get(row["id"], {})
-        context_ids = list(match.get("topicIds", []))
+        context_ids = list(dict.fromkeys([*match.get("topicIds", []), *sorted(hit_topics.get(row["id"], set()))]))
+        personal_count = personal_hits.get(row["id"], 0)
         key = (store.normalize(row["term"]), store.normalize(row["meaning"]))
         entries[key] = {
             "id": row["id"],
@@ -59,6 +69,7 @@ def personal_vocabulary_payload(
             "meaning": row["meaning"],
             "kind": row["kind"],
             "level": row["level"],
+            "frequencyRank": row.get("frequency_rank"),
             "scenarioIds": list(row.get("scenario_ids", [])),
             "scenarioLabels": list(row.get("scenario_labels", [])),
             "contextIds": context_ids,
@@ -67,9 +78,11 @@ def personal_vocabulary_payload(
             "taskCount": int(match.get("taskCount", 0)),
             "recentTitles": list(match.get("recentTitles", [])),
             "lastSeenAt": match.get("lastSeenAt", ""),
-            "sourceType": "observed" if match else "foundation",
-            "sourceLabel": "Codex 历史中出现" if match else "基础生活英语",
+            "sourceType": "personal" if personal_count else "observed" if match else "foundation",
+            "sourceLabel": "你导入的上下文" if personal_count else "Codex 历史中出现" if match else "基础生活英语",
+            "userContextCount": personal_count,
             "rationale": (
+                f"与你导入的 {personal_count} 段内容直接相关" if personal_count else
                 f"在 {match.get('taskCount', 0)} 个 Codex 任务中出现"
                 if match else "基础工作与生活表达，已纳入个人词表"
             ),
@@ -92,6 +105,7 @@ def personal_vocabulary_payload(
             "meaning": candidate["meaning"],
             "kind": candidate["kind"],
             "level": existing.get("level", "") if existing else "",
+            "frequencyRank": existing.get("frequencyRank") if existing else None,
             "scenarioIds": existing.get("scenarioIds", []) if existing else [],
             "scenarioLabels": existing.get("scenarioLabels", []) if existing else [],
             "contextIds": list(dict.fromkeys([*(existing.get("contextIds", []) if existing else []), *context_ids])),
@@ -104,38 +118,68 @@ def personal_vocabulary_payload(
             "rationale": candidate["rationale"],
             "status": candidate["status"],
             "targetModes": list(candidate.get("target_modes", [])),
+            "userContextCount": max(
+                existing.get("userContextCount", 0) if existing else 0,
+                int(any(state["sources"].get(source_id, {}).get("kind") == "user_supplied_context" for source_id in source_ids)),
+            ),
         }
         contextual["contextLabels"] = [
             topic_labels[item] for item in contextual["contextIds"] if item in topic_labels
         ]
         entries[key] = contextual
 
-    status_order = {"learning": 0, "test": 1, "proposed": 2, "available": 3, "known": 4, "not_now": 5}
-    source_order = {"contextual": 0, "observed": 1, "foundation": 2}
-    rows = sorted(
-        entries.values(),
-        key=lambda row: (
-            status_order.get(row["status"], 9),
-            source_order.get(row["sourceType"], 9),
-            -row["taskCount"],
-            row["term"].casefold(),
-        ),
-    )
+    def relevance(row: dict[str, Any]) -> tuple[int, str]:
+        score = 0
+        if row["status"] in {"learning", "test"}:
+            score += 100000
+        if row["sourceType"] == "contextual":
+            score += 35000
+        if row.get("userContextCount"):
+            score += 20000 + min(row["userContextCount"], 20) * 200
+        if row["taskCount"]:
+            score += 7000 + min(row["taskCount"], 40) * 20
+        if (row.get("lexiconEntryId") or "").startswith("lex_"):
+            score += {"A1": 7000, "A2": 5800, "B1": 4600}.get(row["level"], 0)
+            if row["kind"] != "word":
+                score += 240
+        elif row.get("frequencyRank"):
+            score += 4700 - min(row["frequencyRank"], 4600)
+        if row["status"] == "known":
+            score -= 3000
+        if row["status"] == "not_now":
+            score -= 6000
+        return (-score, row["term"].casefold())
+
+    all_rows = sorted(entries.values(), key=relevance)
+    target = context_intake.target_size(state)
+    rows = all_rows[:target]
+    selected_topics = list(dict.fromkeys([*personal_topics, *(topic["id"] for topic in context_index.get("topics", []))]))
     return {
         "title": "我的英语词表",
-        "description": "首次扫描形成静态快照；更新时优先处理最新任务并扩充词表。",
+        "description": "导入内容或扫描任务后按相关性重新排序；学习进度独立保留。",
         "entryCount": len(rows),
+        "availableCount": len(all_rows),
+        "targetSize": target,
         "uniqueTermCount": len({store.normalize(row["term"]) for row in rows}),
         "contextualCount": sum(1 for row in rows if row["sourceType"] == "contextual"),
-        "observedCount": sum(1 for row in rows if row["sourceType"] == "observed"),
+        "observedCount": sum(1 for row in rows if row["taskCount"]),
+        "personalCount": sum(1 for row in rows if row.get("userContextCount")),
         "foundationCount": sum(1 for row in rows if row["sourceType"] == "foundation"),
         "contexts": [
-            {"id": row["id"], "label": row["label"], "wordCount": row.get("wordCount", row.get("candidateCount", 0))}
-            for row in context_index.get("topics", [])
+            {"id": row["id"], "label": row["label"], "wordCount": sum(row["id"] in entry["contextIds"] for entry in rows)}
+            for row in (
+                next((topic for topic in context_index.get("topics", []) if topic["id"] == ident),
+                     {"id": ident, "label": topic_labels[ident], "wordCount": personal_topics.get(ident, 0), "candidateCount": 0})
+                for ident in selected_topics
+            )
         ],
         "levels": library.get("levels", []),
         "entries": rows,
-        "updatedAt": context_index.get("indexedAt"),
+        "_allEntries": all_rows,
+        "updatedAt": max(
+            [value for value in [context_index.get("indexedAt"), *(row.get("last_added_at") for row in state.get("personal_contexts", {}).values())] if value],
+            default=None,
+        ),
         "coverage": context_index.get("coverage", {}),
     }
 
@@ -153,6 +197,8 @@ def initialize_store(path: Path, *, demo: bool = False) -> None:
             changed = True
         now = store.iso_now()
         if store.ensure_starter_lexicon(state, now) is not None:
+            changed = True
+        if store.ensure_expanded_lexicon(state, now) is not None:
             changed = True
         if demo and not state["candidates"]:
             pack = json.loads(SAMPLE_PACK.read_text(encoding="utf-8"))
@@ -231,16 +277,17 @@ def workbench_state(path: Path) -> dict[str, Any]:
     if not focus_points:
         focus_points = [candidate["rationale"] for candidate in candidates[:3]]
     if not focus_points:
-        focus_points = ["扫描或选择一个上下文，让候选表达贴近日常任务"]
+        focus_points = ["添加一段自己的生活或工作内容，让相关表达优先出现"]
     if active_topic:
         summary = active_topic.get("summary", summary)
         focus_points = active_topic.get("recentTitles", focus_points)[:3]
 
-    library = store.lexicon_payload(state, limit=2000)
+    library = store.lexicon_payload(state, limit=5000)
     personal_vocabulary = personal_vocabulary_payload(state, context_index, library)
+    all_graph_rows = personal_vocabulary.pop("_allEntries")
     with STATE_LOCK:
         graph_state = store.load_state(path)
-        if knowledge_graph.sync_graph(graph_state, personal_vocabulary["entries"], context_index, store.iso_now()):
+        if knowledge_graph.sync_graph(graph_state, all_graph_rows, context_index, store.iso_now()):
             store.save_state(path, graph_state)
     graph_payload = knowledge_graph.payload(graph_state, personal_vocabulary["entries"])
 
@@ -257,6 +304,7 @@ def workbench_state(path: Path) -> dict[str, Any]:
         "reviewQueue": review_queue,
         "library": library,
         "personalVocabulary": personal_vocabulary,
+        "personalContext": context_intake.payload(state),
         "knowledgeGraph": graph_payload,
         "candidates": candidate_rows,
         "sources": [
@@ -415,6 +463,33 @@ def apply_graph_add(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
     return workbench_state(path)
 
 
+def apply_personal_context(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    with STATE_LOCK:
+        state = store.load_state(path)
+        result = context_intake.append_context(
+            state,
+            label=str(payload.get("label", "")),
+            text=str(payload.get("text", "")),
+            now=store.iso_now(),
+        )
+        errors = store.state_errors(state)
+        if errors:
+            raise store.StoreError("Context import produced an invalid state: " + "; ".join(errors))
+        store.save_state(path, state)
+    return {**workbench_state(path), "contextImport": result}
+
+
+def apply_vocabulary_target(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    with STATE_LOCK:
+        state = store.load_state(path)
+        requested = payload.get("target")
+        if not isinstance(requested, int) or isinstance(requested, bool):
+            raise store.StoreError("请选择有效的词表档位")
+        context_intake.set_target(state, requested, store.iso_now())
+        store.save_state(path, state)
+    return workbench_state(path)
+
+
 def make_handler(
     state_path: Path,
     client_dir: Path = CLIENT_DIR,
@@ -460,6 +535,8 @@ def make_handler(
                 "/api/graph/relation": apply_graph_relation,
                 "/api/graph/seen": apply_graph_seen,
                 "/api/graph/add": apply_graph_add,
+                "/api/personal-context": apply_personal_context,
+                "/api/vocabulary-target": apply_vocabulary_target,
             }
             request_path = urlparse(self.path).path
             if request_path == "/api/context-scan":

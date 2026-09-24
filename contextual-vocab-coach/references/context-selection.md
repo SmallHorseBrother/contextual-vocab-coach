@@ -53,7 +53,7 @@ Each scanned or generated item must carry:
 - `priority`: 1–5, used only for ordering.
 - Optional `anchor`, `contrast`, and `evidence_summary`; keep them minimal and non-sensitive.
 
-The initial Codex build should stream every user-authored message from every available rollout and persist only derived vocabulary links, counts, classifications, fingerprints, and timestamps. Later updates should reuse unchanged task results and process the newest changed tasks first.
+The initial Codex build should stream every user-authored message from every available rollout and persist only derived vocabulary links, counts, classifications, fingerprints, and timestamps. Later updates should reuse unchanged task results and process the newest changed tasks first. Codex is optional: a learner can instead enter, dictate, or import a passage in the workbench. Each submission appends to a named personal source; retain only matched lexicon IDs, topic IDs, counts, and timestamps. Recommend from the same unified lexicon with 500/1000/2500-item views. Context matches affect ranking, but entries beyond those matches are general offline candidates, not claimed as direct context extractions.
 
 ## Apply a pack
 

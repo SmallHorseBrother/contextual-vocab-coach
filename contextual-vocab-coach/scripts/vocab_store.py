@@ -25,6 +25,7 @@ from typing import Any
 SCHEMA_VERSION = 1
 SKILL_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_STARTER_LEXICON = SKILL_DIR / "data" / "starter-lexicon.json"
+DEFAULT_EXPANDED_LEXICON = SKILL_DIR / "data" / "expanded-lexicon.json"
 VALID_MODES = {"recognition", "production", "listening"}
 VALID_KINDS = {"word", "phrase", "collocation", "sentence_frame"}
 VALID_LEVELS = {"A1", "A2", "B1"}
@@ -294,6 +295,42 @@ def ensure_starter_lexicon(state: dict[str, Any], now: str) -> dict[str, int] | 
     return apply_lexicon_pack(state, pack, now)
 
 
+def ensure_expanded_lexicon(state: dict[str, Any], now: str) -> dict[str, int] | None:
+    """Install the optional larger offline reservoir without replacing the starter pack."""
+    if not DEFAULT_EXPANDED_LEXICON.is_file():
+        return None
+    pack = json.loads(DEFAULT_EXPANDED_LEXICON.read_text(encoding="utf-8"))
+    if state.get("lexicon_meta", {}).get("expanded_version") == pack.get("version") and all(
+        row["id"] in state["lexicon"] for row in pack["entries"]
+    ):
+        return None
+    validate_lexicon_pack(pack)
+    for row in pack["entries"]:
+        state["lexicon"][row["id"]] = {
+            "id": row["id"], "term": row["term"], "meaning": row["meaning"],
+            "kind": row["kind"], "level": row["level"],
+            "scenario_ids": row["scenario_ids"], "target_modes": row["target_modes"],
+            "frequency_rank": row["frequency_rank"],
+        }
+    meta = state["lexicon_meta"]
+    scenarios = {row["id"]: row for row in meta.get("scenarios", [])}
+    scenarios.update({row["id"]: row for row in pack["scenarios"]})
+    meta["scenarios"] = list(scenarios.values())
+    meta["expanded_version"] = pack["version"]
+    existing = state["sources"].get("ecdict-core", {})
+    state["sources"]["ecdict-core"] = {
+        "id": "ecdict-core", "label": "扩展英汉高频词库（ECDICT）",
+        "kind": "bundled_lexicon", "locator": "data/expanded-lexicon.json",
+        "fingerprint": f"version:{pack['version']}", "authorized": True,
+        "retain_raw": False, "summary": f"{len(pack['entries'])} 个扩展高频英语词。",
+        "focus_points": [], "status": existing.get("status", "active"),
+        "added_at": existing.get("added_at", now), "updated_at": now,
+    }
+    state["updated_at"] = now
+    add_event(state, now, "expanded_lexicon_installed", version=pack["version"], count=len(pack["entries"]))
+    return {"entries_added": len(pack["entries"])}
+
+
 def lexicon_payload(
     state: dict[str, Any],
     *,
@@ -338,7 +375,7 @@ def lexicon_payload(
         "resultCount": len(matched),
         "scenarios": scenario_rows,
         "levels": sorted(VALID_LEVELS, key=lambda value: level_order[value]),
-        "entries": matched[: max(1, min(limit, 2000))],
+        "entries": matched[: max(1, min(limit, 5000))],
     }
 
 
@@ -905,8 +942,11 @@ def state_errors(state: Any) -> list[str]:
 def command_init(args: argparse.Namespace, path: Path, now: str) -> dict[str, Any]:
     if path.exists():
         state = load_state(path)
-        if not getattr(args, "no_starter_lexicon", False) and ensure_starter_lexicon(state, now) is not None:
-            save_state(path, state)
+        if not getattr(args, "no_starter_lexicon", False):
+            starter_changed = ensure_starter_lexicon(state, now) is not None
+            expanded_changed = ensure_expanded_lexicon(state, now) is not None
+            if starter_changed or expanded_changed:
+                save_state(path, state)
         return {"created": False, "store": str(path), "status": status_payload(state, now)}
     state = empty_state(now)
     if args.goal:
@@ -926,6 +966,7 @@ def command_init(args: argparse.Namespace, path: Path, now: str) -> dict[str, An
     add_event(state, now, "store_initialized")
     if not getattr(args, "no_starter_lexicon", False):
         ensure_starter_lexicon(state, now)
+        ensure_expanded_lexicon(state, now)
     save_state(path, state)
     return {"created": True, "store": str(path), "status": status_payload(state, now)}
 
@@ -1070,6 +1111,9 @@ def command_source_delete(args: argparse.Namespace, path: Path, now: str) -> dic
     if args.source_id not in state["sources"]:
         raise StoreError(f"Unknown source: {args.source_id}")
     del state["sources"][args.source_id]
+    # Manual intake has no raw passage, but its derived links still belong to
+    # the source and must disappear when the source itself is deleted.
+    state.get("personal_contexts", {}).pop(args.source_id, None)
     removed_candidates: list[str] = []
     removed_learning_items: list[str] = []
 

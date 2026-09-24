@@ -146,7 +146,7 @@ function graphStyle() {
   ];
 }
 
-export function GraphMap({ graph, topics = [], onScan, pendingScan, onAdd, pendingAdd, onSeen, selectedNodeId, selectedEdgeId, onSelectNode, onSelectEdge, scanError, phase, onPhase }) {
+export function GraphMap({ graph, topics = [], onScan, onOpenStudio, hasCodexTasks, pendingScan, onAdd, pendingAdd, onSeen, selectedNodeId, selectedEdgeId, onSelectNode, onSelectEdge, scanError, phase, onPhase }) {
   const [domain, setDomain] = useState("all");
   const [density, setDensity] = useState("overview");
   const [relationType, setRelationType] = useState("all");
@@ -229,7 +229,7 @@ export function GraphMap({ graph, topics = [], onScan, pendingScan, onAdd, pendi
 
   return <section className="graph-experience" aria-labelledby="graph-title">
     <div className="graph-toolbar">
-      <button className="graph-scan-button" disabled={pendingScan} onClick={onScan} type="button"><ClockCounterClockwise size={18} />{pendingScan ? "正在扫描并接入…" : "扫描最新对话"}</button>
+      <button className="graph-scan-button" disabled={hasCodexTasks && pendingScan} onClick={hasCodexTasks ? onScan : onOpenStudio} type="button">{hasCodexTasks ? <ClockCounterClockwise size={18} /> : <Plus size={18} />}{hasCodexTasks ? (pendingScan ? "正在扫描并接入…" : "扫描最新对话") : "添加上下文"}</button>
       <button className="graph-add-button" aria-expanded={addOpen} onClick={() => setAddOpen((value) => !value)} type="button"><Plus size={16} />添加表达</button>
       <select aria-label="按知识领域筛选" value={domain} onChange={(event) => setDomain(event.target.value)}><option value="all">全部领域</option>{Object.entries(DOMAIN_META).map(([id, meta]) => <option key={id} value={id}>{meta.label}</option>)}</select>
       <div className="graph-density" aria-label="图谱密度">{[["overview", "重点"], ["more", "扩展"], ["all", "全部"]].map(([id, label]) => <button aria-pressed={density === id} className={density === id ? "is-active" : ""} key={id} onClick={() => setDensity(id)} type="button">{label}</button>)}</div>
@@ -241,7 +241,7 @@ export function GraphMap({ graph, topics = [], onScan, pendingScan, onAdd, pendi
     <div className="graph-stage">
       <div className="graph-intro"><span className="eyebrow">你的表达，正在形成自己的网络</span><h2 id="graph-title"><ShareNetwork size={28} weight="duotone" />我的英语知识图谱</h2><p>{graph?.nodes?.length || 0} 个词与表达 · {graph?.edges?.filter((edge) => edge.status !== "ignored").length || 0} 条有依据的关系</p></div>
       <div className="graph-legend-card"><strong>学习状态</strong><span><i className="graph-dot dot-learn" />正在学习</span><span><i className="graph-dot dot-new" />本次新增</span><span><i className="graph-line" />已有关系</span><span><i className="graph-line dashed" />待核对关系</span></div>
-      {freshCount ? <div className="graph-new-tray"><Sparkle size={20} weight="duotone" /><div><strong>待查看的新表达 {freshCount} 个</strong><span>已尝试寻找邻居；有依据的虚线关系可逐条核对。</span></div><button onClick={() => onSeen(null)} type="button">看过本次新增</button></div> : <div className="graph-new-tray is-quiet"><CheckCircle size={19} /><div><strong>词汇网络已更新</strong><span>下一次扫描发现的新表达会在这里亮起。</span></div></div>}
+      {freshCount ? <div className="graph-new-tray"><Sparkle size={20} weight="duotone" /><div><strong>待查看的新表达 {freshCount} 个</strong><span>已尝试寻找邻居；有依据的虚线关系可逐条核对。</span></div><button onClick={() => onSeen(null)} type="button">看过本次新增</button></div> : <div className="graph-new-tray is-quiet"><CheckCircle size={19} /><div><strong>词汇网络已更新</strong><span>下次添加内容发现的新表达会在这里亮起。</span></div></div>}
       <div className="graph-canvas" ref={containerRef} role="img" aria-label={`可缩放的词汇知识图谱，当前显示 ${computed.visibleCount} 个表达，分布在 ${computed.domainCount} 个领域`} />
       <div className="graph-controls"><button aria-label="放大图谱" onClick={() => zoom(1.35)} type="button"><Plus size={19} /></button><button aria-label="缩小图谱" onClick={() => zoom(0.75)} type="button"><Minus size={19} /></button><button aria-label="适合屏幕" onClick={fit} type="button"><ArrowsOut size={18} /></button></div>
       <div className="graph-relation-filter"><span>关系</span><select aria-label="按关系类型筛选" value={relationType} onChange={(event) => setRelationType(event.target.value)}><option value="all">全部关系</option>{Object.entries(RELATIONS).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></div>

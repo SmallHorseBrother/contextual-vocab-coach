@@ -25,6 +25,13 @@ button, textarea { font: inherit; }
 button { color: inherit; }
 button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(8, 116, 98, 0.2); outline-offset: 2px; }
 
+.workbench-loading {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; gap: 12px; color: var(--teal); background: var(--ivory);
+}
+.workbench-loading strong { color: var(--ink); font-size: 18px; }
+.workbench-loading span { color: var(--muted); font-size: 13px; }
+
 .workbench-shell {
   display: grid;
   grid-template-columns: 212px minmax(700px, 1fr) 354px;
