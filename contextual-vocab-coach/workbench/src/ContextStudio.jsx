@@ -78,16 +78,15 @@ export function ContextStudio({ context, contextIndex, onImport, pendingImport, 
   };
 
   return <section className="context-studio" aria-labelledby="studio-title">
-    <div className="studio-intro"><span className="eyebrow">一个入口，汇集你的全部真实素材</span><h2 id="studio-title">告诉我你最近在做什么，其余交给系统。</h2><p>Codex 对话和你补充的文字会合成一份素材库。分类与来源仍可追溯，但学习时不需要反复选择上下文。</p></div>
+    <div className="studio-intro"><h2 id="studio-title">更新素材</h2><p>输入新内容，或直接同步 Codex。词表会自动重新排序。</p></div>
 
     <div className="material-status">
-      <div><span>Codex 对话</span><strong>{taskCount}</strong></div>
-      <div><span>补充内容</span><strong>{segmentCount} 段</strong></div>
-      <p>两种来源会一起决定推荐哪些词，不再分成两套流程。</p>
+      <span>Codex 对话 <strong>{taskCount}</strong></span>
+      <span>补充内容 <strong>{segmentCount} 段</strong></span>
     </div>
 
     <form className="studio-composer studio-composer-simple" onSubmit={updateMaterials}>
-      <label htmlFor="material-text">有新内容就补充，没有也可以直接同步 Codex</label>
+      <label htmlFor="material-text">补充最近在做的事</label>
       <textarea id="material-text" aria-label="输入或语音转写的补充内容" maxLength={12000} placeholder="随便说说最近在做的项目、遇到的问题、读到的内容或生活场景……" rows={7} value={text} onChange={(event) => setText(event.target.value)} />
       {interim ? <p className="studio-interim">正在识别：{interim}</p> : null}
       <div className="studio-input-actions"><button aria-pressed={listening} className={listening ? "is-listening" : ""} disabled={!canDictate || demoMode || pending} onClick={toggleVoice} type="button">{listening ? <MicrophoneSlash size={18} /> : <Microphone size={18} />}{listening ? "停止口述" : "语音口述"}</button><label className="studio-file"><FileText size={18} />导入 TXT / MD<input accept=".txt,.md,text/plain,text/markdown" disabled={demoMode || pending} onChange={readFile} type="file" /></label><span>{text.length} / 12000</span></div>

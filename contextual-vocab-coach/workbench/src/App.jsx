@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpenText,
   Books,
-  CaretDown,
-  ChatCenteredDots,
   Check,
   CheckCircle,
   ClockCounterClockwise,
@@ -78,27 +76,6 @@ function NavRail({ activeView, onNavigate, dueCount }) {
   );
 }
 
-function GoalHeader({ goal, subtitle }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  return (
-    <header className="goal-header">
-      <div className="goal-switcher">
-        <span className="eyebrow">长期学习方向</span>
-        <button aria-expanded={menuOpen} className="goal-title" type="button" aria-label="查看学习方向" onClick={() => setMenuOpen((value) => !value)}>
-          {goal?.statement || "把我日常正在做的事，用英语表达出来"}
-          <CaretDown size={24} weight="bold" />
-        </button>
-        <p>{subtitle || "系统会自动从你的真实任务中整理词表"}</p>
-        {menuOpen ? <div className="goal-menu"><strong>{goal?.statement || "把我日常正在做的事，用英语表达出来"}</strong><span>{goal?.successDefinition || "遇到熟悉场景时，能直接调用合适的英文表达。"}</span><small>上下文默认隐藏，只用于推荐、分类和来源追溯。</small></div> : null}
-      </div>
-      <div className="goal-promise">
-        <Sparkle size={22} weight="duotone" />
-        <span>从你说过、写过的事中，<br />收集值得学习的英语。</span>
-      </div>
-    </header>
-  );
-}
-
 const LIBRARY_STATUS_LABELS = {
   available: "加入学习",
   learning: "正在学习",
@@ -125,28 +102,33 @@ function PersonalVocabularyView({ vocabulary, pendingId, pendingTarget, scanNoti
     return [entry.term, entry.meaning, ...(entry.scenarioLabels || []), ...(entry.contextLabels || [])].join(" ").toLocaleLowerCase().includes(normalizedQuery);
   });
   const visible = filtered.slice(0, visibleCount);
+  const hasActiveFilters = Boolean(normalizedQuery || context || level || sourceType);
 
   return (
     <section className="library-view" aria-labelledby="vocabulary-heading">
-      <div className="vocabulary-hero">
-        <div><span className="eyebrow">你的全部素材，自动整理成一份词表</span><h2 id="vocabulary-heading">{vocabulary?.entryCount || 0} 个与你相关的英语表达</h2><p>已综合 {taskCount} 个 Codex 对话和 {segmentCount} 段补充内容。系统在后台保留来源，学习时不再让你反复选择上下文。</p></div>
-        <button className="vocabulary-update" onClick={onOpenStudio} type="button"><Plus size={19} />更新我的素材</button>
+      <div className="vocabulary-heading-row">
+        <div>
+          <h1 id="vocabulary-heading">我的词表</h1>
+          <p>{vocabulary?.entryCount || 0} 项 · {taskCount} 个 Codex 对话{segmentCount ? ` · ${segmentCount} 段补充内容` : ""}</p>
+        </div>
+        <button className="vocabulary-update" onClick={onOpenStudio} type="button"><Plus size={19} />更新素材</button>
       </div>
       {scanNotice ? <div className="scan-notice" role="status"><CheckCircle size={19} weight="fill" />{scanNotice}</div> : null}
       {scanError ? <div className="context-error" role="alert"><WarningCircle size={20} weight="fill" />{scanError}</div> : null}
       <div className="library-controls">
-        <label className="library-search"><MagnifyingGlass size={19} /><input aria-label="搜索我的词表" value={query} onChange={(event) => { setQuery(event.target.value); setVisibleCount(120); }} placeholder="搜索英文或中文…" /></label>
-        <label className="library-size"><span>词表规模</span><select aria-label="选择词表规模" disabled={pendingTarget} value={vocabulary?.targetSize || 500} onChange={(event) => onTarget(Number(event.target.value))}><option value={500}>500 · 重点</option><option value={1000}>1000 · 扩展</option><option value={2500}>2000+ · 细化</option></select></label>
+        <label className="library-search"><MagnifyingGlass size={19} /><input aria-label="搜索我的词表" value={query} onChange={(event) => { setQuery(event.target.value); setVisibleCount(120); }} placeholder="搜索词表" /></label>
+        <label className="library-size"><select aria-label="选择词表规模" disabled={pendingTarget} value={vocabulary?.targetSize || 500} onChange={(event) => onTarget(Number(event.target.value))}><option value={500}>500 项 · 重点</option><option value={1000}>1000 项 · 扩展</option><option value={2500}>2000+ 项 · 细化</option></select></label>
       </div>
       <details className="library-filters">
-        <summary>需要时再筛选</summary>
+        <summary>筛选与词表信息</summary>
         <div>
           <select aria-label="按上下文筛选" value={context} onChange={(event) => { setContext(event.target.value); setVisibleCount(120); }}><option value="">全部主题</option>{(vocabulary?.contexts || []).map((item) => <option key={item.id} value={item.id}>{item.label} · {item.wordCount}</option>)}</select>
           <select aria-label="按词表来源筛选" value={sourceType} onChange={(event) => { setSourceType(event.target.value); setVisibleCount(120); }}><option value="">全部来源</option><option value="personal">补充内容</option><option value="contextual">领域表达</option><option value="observed">Codex 中出现</option><option value="foundation">基础表达</option></select>
           <select aria-label="按难度筛选" value={level} onChange={(event) => { setLevel(event.target.value); setVisibleCount(120); }}><option value="">全部难度</option>{(vocabulary?.levels || []).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+          <p>候选池 {vocabulary?.availableCount || 0} 项 · {vocabulary?.updatedAt ? `更新于 ${formatScanTime(vocabulary.updatedAt)}` : "素材更新后自动重新排序"}</p>
         </div>
       </details>
-      <div className="library-result-line"><span>{filtered.length} 条推荐 · 候选池共 {vocabulary?.availableCount || 0} 条</span><small>{vocabulary?.updatedAt ? `更新于 ${formatScanTime(vocabulary.updatedAt)}` : "素材更新后会自动重新排序"}</small></div>
+      {hasActiveFilters ? <div className="library-result-line">找到 {filtered.length} 项</div> : null}
       <div className="library-grid">
         {visible.map((entry) => {
           const available = entry.status === "available";
@@ -154,8 +136,11 @@ function PersonalVocabularyView({ vocabulary, pendingId, pendingTarget, scanNoti
             <div className="library-copy">
               <div className="library-term"><strong>{entry.term}</strong><button className="speak-button" onClick={() => onSpeak(entry.term)} type="button" aria-label={`朗读 ${entry.term}`}><SpeakerHigh size={18} /></button></div>
               <p>{entry.meaning}</p>
-              <div className="library-tags">{entry.level ? <span className={`level-tag level-${entry.level.toLowerCase()}`}>{entry.level}</span> : null}<span>{entry.sourceType === "contextual" ? "领域表达" : entry.sourceType === "personal" ? "我的上下文" : entry.sourceType === "observed" ? `Codex 中出现 · ${entry.taskCount}` : "基础表达"}</span></div>
-              {(entry.contextLabels || []).length || (entry.recentTitles || []).length ? <details className="word-source"><summary>查看来源</summary><p>{(entry.contextLabels || []).length ? `相关分类：${entry.contextLabels.join("、")}` : ""}{(entry.recentTitles || []).length ? ` · 最近任务：${entry.recentTitles.join("、")}` : ""}</p></details> : null}
+              <details className="word-source">
+                <summary>来源与分类</summary>
+                <p>{[entry.level, entry.sourceType === "contextual" ? "领域表达" : entry.sourceType === "personal" ? "补充内容" : entry.sourceType === "observed" ? `Codex 中出现 ${entry.taskCount || 0} 次` : "基础表达"].filter(Boolean).join(" · ")}</p>
+                {(entry.contextLabels || []).length || (entry.recentTitles || []).length ? <p>{(entry.contextLabels || []).length ? `分类：${entry.contextLabels.join("、")}` : ""}{(entry.recentTitles || []).length ? ` · 最近任务：${entry.recentTitles.join("、")}` : ""}</p> : null}
+              </details>
             </div>
             <button className={`library-add ${available || entry.status === "proposed" ? "" : "is-added"}`} disabled={(!available && entry.status !== "proposed") || pendingId === entry.id} onClick={() => onAdd(entry)} type="button">{available || entry.status === "proposed" ? <Plus size={17} weight="bold" /> : <Check size={17} weight="bold" />}{LIBRARY_STATUS_LABELS[entry.status] || entry.status}</button>
           </article>;
@@ -171,11 +156,7 @@ function AssistantRail({ data, onStartLearning }) {
   const selectedCount = data.candidates.filter((item) => ["learning", "test"].includes(item.status)).length;
   return (
     <aside className="assistant-rail">
-      <header><h2>学习助手</h2><p>基于你添加的内容与本机词库</p></header>
-      <section className="assistant-summary">
-        <div className="assistant-section-title"><ChatCenteredDots size={23} weight="duotone" /><strong>词表与学习摘要</strong></div>
-        <p>{data.summary}</p>
-      </section>
+      <header><h2>开始学习</h2></header>
       <button className="start-learning" onClick={onStartLearning} type="button"><Play size={24} weight="fill" />开始 10 分钟学习</button>
       <p className="start-note">{selectedCount > 0 ? `已选择 ${selectedCount} 条表达，将优先生成练习` : "先从词表中挑选真正想学的表达"}</p>
     </aside>
@@ -603,11 +584,11 @@ function ConnectedWorkbench({ data, updateLocal }) {
       <NavRail activeView={activeView} onNavigate={navigate} dueCount={dueCount} />
       <main className="workspace-main">
         {data.runtime?.mode === "demo" || !data.connected ? <div className="demo-banner"><WarningCircle size={18} weight="fill" />当前显示演示数据，不代表已扫描你的 Codex 历史。</div> : null}
-        <GoalHeader goal={data.goal} subtitle={`已综合 ${scannedTaskCount} 个 Codex 对话和 ${importedSegmentCount} 段补充内容 · 当前精选 ${data.personalVocabulary?.entryCount || 0} 项`} /><div className="workspace-content">{content}</div>
+        <div className="workspace-content">{content}</div>
       </main>
       {activeView === "map" && !sessionOpen
         ? <GraphInspector graph={graph} selectedNodeId={selectedGraphNodeId} selectedEdgeId={graphSelection.edgeId} onSelectEdge={selectGraphEdge} onRelation={handleGraphRelation} pendingEdgeId={pendingGraphEdgeId} onSeen={handleGraphSeen} phase={graphPhase} />
-        : <AssistantRail data={{ ...scopedData, summary: `已把 ${scannedTaskCount} 个 Codex 对话和 ${importedSegmentCount} 段补充内容合并整理，共精选 ${data.personalVocabulary?.entryCount || 0} 项。` }} onStartLearning={() => setSessionOpen(true)} />}
+        : <AssistantRail data={scopedData} onStartLearning={() => setSessionOpen(true)} />}
     </div>
   );
 }
