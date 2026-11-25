@@ -19,13 +19,17 @@ import tempfile
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 SCHEMA_VERSION = 1
 SKILL_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_STARTER_LEXICON = SKILL_DIR / "data" / "starter-lexicon.json"
 DEFAULT_EXPANDED_LEXICON = SKILL_DIR / "data" / "expanded-lexicon.json"
+# Bundled dictionaries are read from data/ instead of being copied into every
+# state file. The marker lists the ones a saved store relies on.
+BUNDLED_MARKER = "bundled_lexicons"
+BUNDLED_LEXICONS = ("starter", "expanded")
 VALID_MODES = {"recognition", "production", "listening"}
 VALID_KINDS = {"word", "phrase", "collocation", "sentence_frame"}
 VALID_LEVELS = {"A1", "A2", "B1"}
@@ -120,6 +124,7 @@ def load_state(path: Path) -> dict[str, Any]:
     # Schema v1 stores created before the starter library remain readable.
     state.setdefault("lexicon_meta", {})
     state.setdefault("lexicon", {})
+    _restore_bundled_lexicons(state)
     errors = state_errors(state)
     if errors:
         raise StoreError("Invalid learning store: " + "; ".join(errors))
@@ -128,7 +133,7 @@ def load_state(path: Path) -> dict[str, Any]:
 
 def save_state(path: Path, state: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    payload = json.dumps(_disk_form(state), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     fd, temp_name = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
@@ -139,6 +144,107 @@ def save_state(path: Path, state: dict[str, Any]) -> None:
     finally:
         if os.path.exists(temp_name):
             os.unlink(temp_name)
+
+
+def _starter_row(incoming: dict[str, Any]) -> dict[str, Any]:
+    """The form in which a starter-style lexicon entry is kept in the store."""
+    return {
+        "id": incoming["id"],
+        "term": incoming["term"].strip(),
+        "meaning": incoming["meaning"].strip(),
+        "kind": incoming["kind"],
+        "level": incoming["level"],
+        "scenario_ids": list(dict.fromkeys(incoming["scenario_ids"])),
+        "target_modes": list(dict.fromkeys(incoming["target_modes"])),
+    }
+
+
+def _expanded_row(incoming: dict[str, Any]) -> dict[str, Any]:
+    """The form in which an expanded (ECDICT) lexicon entry is kept in the store."""
+    return {
+        "id": incoming["id"], "term": incoming["term"], "meaning": incoming["meaning"],
+        "kind": incoming["kind"], "level": incoming["level"],
+        "scenario_ids": list(incoming["scenario_ids"]), "target_modes": list(incoming["target_modes"]),
+        "frequency_rank": incoming["frequency_rank"],
+    }
+
+
+def _bundled_source(name: str) -> tuple[Path, Callable[[dict[str, Any]], dict[str, Any]]]:
+    if name == "starter":
+        return DEFAULT_STARTER_LEXICON, _starter_row
+    return DEFAULT_EXPANDED_LEXICON, _expanded_row
+
+
+_BUNDLED_CACHE: dict[str, tuple[tuple[str, int, int], dict[str, dict[str, Any]]]] = {}
+
+
+def _bundled_rows(name: str) -> dict[str, dict[str, Any]] | None:
+    """Stored-form rows of a bundled lexicon, parsed once per file version; None if absent."""
+    path, to_row = _bundled_source(name)
+    try:
+        stat = path.stat()
+    except FileNotFoundError:
+        return None
+    key = (str(path), stat.st_mtime_ns, stat.st_size)
+    cached = _BUNDLED_CACHE.get(name)
+    if cached is not None and cached[0] == key:
+        return cached[1]
+    try:
+        pack = json.loads(path.read_text(encoding="utf-8"))
+        rows = {row["id"]: to_row(row) for row in pack["entries"]}
+    except (OSError, json.JSONDecodeError, KeyError, TypeError, AttributeError) as exc:
+        raise StoreError(f"Cannot read bundled {name} lexicon at {path}: {exc}") from exc
+    _BUNDLED_CACHE[name] = (key, rows)
+    return rows
+
+
+def _disk_form(state: dict[str, Any]) -> dict[str, Any]:
+    """Return what save_state writes: the state minus rows identical to a bundled lexicon.
+
+    A bundled lexicon counts as installed only when every one of its entries is
+    present. Custom and locally changed entries are always written out.
+    """
+    lexicon = state.get("lexicon")
+    if not isinstance(lexicon, dict) or not lexicon:
+        return state
+    kept = dict(lexicon)
+    installed: list[str] = []
+    for name in BUNDLED_LEXICONS:
+        rows = _bundled_rows(name)
+        if not rows or any(ident not in lexicon for ident in rows):
+            continue
+        installed.append(name)
+        for ident, row in rows.items():
+            if kept.get(ident) == row:
+                del kept[ident]
+    if not installed:
+        return state
+    return {**state, "lexicon": kept, BUNDLED_MARKER: installed}
+
+
+def _restore_bundled_lexicons(state: dict[str, Any]) -> None:
+    """Undo _disk_form: rebuild bundled rows, then let entries saved on disk win."""
+    installed = state.pop(BUNDLED_MARKER, None)
+    if installed is None:
+        return
+    if not isinstance(installed, list) or not set(installed) <= set(BUNDLED_LEXICONS):
+        raise StoreError(f"Invalid learning store: {BUNDLED_MARKER} must list {list(BUNDLED_LEXICONS)}")
+    persisted = state.get("lexicon")
+    if not isinstance(persisted, dict):
+        return  # leave the corrupt value for state_errors to report
+    restored: dict[str, dict[str, Any]] = {}
+    for name in installed:
+        rows = _bundled_rows(name)
+        if rows is None:
+            path, _ = _bundled_source(name)
+            raise StoreError(
+                f"This store uses the bundled {name} lexicon, but {path} is missing. "
+                "Reinstall the skill to restore its data folder."
+            )
+        for ident, row in rows.items():
+            restored[ident] = {**row, "scenario_ids": list(row["scenario_ids"]), "target_modes": list(row["target_modes"])}
+    restored.update(persisted)
+    state["lexicon"] = restored
 
 
 def add_event(state: dict[str, Any], now: str, event_type: str, **details: Any) -> None:
@@ -235,15 +341,7 @@ def apply_lexicon_pack(state: dict[str, Any], pack: dict[str, Any], now: str) ->
     for incoming in pack["entries"]:
         entry_id = incoming["id"]
         existed = entry_id in state["lexicon"]
-        state["lexicon"][entry_id] = {
-            "id": entry_id,
-            "term": incoming["term"].strip(),
-            "meaning": incoming["meaning"].strip(),
-            "kind": incoming["kind"],
-            "level": incoming["level"],
-            "scenario_ids": list(dict.fromkeys(incoming["scenario_ids"])),
-            "target_modes": list(dict.fromkeys(incoming["target_modes"])),
-        }
+        state["lexicon"][entry_id] = _starter_row(incoming)
         result["entries_updated" if existed else "entries_added"] += 1
 
     state["lexicon_meta"] = {
@@ -306,12 +404,7 @@ def ensure_expanded_lexicon(state: dict[str, Any], now: str) -> dict[str, int] |
         return None
     validate_lexicon_pack(pack)
     for row in pack["entries"]:
-        state["lexicon"][row["id"]] = {
-            "id": row["id"], "term": row["term"], "meaning": row["meaning"],
-            "kind": row["kind"], "level": row["level"],
-            "scenario_ids": row["scenario_ids"], "target_modes": row["target_modes"],
-            "frequency_rank": row["frequency_rank"],
-        }
+        state["lexicon"][row["id"]] = _expanded_row(row)
     meta = state["lexicon_meta"]
     scenarios = {row["id"]: row for row in meta.get("scenarios", [])}
     scenarios.update({row["id"]: row for row in pack["scenarios"]})

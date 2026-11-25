@@ -8,12 +8,25 @@
 
 ### 有 Codex：自动读取本机对话
 
-在 PowerShell 中运行：
+仓库根目录不是 Skill 目录：Skill 是仓库里的 `contextual-vocab-coach/` 子目录，要把它复制到 Codex 的 skills 目录。在 PowerShell 中运行：
 
 ```powershell
-git clone https://github.com/SmallHorseBrother/contextual-vocab-coach.git "$env:USERPROFILE\.codex\skills\contextual-vocab-coach"
-cd "$env:USERPROFILE\.codex\skills\contextual-vocab-coach"
+git clone https://github.com/SmallHorseBrother/contextual-vocab-coach.git
+$target = Join-Path $env:USERPROFILE ".codex\skills\contextual-vocab-coach"
+New-Item -ItemType Directory -Force -Path $target | Out-Null
+Copy-Item -Recurse -Force ".\contextual-vocab-coach\contextual-vocab-coach\*" $target
+cd $target
 python scripts\workbench_server.py
+```
+
+macOS / Linux：
+
+```bash
+git clone https://github.com/SmallHorseBrother/contextual-vocab-coach.git
+mkdir -p ~/.codex/skills/contextual-vocab-coach
+cp -R contextual-vocab-coach/contextual-vocab-coach/. ~/.codex/skills/contextual-vocab-coach/
+cd ~/.codex/skills/contextual-vocab-coach
+python3 scripts/workbench_server.py
 ```
 
 然后打开 <http://127.0.0.1:4174/>。第一次启动会在本机索引 Codex 历史；原始对话不会写进词汇库，只保留词汇命中、主题与来源索引等派生信息。
@@ -24,11 +37,13 @@ python scripts\workbench_server.py
 
 ### 没有 Codex：粘贴或口述自己的内容
 
-把项目克隆到任意目录后运行：
+把项目克隆到任意目录，在仓库根目录运行：
 
 ```powershell
-python scripts\workbench_server.py --no-context-scan
+python .\contextual-vocab-coach\scripts\workbench_server.py --no-context-scan
 ```
+
+如果当前已经在本目录（Skill 目录）里，运行 `python scripts\workbench_server.py --no-context-scan` 即可。
 
 打开工作台，进入“我的素材”，粘贴一段最近的工作、学习、兴趣或生活内容；也可以使用语音口述或导入 `.txt` / `.md`。以后有新内容，继续追加并点击一次“加入内容并更新词表”即可。
 
@@ -65,5 +80,7 @@ npm run test:sites
 cd ..
 python -m unittest discover -s tests -p "test_*.py"
 ```
+
+存储、扫描和本地服务的测试在仓库根目录的 `tests/`，在仓库根目录运行 `python -m unittest discover -s tests`。CI 会同时跑这两组测试。
 
 更完整的 Agent 行为、数据命令和隐私边界请看 [SKILL.md](SKILL.md)、[本地存储说明](references/store-cli.md) 与 [隐私说明](references/privacy.md)。

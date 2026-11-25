@@ -7,6 +7,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -231,6 +232,110 @@ class VocabStoreTests(unittest.TestCase):
         self.assertEqual(after["entries"][0]["status"], "learning")
         self.assertEqual(after["entries"][0]["candidate_id"], result["item_id"])
         self.assertIn(result["item_id"], state["learning_items"])
+
+
+class BundledLexiconStorageTests(unittest.TestCase):
+    """The shipped dictionaries live in data/, not in every learner's state file."""
+
+    def setUp(self) -> None:
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tempdir.cleanup)
+        self.path = Path(self.tempdir.name) / "state.json"
+        self.now = "2026-09-21T12:00:00Z"
+
+    def init(self, *, no_starter_lexicon: bool = False) -> None:
+        args = argparse.Namespace(
+            goal=None, success_definition=None, focus_modes=None, confirmed=False,
+            no_starter_lexicon=no_starter_lexicon,
+        )
+        store.command_init(args, self.path, self.now)
+
+    def on_disk(self) -> dict:
+        return json.loads(self.path.read_text(encoding="utf-8"))
+
+    def test_bundled_entries_are_not_written_but_load_back_unchanged(self) -> None:
+        self.init()
+
+        state = store.load_state(self.path)
+        self.assertEqual(len(state["lexicon"]), 540 + 3200)
+        self.assertEqual(self.on_disk()["lexicon"], {})
+        self.assertLess(self.path.stat().st_size, 64 * 1024)
+        hello = next(entry for entry in state["lexicon"].values() if entry["term"] == "hello")
+        self.assertEqual(hello["meaning"], "你好")
+        self.assertNotIn(store.BUNDLED_MARKER, state)
+
+    def test_saved_store_round_trips_to_the_same_state(self) -> None:
+        self.init()
+        state = store.load_state(self.path)
+        hello = next(entry for entry in state["lexicon"].values() if entry["term"] == "hello")
+        store.add_lexicon_entry(state, hello["id"], "learning", "2026-09-21T12:01:00Z")
+        expected = copy.deepcopy(state)
+
+        store.save_state(self.path, state)
+
+        self.assertEqual(store.load_state(self.path), expected)
+        self.assertEqual(state, expected, "saving must not modify the in-memory state")
+
+    def test_custom_and_overridden_entries_stay_on_disk(self) -> None:
+        self.init()
+        state = store.load_state(self.path)
+        hello_id = next(ident for ident, entry in state["lexicon"].items() if entry["term"] == "hello")
+        state["lexicon"][hello_id] = {**state["lexicon"][hello_id], "meaning": "喂（打招呼）"}
+        state["lexicon"]["custom_greeting"] = {
+            "id": "custom_greeting", "term": "howdy", "meaning": "你好（口语）", "kind": "word",
+            "level": "B1", "scenario_ids": ["greetings"], "target_modes": ["recognition"],
+        }
+        store.save_state(self.path, state)
+
+        self.assertEqual(set(self.on_disk()["lexicon"]), {hello_id, "custom_greeting"})
+        reloaded = store.load_state(self.path)
+        self.assertEqual(reloaded["lexicon"][hello_id]["meaning"], "喂（打招呼）")
+        self.assertEqual(reloaded["lexicon"]["custom_greeting"]["term"], "howdy")
+        self.assertEqual(len(reloaded["lexicon"]), 540 + 3200 + 1)
+
+    def test_store_without_bundled_lexicon_stays_empty(self) -> None:
+        self.init(no_starter_lexicon=True)
+
+        self.assertEqual(store.load_state(self.path)["lexicon"], {})
+        self.assertNotIn(store.BUNDLED_MARKER, self.on_disk())
+
+    def test_store_written_by_older_version_loads_and_shrinks_on_next_save(self) -> None:
+        self.init()
+        full = store.load_state(self.path)
+        legacy = json.dumps(full, ensure_ascii=False, indent=2, sort_keys=True)
+        self.path.write_text(legacy, encoding="utf-8")
+
+        state = store.load_state(self.path)
+        self.assertEqual(state, full)
+        store.save_state(self.path, state)
+        self.assertLess(self.path.stat().st_size, len(legacy.encode("utf-8")) // 10)
+        self.assertEqual(store.load_state(self.path), full)
+
+    def test_learning_survives_an_upgrade_that_drops_the_bundled_entry(self) -> None:
+        self.init()
+        state = store.load_state(self.path)
+        hello = next(entry for entry in state["lexicon"].values() if entry["term"] == "hello")
+        result = store.add_lexicon_entry(state, hello["id"], "learning", "2026-09-21T12:01:00Z")
+        store.save_state(self.path, state)
+        upgraded = starter_lexicon()
+        upgraded["entries"] = [row for row in upgraded["entries"] if row["id"] != hello["id"]]
+        upgraded_path = Path(self.tempdir.name) / "starter-lexicon-v2.json"
+        upgraded_path.write_text(json.dumps(upgraded, ensure_ascii=False), encoding="utf-8")
+
+        with mock.patch.object(store, "DEFAULT_STARTER_LEXICON", upgraded_path):
+            reloaded = store.load_state(self.path)
+
+        self.assertNotIn(hello["id"], reloaded["lexicon"])
+        self.assertEqual(reloaded["candidates"][result["item_id"]]["status"], "learning")
+        self.assertEqual(reloaded["learning_items"][result["item_id"]]["term"], "hello")
+        self.assertEqual(store.status_payload(reloaded, "2026-09-21T12:02:00Z")["due_count"], 2)
+
+    def test_missing_bundled_file_is_reported_instead_of_dropping_entries(self) -> None:
+        self.init()
+        missing = Path(self.tempdir.name) / "missing-expanded-lexicon.json"
+        with mock.patch.object(store, "DEFAULT_EXPANDED_LEXICON", missing):
+            with self.assertRaisesRegex(store.StoreError, "expanded"):
+                store.load_state(self.path)
 
 
 if __name__ == "__main__":

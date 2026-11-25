@@ -16,7 +16,7 @@ cd contextual-vocab-coach
 python .\contextual-vocab-coach\scripts\workbench_server.py --no-context-scan
 ```
 
-macOS / Linux 将最后一行换成 `python3 ./contextual-vocab-coach/scripts/workbench_server.py --no-context-scan`。浏览器打开 `http://127.0.0.1:4174/`。第一次会看到“我的上下文”：随意写或说一段今天做过的事，也可导入 `.txt` / `.md`；点击“追加上下文并推荐词汇”。日后可用同一个名称继续追加，也可创建另一组。前端预构建产物已随仓库提供，普通使用不需要 Node.js。
+macOS / Linux 将最后一行换成 `python3 ./contextual-vocab-coach/scripts/workbench_server.py --no-context-scan`。浏览器打开 `http://127.0.0.1:4174/`。第一次会看到“我的素材”：随意写或说一段今天做过的事，也可导入 `.txt` / `.md`；点击“加入内容并更新词表”。日后可用同一个名称继续追加，也可创建另一组。前端预构建产物已随仓库提供，普通使用不需要 Node.js。
 
 有 Codex：按下文将 Skill 复制到 Codex Skills 目录，然后在 Codex 中说：
 
@@ -34,7 +34,7 @@ $contextual-vocab-coach 打开我的词汇学习工作台
 
 首次扫描量取决于你的 Codex 历史，任务较多时可能需要几分钟。终端会显示处理进度；工作台就绪后会显示扫描到的任务数、读取的数据量和词表规模。无 Codex 模式不做任务扫描，可以立刻添加自己的内容。
 
-后续不需要反复全量重建。Codex 用户在“我的词表”中点击 **扫描最新对话**，系统会优先处理最新任务，只重读新增或发生变化的内容。所有用户都可在“我的上下文”继续追加文字、文件或语音转写；系统会重新排序推荐，同时保留已经会了、近期不用、正在学习和复习历史。
+后续不需要反复全量重建。Codex 用户在“我的素材”中留空输入框，点击 **同步 Codex 并更新词表**（或在“词汇地图”点击 **扫描最新对话**），系统会优先处理最新任务，只重读新增或发生变化的内容。所有用户都可在“我的素材”继续追加文字、文件或语音转写；系统会重新排序推荐，同时保留已经会了、近期不用、正在学习和复习历史。
 
 ## 这个产品到底做什么
 
@@ -59,12 +59,13 @@ $contextual-vocab-coach 打开我的词汇学习工作台
 
 ## 工作台里有什么
 
-- **我的上下文**：输入、浏览器语音转写或导入文字；以后随时追加，并选择推荐词表规模。
+- **我的素材**：输入、浏览器语音转写或导入文字，以后随时追加；有 Codex 时也在这里同步最新对话。
 - **今日学习**：优先处理到期复习，再加入少量新表达。
-- **我的词表**：搜索完整个人词表，按来源、上下文和难度做可选筛选，一键增量更新。
+- **我的词表**：搜索完整个人词表，选择推荐词表规模，按来源、上下文和难度做可选筛选。
 - **复习**：用主动回忆记录真实表现，而不是“看过答案就算会”。
 - **词汇地图 / 知识图谱**：把完整词表组织成可缩放的领域网络；可搜索任意表达、筛选关系、查看为什么相连，并核对新词接入时的虚线建议。
-- **来源与扫描**：核对来源、分类和（有 Codex 时的）任务覆盖情况，并暂停不想继续参与推荐的来源。
+
+工作台目前没有单独的来源管理页。查看、暂停或删除某个来源，请用命令行的 `source-status` 和 `source-delete`，见 [本地存储说明](contextual-vocab-coach/references/store-cli.md)。
 
 ![Contextual Vocab Coach 可视化工作台](design/workbench-preview.png)
 
@@ -164,7 +165,7 @@ $contextual-vocab-coach 暂停使用某个来源。
 - 学习档案只保存词汇、分类、来源关联、计数、时间戳和内容指纹等派生结果。
 - 不把原始聊天正文复制进学习档案。
 - 手动输入或导入的文字提交后也不保存原文，只保存关联词条、主题、字符数和时间；页面会清空输入框。浏览器语音识别可能经浏览器服务处理音频，不等同于完全离线识别。
-- 工作台只监听 `127.0.0.1`，不会自动向公网提供服务。
+- 工作台只监听 `127.0.0.1`，不会自动向公网提供服务。它只响应发往 `127.0.0.1` / `localhost` 的请求，并拒绝其他网站发起的写操作，所以你浏览的网页无法读取或修改本地词表。
 - 不想自动扫描时，使用 `--no-context-scan`。
 - 可以暂停来源；只有明确执行 purge 时才会删除仅由该来源支持的学习记录。
 
@@ -232,9 +233,7 @@ contextual-vocab-coach/
 ## 开发与验证
 
 ```powershell
-python -m py_compile .\contextual-vocab-coach\scripts\vocab_store.py
-python -m py_compile .\contextual-vocab-coach\scripts\codex_context.py
-python -m py_compile .\contextual-vocab-coach\scripts\workbench_server.py
+python -m compileall -q .\contextual-vocab-coach\scripts
 python -m unittest discover -s tests -v
 python -m unittest discover -s .\contextual-vocab-coach\tests -v
 Set-Location .\contextual-vocab-coach\workbench

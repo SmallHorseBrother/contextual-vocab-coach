@@ -6,6 +6,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from http.client import HTTPConnection
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -63,6 +64,55 @@ class WorkbenchServerTests(unittest.TestCase):
         except HTTPError as exc:
             return exc.code, json.loads(exc.read().decode("utf-8"))
 
+    def raw_request(self, method: str, path: str, headers: dict[str, str], body: bytes = b"") -> tuple[int, bytes]:
+        connection = HTTPConnection("127.0.0.1", self.server.server_port, timeout=2)
+        self.addCleanup(connection.close)
+        connection.putrequest(method, path, skip_host=True, skip_accept_encoding=True)
+        for name, value in {**headers, "Content-Length": str(len(body))}.items():
+            connection.putheader(name, value)
+        connection.endheaders(body)
+        response = connection.getresponse()
+        return response.status, response.read()
+
+    def test_rejects_foreign_host_header_to_block_dns_rebinding(self) -> None:
+        port = self.server.server_port
+        status, body = self.raw_request("GET", "/api/state", {"Host": f"attacker.example:{port}"})
+
+        self.assertEqual(status, 403)
+        self.assertNotIn(b"candidates", body)
+        for host in (f"127.0.0.1:{port}", f"localhost:{port}"):
+            status, _ = self.raw_request("GET", "/api/state", {"Host": host})
+            self.assertEqual(status, 200, host)
+
+    def test_rejects_cross_origin_writes(self) -> None:
+        port = self.server.server_port
+        body = json.dumps({"source_id": "demo-context", "status": "paused"}).encode("utf-8")
+        headers = {"Host": f"127.0.0.1:{port}", "Content-Type": "application/json"}
+
+        status, _ = self.raw_request("POST", "/api/source-status", {**headers, "Origin": "https://attacker.example"}, body)
+        self.assertEqual(status, 403)
+        _, state = self.request("/api/state")
+        self.assertEqual(next(row for row in state["sources"] if row["id"] == "demo-context")["status"], "active")
+
+        status, _ = self.raw_request("POST", "/api/source-status", {**headers, "Origin": f"http://127.0.0.1:{port}"}, body)
+        self.assertEqual(status, 200)
+
+    def test_rejects_cors_safelisted_content_type_that_mentions_json(self) -> None:
+        # Browsers send "text/plain; application/json" cross-site without a
+        # preflight, so a substring check on the header is not a CSRF defence.
+        port = self.server.server_port
+        body = json.dumps({"source_id": "demo-context", "status": "paused"}).encode("utf-8")
+        status, _ = self.raw_request(
+            "POST",
+            "/api/source-status",
+            {"Host": f"127.0.0.1:{port}", "Content-Type": "text/plain; application/json"},
+            body,
+        )
+
+        self.assertEqual(status, 400)
+        _, state = self.request("/api/state")
+        self.assertEqual(next(row for row in state["sources"] if row["id"] == "demo-context")["status"], "active")
+
     def test_state_exposes_seeded_candidates_without_raw_context(self) -> None:
         status, payload = self.request("/api/state")
         self.assertEqual(status, 200)
@@ -72,6 +122,9 @@ class WorkbenchServerTests(unittest.TestCase):
         self.assertNotIn("locator", payload["sources"][0])
         self.assertTrue(payload["connected"])
         self.assertEqual(payload["library"]["entryCount"], 3740)
+        # The full lexicon is not resent on every request; the vocabulary view carries the ranked rows.
+        self.assertNotIn("entries", payload["library"])
+        self.assertEqual(len(payload["personalVocabulary"]["entries"]), 500)
         self.assertEqual(len(payload["library"]["scenarios"]), 19)
         self.assertEqual(payload["personalVocabulary"]["entryCount"], 500)
         self.assertGreaterEqual(payload["personalVocabulary"]["uniqueTermCount"], 490)
@@ -122,14 +175,17 @@ class WorkbenchServerTests(unittest.TestCase):
 
     def test_library_entry_can_be_added_to_learning(self) -> None:
         _, initial = self.request("/api/state")
-        hello = next(entry for entry in initial["library"]["entries"] if entry["term"] == "hello")
+        hello = next(entry for entry in initial["personalVocabulary"]["entries"] if entry["term"] == "hello")
 
         status, updated = self.request(
-            "/api/library-decision", {"entry_id": hello["id"], "decision": "learning"}
+            "/api/library-decision", {"entry_id": hello["lexiconEntryId"], "decision": "learning"}
         )
 
         self.assertEqual(status, 200)
-        updated_hello = next(entry for entry in updated["library"]["entries"] if entry["id"] == hello["id"])
+        updated_hello = next(
+            entry for entry in updated["personalVocabulary"]["entries"]
+            if entry["lexiconEntryId"] == hello["lexiconEntryId"]
+        )
         self.assertEqual(updated_hello["status"], "learning")
         self.assertIn("hello", [candidate["term"] for candidate in updated["candidates"]])
         self.assertEqual(updated["dueCount"], 2)
@@ -155,6 +211,10 @@ class WorkbenchServerTests(unittest.TestCase):
         self.assertEqual(scanned["contextIndex"]["coverage"]["discoveredTaskCount"], 1)
         self.assertEqual(scanned["contextIndex"]["coverage"]["deepAnalyzedTaskCount"], 1)
         self.assertIn("embodied-ai", {topic["id"] for topic in scanned["contextIndex"]["topics"]})
+        # The per-task index stays on disk; responses carry coverage and topics only.
+        self.assertNotIn("tasks", scanned["contextIndex"])
+        self.assertNotIn("lexiconMatches", scanned["contextIndex"])
+        self.assertEqual(len(server_module.store.load_state(self.state_path)["context_index"]["tasks"]), 1)
         learning_direction = scanned["goal"]["statement"]
 
         status, selected = self.request("/api/context-topic", {"topic_id": "embodied-ai"})

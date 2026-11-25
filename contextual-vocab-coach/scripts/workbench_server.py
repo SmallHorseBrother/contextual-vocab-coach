@@ -35,6 +35,23 @@ MODE_LABELS = {
 }
 STATE_LOCK = threading.RLock()
 MAX_BODY_BYTES = 64 * 1024
+LOOPBACK_NAMES = ("127.0.0.1", "localhost")
+
+
+def allowed_hosts(port: int) -> set[str]:
+    """Host header values a browser sends when it really targets this server.
+
+    Checking them defeats DNS rebinding: a page on another domain that
+    re-points its name at 127.0.0.1 still sends its own domain as Host.
+    """
+    hosts = {f"{name}:{port}" for name in LOOPBACK_NAMES}
+    if port == 80:
+        hosts.update(LOOPBACK_NAMES)
+    return hosts
+
+
+def allowed_origins(port: int) -> set[str]:
+    return {f"http://{host}" for host in allowed_hosts(port)}
 
 
 def personal_vocabulary_payload(
@@ -209,11 +226,33 @@ def initialize_store(path: Path, *, demo: bool = False) -> None:
 
 
 def workbench_state(path: Path) -> dict[str, Any]:
-    """Translate the durable store schema into the compact UI view model."""
+    """Translate the durable store schema into the compact UI view model.
+
+    One load under the lock builds the whole response, so the store is parsed
+    once and a concurrent write cannot mix two versions into one response.
+    """
     with STATE_LOCK:
         state = store.load_state(path)
-        status = store.status_payload(state, store.iso_now())
+        return _view_model(path, state, store.iso_now())
 
+
+# The UI reads coverage and topics only. The per-task index and lexicon matches
+# grow with the Codex history, so they stay on disk instead of riding along
+# with every response.
+CONTEXT_INDEX_HEAVY_KEYS = frozenset({"tasks", "lexiconMatches"})
+
+
+def _context_index_summary(context_index: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in context_index.items() if key not in CONTEXT_INDEX_HEAVY_KEYS}
+
+
+def _library_summary(library: dict[str, Any]) -> dict[str, Any]:
+    """Counts and filter options; the entries reach the UI through personalVocabulary."""
+    return {key: value for key, value in library.items() if key != "entries"}
+
+
+def _view_model(path: Path, state: dict[str, Any], now: str) -> dict[str, Any]:
+    status = store.status_payload(state, now)
     goal = status.get("active_goal")
     sources = sorted(state["sources"].values(), key=lambda item: item["label"].casefold())
     # Python's sort is stable, so equal-priority items keep the order in which
@@ -285,11 +324,10 @@ def workbench_state(path: Path) -> dict[str, Any]:
     library = store.lexicon_payload(state, limit=5000)
     personal_vocabulary = personal_vocabulary_payload(state, context_index, library)
     all_graph_rows = personal_vocabulary.pop("_allEntries")
-    with STATE_LOCK:
-        graph_state = store.load_state(path)
-        if knowledge_graph.sync_graph(graph_state, all_graph_rows, context_index, store.iso_now()):
-            store.save_state(path, graph_state)
-    graph_payload = knowledge_graph.payload(graph_state, personal_vocabulary["entries"])
+    # The graph is materialized lazily from the vocabulary; write only when it changed.
+    if knowledge_graph.sync_graph(state, all_graph_rows, context_index, now):
+        store.save_state(path, state)
+    graph_payload = knowledge_graph.payload(state, personal_vocabulary["entries"])
 
     return {
         "connected": True,
@@ -299,10 +337,10 @@ def workbench_state(path: Path) -> dict[str, Any]:
         },
         "summary": summary,
         "focusPoints": focus_points,
-        "contextIndex": context_index,
+        "contextIndex": _context_index_summary(context_index),
         "dueCount": status["due_count"],
         "reviewQueue": review_queue,
-        "library": library,
+        "library": _library_summary(library),
         "personalVocabulary": personal_vocabulary,
         "personalContext": context_intake.payload(state),
         "knowledgeGraph": graph_payload,
@@ -510,7 +548,28 @@ def make_handler(
             self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'")
             super().end_headers()
 
+        def _reject_foreign_request(self, *, write: bool) -> bool:
+            """Answer 403 and return True unless the request targets this loopback server."""
+            port = self.server.server_address[1]
+            host = self.headers.get("Host", "").strip().lower()
+            if host not in allowed_hosts(port):
+                self._send_json({"error": "forbidden host"}, HTTPStatus.FORBIDDEN)
+                return True
+            origin = self.headers.get("Origin")
+            # Browsers always attach Origin to cross-site POSTs; CLI clients omit it.
+            if write and origin is not None and origin.strip().lower() not in allowed_origins(port):
+                self._send_json({"error": "forbidden origin"}, HTTPStatus.FORBIDDEN)
+                return True
+            return False
+
+        def do_HEAD(self) -> None:  # noqa: N802
+            if self._reject_foreign_request(write=False):
+                return
+            super().do_HEAD()
+
         def do_GET(self) -> None:  # noqa: N802
+            if self._reject_foreign_request(write=False):
+                return
             path = urlparse(self.path).path
             if path == "/api/state":
                 self._send_json(self._decorate(workbench_state(state_path)))
@@ -523,6 +582,8 @@ def make_handler(
             super().do_GET()
 
         def do_POST(self) -> None:  # noqa: N802
+            if self._reject_foreign_request(write=True):
+                return
             if urlparse(self.path).path == "/api/qa-screenshot" and qa_output is not None:
                 self._save_qa_screenshot(qa_output)
                 return
@@ -590,7 +651,9 @@ def make_handler(
                 raise ValueError("invalid Content-Length") from exc
             if length <= 0 or length > MAX_BODY_BYTES:
                 raise ValueError("request body must be between 1 byte and 64 KiB")
-            if "application/json" not in self.headers.get("Content-Type", ""):
+            # Compare the parsed media type: "text/plain; application/json" is a
+            # CORS-safelisted type that a substring check would wrongly accept.
+            if self.headers.get_content_type() != "application/json":
                 raise ValueError("Content-Type must be application/json")
             payload = json.loads(self.rfile.read(length).decode("utf-8"))
             if not isinstance(payload, dict):
